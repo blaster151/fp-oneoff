@@ -24,3 +24,6 @@ export * from './foldable';
 
 // Advanced constructions (arrows, optics, etc.)
 export * from './advanced';
+
+// Value-level instances and implementations
+export * from './instances';

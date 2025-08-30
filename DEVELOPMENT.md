@@ -256,7 +256,46 @@ interface Traversal<S,A> { traverse:<F>(F:Applicative<F>)=> (s:S, f:(a:A)=>HKT<F
 12. **Free / Cofree / Fix + recursion schemes**
 13. **Optics (Iso/Lens/Prism/Traversal)** built via **Profunctor** & friends
 
+---
 
+Next commit
+
+## Minimal example interfaces (copy/paste starting point)
+
+```
+// 1) Value-level algebra
+export interface Eq<A> { equals: (x:A, y:A)=>boolean }
+export interface Semigroup<A> { concat:(x:A,y:A)=>A }
+export interface Monoid<A> extends Semigroup<A> { empty:A }
+
+// 4) Functor core with HKTs
+export interface Functor<F> {
+  readonly map: <A,B>(fa:HKT<F,A>, f:(a:A)=>B)=>HKT<F,B>
+}
+export interface Apply<F> extends Functor<F> {
+  readonly ap: <A,B>(ff:HKT<F,(a:A)=>B>, fa:HKT<F,A>)=>HKT<F,B>
+}
+export interface Applicative<F> extends Apply<F> {
+  readonly of: <A>(a:A)=>HKT<F,A>
+}
+export interface Chain<F> extends Apply<F> {
+  readonly chain:<A,B>(fa:HKT<F,A>, f:(a:A)=>HKT<F,B>)=>HKT<F,B>
+}
+export interface Monad<F> extends Applicative<F>, Chain<F> {}
+
+// 7) Traversable (needs an Applicative param)
+export interface Traversable<F> extends Functor<F> {
+  readonly traverse:<G,A,B>(G:Applicative<G>, fa:HKT<F,A>, f:(a:A)=>HKT<G,B>)=>HKT<G,HKT<F,B>>
+}
+
+// Natural transformation and Kleisli helpers
+export type Nat<F,G> = <A>(fa:HKT<F,A>)=>HKT<G,A>
+export type Kleisli<M,A,B> = (a:A)=>HKT<M,B>
+```
+
+------
+
+## 
 
 
 
