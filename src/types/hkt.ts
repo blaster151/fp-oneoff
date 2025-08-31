@@ -18,6 +18,16 @@ export interface HKT3<URI, R, E, A> extends HKT2<URI, E, A> {
   readonly _R: R 
 }
 
+// Profunctor-specific HKT2 interface (arity-2 for profunctors)
+export interface HKT2Prof<URI, A, B> { 
+  readonly _URI: URI; 
+  readonly _A: A; 
+  readonly _B: B 
+}
+
+// Either type for Choice profunctors and optics
+export type Either<L, R> = { _tag: 'Left'; left: L } | { _tag: 'Right'; right: R }
+
 // URI type for concrete libraries to narrow to string unions
 export type URIS = any;
 
