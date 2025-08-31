@@ -9,6 +9,15 @@ export interface HKT<URI, A> {
   readonly _A: A 
 }
 
+// HKT encodings for arities > 1
+export interface HKT2<URI, E, A> extends HKT<URI, A> { 
+  readonly _E: E 
+}
+
+export interface HKT3<URI, R, E, A> extends HKT2<URI, E, A> { 
+  readonly _R: R 
+}
+
 // URI type for concrete libraries to narrow to string unions
 export type URIS = any;
 

@@ -3,7 +3,7 @@
  * These provide structure-preserving maps over type constructors
  */
 
-import { HKT } from './hkt';
+import { HKT, HKT2, HKT3 } from './hkt';
 
 // Core functor - structure-preserving maps
 export interface Functor<F> {
@@ -20,8 +20,21 @@ export interface Invariant<F> {
   imap: <A, B>(fa: HKT<F, A>, to: (a: A) => B, from: (b: B) => A) => HKT<F, B>
 }
 
-// Bifunctor - functor in two arguments
+// Bifunctor - functor in two arguments (using HKT2)
 export interface Bifunctor<F> {
+  bimap: <E, A, E2, A2>(fea: HKT2<F, E, A>, f: (e: E) => E2, g: (a: A) => A2) => HKT2<F, E2, A2>
+  mapLeft?: <E, E2, A>(fea: HKT2<F, E, A>, f: (e: E) => E2) => HKT2<F, E2, A>
+}
+
+// Trifunctor - functor in three arguments (using HKT3)
+export interface Trifunctor<F> {
+  trimap: <R, E, A, R2, E2, A2>(
+    r: HKT3<F, R, E, A>, fR: (r: R2) => R, fE: (e: E) => E2, fA: (a: A) => A2
+  ) => HKT3<F, R2, E2, A2>
+}
+
+// Legacy Bifunctor interface (keeping for backward compatibility)
+export interface BifunctorLegacy<F> {
   bimap: <A, B, C, D>(fab: HKT<F, [A, B]>, f: (a: A) => C, g: (b: B) => D) => HKT<F, [C, D]>
 }
 

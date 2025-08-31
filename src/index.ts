@@ -16,9 +16,11 @@ console.log('- Semigroup, Monoid, Group');
 console.log('- Semiring, Ring');
 console.log('- Lattice, BoundedLattice, HeytingAlgebra');
 console.log('- Category, Semigroupoid');
+console.log('- Action, Algebra, Coalgebra');
+console.log('- LeftModule, LeftComodule');
 
 // Functor family
-console.log('- Functor, Contravariant, Invariant, Bifunctor, Profunctor');
+console.log('- Functor, Contravariant, Invariant, Bifunctor, Trifunctor, Profunctor');
 console.log('- Apply, Applicative, Alt, Plus, Alternative');
 console.log('- Chain, Monad');
 console.log('- MonadThrow, MonadError, MonadReader, MonadState, MonadWriter');
