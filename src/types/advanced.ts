@@ -32,8 +32,35 @@ export interface Distributive<F> extends Functor<F> {
 }
 
 // Free constructions & recursion schemes
-// Free monad over a functor F
-export type Free<F, A> = Pure<A> | Suspend<HKT<F, Free<F, A>>>;
+
+// Monad algebra folds Free
+export type Free<F, A> = { _tag: 'Pure', a: A } | { _tag: 'Suspend', fa: HKT<F, Free<F, A>> }
+
+export interface FreeAlgebra<F> { 
+  alg: <A>(fa: HKT<F, A>) => A 
+}
+
+export const foldFree = <F, A>(F: Functor<F>, alg: FreeAlgebra<F>) =>
+  (fa: Free<F, A>): A =>
+    fa._tag === 'Pure'
+      ? fa.a
+      : alg.alg(F.map(fa.fa, foldFree(F, alg)))
+
+// Comonad coalgebra drives Cofree
+export type Cofree<F, A> = { head: A, tail: HKT<F, Cofree<F, A>> }
+
+export interface FreeCoalgebra<F> { 
+  coalg: <A>(a: A) => HKT<F, A> 
+}
+
+export const unfoldCofree = <F, A>(F: Functor<F>, coalg: FreeCoalgebra<F>) =>
+  (a: A): Cofree<F, A> => ({ 
+    head: a, 
+    tail: F.map(coalg.coalg(a), unfoldCofree(F, coalg)) 
+  })
+
+// Legacy Free monad over a functor F (keeping for backward compatibility)
+export type FreeLegacy<F, A> = Pure<A> | Suspend<HKT<F, FreeLegacy<F, A>>>;
 
 // Fixed point of a functor
 export type Fix<F> = { unfix: HKT<F, Fix<F>> };

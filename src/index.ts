@@ -32,7 +32,7 @@ console.log('- Extend, Comonad');
 // Advanced
 console.log('- Arrow, ArrowChoice, ArrowApply');
 console.log('- Representable, Distributive');
-console.log('- Free, Fix');
+console.log('- Free, Cofree, Fix');
 console.log('- Iso, Lens, Prism, Traversal');
 
 console.log('\nType classes are ready for use!');
