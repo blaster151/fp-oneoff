@@ -1032,6 +1032,62 @@ export const printExpr = (e: Expr): string => {
 // 18) Protransformations, Coend-based Composition, and Whiskering
 // =================================================================================================
 
+/** Creates a discrete finite category: objects X with only identity morphisms. */
+export function Disc<X extends string>(objs: ReadonlyArray<X>): FiniteSmallCategory<X, {tag:"id", x:X}> {
+  return {
+    objects: objs,
+    morphisms: objs.map(x => ({ tag:"id", x })),
+    id: (o:X)=>({tag:"id", x:o}),
+    src: (m)=>m.x,
+    dst: (m)=>m.x,
+    comp: (g,f)=> (g.x===f.x ? g : (()=>{ throw new Error("impossible in discrete"); })()),
+    hom: (x, y) => x === y ? [{tag:"id", x}] : []
+  };
+}
+
+/** Creates a table-based finite profunctor with identity lmap/rmap (useful for discrete categories). */
+export function tableProf<A extends string, B extends string, T>(
+  _A: FiniteSmallCategory<A, any>,
+  _B: FiniteSmallCategory<B, any>,
+  table: Record<A, Record<B, T[]>>
+): FiniteProf<A, any, B, any, T> {
+  return {
+    elems: (a,b)=> table[a]?.[b] ?? [],
+    lmap: (_u, _b, t)=> t,  // discrete: only identities
+    rmap: (_a, _v, t)=> t
+  };
+}
+
+/** Tests if two relations are equal by checking inclusions both ways. */
+export function relsEqualByInclusions(R: Rel, S: Rel): boolean {
+  const D = makeRelationsDouble();
+  const incl = (top: Rel, bot: Rel) => {
+    try { 
+      D.mkSquare({ 
+        hTop: top, 
+        hBot: bot, 
+        vLeft: D.V.id(top.src), 
+        vRight: D.V.id(top.dst) 
+      }); 
+      return true; 
+    }
+    catch { 
+      return false; 
+    }
+  };
+  return incl(R,S) && incl(S,R);
+}
+
+/** Pretty-prints coend quotient classes for debugging. */
+export function showClasses<A_O, C_O, B_O, TP, TQ>(
+  a: A_O, 
+  c: C_O, 
+  R: { elems: (a: A_O, c: C_O) => ReadonlyArray<{ rep: { b: B_O; p: TP; q: TQ } }> }
+): string[] {
+  const classes = R.elems(a,c);
+  return classes.map((cls) => `⟦b=${cls.rep.b}; p=${cls.rep.p}; q=${cls.rep.q}⟧`);
+}
+
 /** A protransformation α : P ⇒ Q between profunctors P,Q : A ⇸ B is a natural family. */
 export interface ProTrans<A_O, _A_M, B_O, _B_M, TP, TQ> {
   // Component at each pair (a,b): α_{a,b} : P(a,b) → Q(a,b)

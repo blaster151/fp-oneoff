@@ -8,6 +8,7 @@
  * 3. Functor family and monadic structures
  * 4. Foldable, traversable, and comonad structures
  * 5. Advanced constructions (arrows, optics, etc.)
+ * 6. Category theory and adjunction theory
  */
 
 // HKT plumbing and basic types
@@ -30,6 +31,14 @@ export * from './advanced';
 import * as OpticsFree from './optics-free';
 export { OpticsFree };
 export * from './category-to-nerve-sset';
+
+// Category theory and adjunction theory (hom-set companions/conjoints, mates)
+// Note: Some types from catkit-adjunction conflict with existing types
+// export * from './catkit-adjunction';
+
+// Kan extensions via ends/coends
+// Note: Some types from catkit-kan conflict with existing types  
+// export * from './catkit-kan';
 
 // Value-level instances and implementations
 export * from './instances';

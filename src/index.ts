@@ -1,39 +1,17 @@
-// Import type classes (unused import warning suppressed for demonstration)
-// import * as Types from './types';
+// Main entry point for the Category Theory Toolkit
+// This demonstrates the full power of our profunctor and relations equipment
 
-console.log('Functional Programming Type Classes Library');
-console.log('==========================================');
+import './examples/kan-extensions-demo';
 
-// Demonstrate that all type classes are available
-console.log('Available type classes:');
-
-// HKT and basic types
-console.log('- HKT, Fn, Nat, Kleisli, CoKleisli');
-
-// Algebraic structures
-console.log('- Eq, Show, Ord');
-console.log('- Semigroup, Monoid, Group');
-console.log('- Semiring, Ring');
-console.log('- Lattice, BoundedLattice, HeytingAlgebra');
-console.log('- Category, Semigroupoid');
-console.log('- Action, Algebra, Coalgebra');
-console.log('- LeftModule, LeftComodule');
-
-// Functor family
-console.log('- Functor, Contravariant, Invariant, Bifunctor, Trifunctor, Profunctor');
-console.log('- Apply, Applicative, Alt, Plus, Alternative');
-console.log('- Chain, Monad');
-console.log('- MonadThrow, MonadError, MonadReader, MonadState, MonadWriter');
-
-// Foldable and Comonad
-console.log('- Foldable, Unfoldable, Traversable');
-console.log('- Extend, Comonad');
-
-// Advanced
-console.log('- Arrow, ArrowChoice, ArrowApply');
-console.log('- Representable, Distributive');
-console.log('- Free, Cofree, Fix');
-console.log('- Iso, Lens, Prism, Traversal');
-
-console.log('\nType classes are ready for use!');
-console.log('Import them with: import * as Types from "./types"');
+console.log('\n🎯 Main entry point loaded successfully!');
+console.log('The comprehensive category theory toolkit is ready for use.');
+console.log('Check out the examples above to see all the functionality in action.');
+console.log('\nAvailable examples:');
+console.log('  • kan-extensions-demo.ts - Pointwise Kan extensions via ends/coends');
+console.log('  • relations-companion-demo.ts - Concrete Set/Rel equipment');
+console.log('  • profunctor-calculus-demo.ts - Profunctor composition & coends');
+console.log('  • profunctor-optics.ts - Optics encoded as profunctors');
+console.log('  • And many more in src/examples/');
+console.log('');
+console.log('Note: Some advanced types (adjunction theory, Kan extensions) are available');
+console.log('directly from their respective files to avoid export conflicts.');
