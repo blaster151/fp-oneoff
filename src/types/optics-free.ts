@@ -137,3 +137,94 @@ export const MonoidFirstFree = <A>(): MonoidFree<OptionFree<A>> => ({
 export const previewFree = <S, A>(o: PPrismFree<S, S, A, A>) =>
   (s: S): OptionFree<A> =>
     (o(ForgetChoiceFree<OptionFree<A>>(MonoidFirstFree<A>()))(someFree as any) as any)(s);
+
+// -------------------------------------------------------------------------------------
+// 4) Traversal via "Wander" (array `each`) + Identity Applicative to run it as `over`
+// -------------------------------------------------------------------------------------
+export interface FunctorFree<F extends URISFree> {
+  map: <A, B>(fa: KindFree<F, A>, f: (a: A) => B) => KindFree<F, B>;
+}
+
+export interface ApplicativeFree<F extends URISFree> extends FunctorFree<F> {
+  of: <A>(a: A) => KindFree<F, A>;
+  ap: <A, B>(ff: KindFree<F, (a: A) => B>, fa: KindFree<F, A>) => KindFree<F, B>;
+}
+
+// Identity applicative to run Traversals as pure modifications
+export const URI_IdFree = 'Id' as const;
+export type URI_IdFree = typeof URI_IdFree;
+
+declare module './optics-free' {
+  interface URItoKindFree<A> {
+    Id: A;
+  }
+}
+
+export const IdFree: ApplicativeFree<URI_IdFree> = {
+  of: <A>(a: A) => a,
+  map: <A, B>(fa: A, f: (a: A) => B) => f(fa),
+  ap: <A, B>(ff: (a: A) => B, fa: A) => ff(fa)
+};
+
+// Wander/Traversing profunctor interface distilled for one method
+export interface WanderFree<P> extends StrongFree<P>, ChoiceFree<P> {
+  wander: <F extends URISFree>(F: ApplicativeFree<F>) =>
+    <S, T, A, B>(trav: (s: S, f: (a: A) => KindFree<F, B>) => KindFree<F, T>, pab: (a: A) => B) =>
+      (s: S) => T;
+}
+
+// A Star-like instance sufficient to run wander with Id
+export const FunctionWanderFree: WanderFree<'Function'> = {
+  ...FunctionStrongFree,
+  ...({
+    left: <A, B, C>(pab: (a: A) => B) => (e: EitherFree<A, C>) =>
+      e._tag === 'Left' ? leftFree<B, C>(pab(e.left)) : rightFree<B, C>(e.right)
+  } as ChoiceFree<'Function'>),
+  wander: <F extends URISFree>(F: ApplicativeFree<F>) =>
+    <S, T, A, B>(trav: (s: S, f: (a: A) => KindFree<F, B>) => KindFree<F, T>, pab: (a: A) => B) =>
+      (s: S): T => trav(s, (a: A) => F.of(pab(a))) as any
+};
+
+// A PTraversal over arrays ("each")
+export type PTraversalFree<S, T, A, B> = <P>(P: WanderFree<P>) => (pab: (a: A) => B) => (s: S) => T;
+
+export const eachFree = <A, B>(): PTraversalFree<ReadonlyArray<A>, ReadonlyArray<B>, A, B> =>
+  <P>(P: WanderFree<P>) => (pab: (a: A) => B) =>
+    (as: ReadonlyArray<A>): ReadonlyArray<B> =>
+      (P.wander(IdFree)((xs: ReadonlyArray<A>, f: (a: A) => B) => 
+        xs.reduce((acc: B[], a: A) => [...acc, f(a)], [] as B[]), pab) as any)(as);
+
+// -------------------------------------------------------------------------------------
+// 5) Free monad (for any Functor F), plus fold (interpreter via algebra)
+// -------------------------------------------------------------------------------------
+export type FreeOptics<F extends URISFree, A> =
+  | { _tag: 'Pure';    a: A }
+  | { _tag: 'Suspend'; fa: KindFree<F, FreeOptics<F, A>> };
+
+export const pureOptics = <F extends URISFree, A>(a: A): FreeOptics<F, A> => ({ _tag:'Pure', a });
+
+export const liftFOptics = <F extends URISFree, A>(F: FunctorFree<F>) =>
+  (fa: KindFree<F, A>): FreeOptics<F, A> =>
+    ({ _tag:'Suspend', fa: F.map(fa, pureOptics as any) });
+
+export const foldFreeOptics = <F extends URISFree>(F: FunctorFree<F>) =>
+  <A>(alg: (fa: KindFree<F, A>) => A) =>
+  (ma: FreeOptics<F, A>): A =>
+    ma._tag === 'Pure' ? ma.a : alg(F.map(ma.fa, foldFreeOptics(F)(alg)));
+
+// Free "ExprF" DSL types (for use in demos)
+export const URI_ExprF = 'ExprF';
+export type URI_ExprF = typeof URI_ExprF;
+declare module './optics-free' {
+  interface URItoKindFree<A> {
+    ExprF: ExprFOptics<A>;
+  }
+}
+export type ExprFOptics<A> =
+  | { _tag: 'Const'; n: number }
+  | { _tag: 'Add';   l: A; r: A };
+
+export const ExprFFunctorOptics: FunctorFree<URI_ExprF> = {
+  map: <A, B>(fa: ExprFOptics<A>, f: (a: A) => B): ExprFOptics<B> =>
+    fa._tag === 'Const' ? fa : { _tag:'Add', l: f(fa.l), r: f(fa.r) }
+};

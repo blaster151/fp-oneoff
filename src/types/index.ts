@@ -27,6 +27,7 @@ export * from './advanced';
 
 // Profunctor-encoded optics (free implementation)
 export * from './optics-free';
+export * from './category-to-nerve-sset';
 
 // Value-level instances and implementations
 export * from './instances';
