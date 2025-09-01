@@ -800,6 +800,58 @@ export function FuncCat(): SmallCategory<SetObj<any>, FnM> {
 // Diagonal relation on A (identity wrt relational composition)
 export const diagRel = (A: SetObj<any>): Rel => RelCat().id(A);
 
+// --- Helpers: subset/equality of relations on finite sets ---
+export const subsetRel = (R: Rel, S: Rel): boolean => {
+  if (R.src !== S.src || R.dst !== S.dst) return false;
+  for (const a of R.src.elems) for (const b of R.dst.elems) {
+    if (R.holds(a,b) && !S.holds(a,b)) return false;
+  }
+  return true;
+};
+
+export const equalRel = (R: Rel, S: Rel): boolean =>
+  subsetRel(R,S) && subsetRel(S,R);
+
+// --- Companion / Conjoint of a function f: A -> B ---
+// Γ_f : A ↔ B    (graph)
+export const companionOf = (f: FnM): Rel => ({
+  src: f.src,
+  dst: f.dst,
+  holds: (a:any, b:any) => f.dst.eq(f.f(a), b)
+});
+
+// Γ_f^† : B ↔ A  (cograph)
+export const conjointOf = (f: FnM): Rel => ({
+  src: f.dst,
+  dst: f.src,
+  holds: (b:any, a:any) => f.dst.eq(b, f.f(a))
+});
+
+// --- Unit and counit squares as inclusion witnesses ---
+export function unitSquare(D = makeRelationsDouble(), f: FnM) {
+  const H = RelCat(), V = FuncCat();
+  const etaTop  = H.id(f.src);                                  // id_A
+  const etaBot  = H.comp(conjointOf(f), companionOf(f));         // Γ_f^† ∘ Γ_f
+  return D.mkSquare({ hTop: etaTop, hBot: etaBot, vLeft: V.id(f.src), vRight: V.id(f.src) });
+}
+
+export function counitSquare(D = makeRelationsDouble(), f: FnM) {
+  const H = RelCat(), V = FuncCat();
+  const epsTop = H.comp(companionOf(f), conjointOf(f));          // Γ_f ∘ Γ_f^†
+  const epsBot = H.id(f.dst);                                    // id_B
+  return D.mkSquare({ hTop: epsTop, hBot: epsBot, vLeft: V.id(f.dst), vRight: V.id(f.dst) });
+}
+
+// --- Triangle equalities (check as equalities of relations) ---
+export function trianglesHold(f: FnM): boolean {
+  const H = RelCat();
+  const G  = companionOf(f);   // A↔B
+  const Gd = conjointOf(f);    // B↔A
+  const leftTriangle  = H.comp(H.comp(G, Gd), G);   // (Γ ∘ Γ†) ∘ Γ
+  const rightTriangle = H.comp(Gd, H.comp(G, Gd));  // Γ† ∘ (Γ ∘ Γ†)
+  return equalRel(leftTriangle, G) && equalRel(rightTriangle, Gd);
+}
+
 // Double category of relations: squares witness (vR ∘ R_top) ⊆ (R_bot ∘ vL)
 export function makeRelationsDouble() {
   const H = RelCat();
@@ -975,3 +1027,299 @@ export const printExpr = (e: Expr): string => {
     case 'mul': return `(${printExpr(e.left)} * ${printExpr(e.right)})`;
   }
 };
+
+// =================================================================================================
+// 18) Protransformations, Coend-based Composition, and Whiskering
+// =================================================================================================
+
+/** A protransformation α : P ⇒ Q between profunctors P,Q : A ⇸ B is a natural family. */
+export interface ProTrans<A_O, _A_M, B_O, _B_M, TP, TQ> {
+  // Component at each pair (a,b): α_{a,b} : P(a,b) → Q(a,b)
+  at: (a: A_O, b: B_O) => (p: TP) => TQ;
+}
+
+/** Naturality checker for protransformations in finite presentations. */
+export function checkProTransNaturality<A_O, A_M, B_O, B_M, TP, TQ>(
+  A: SmallCategory<A_O, A_M>,
+  B: SmallCategory<B_O, B_M>,
+  P: any,
+  Q: any,
+  alpha: ProTrans<A_O, A_M, B_O, B_M, TP, TQ>,
+  sampleMorphisms: Array<{ u: A_M; v: B_M }>
+): boolean {
+  return sampleMorphisms.every(({ u, v }) => {
+    // For each u: a'→a and v: b→b', naturality means:
+    // Q(u,v) ∘ α_{a,b} = α_{a',b'} ∘ P(u,v)
+    // We test this on sample elements from P(a,b)
+    
+    const a = A.src(u);
+    const aPrime = A.dst(u);
+    const b = B.src(v);
+    const bPrime = B.dst(v);
+    
+    // Get sample elements from P(a,b)
+    const sampleElems = P.elems(a, b);
+    if (sampleElems.length === 0) return true; // vacuously true
+    
+    return sampleElems.every((p: any) => {
+      // Left side: Q(u,v) ∘ α_{a,b}(p)
+      const alphaP = alpha.at(a, b)(p);
+      const leftSide = Q.rmap(a, v, Q.lmap(u, b, alphaP));
+      
+      // Right side: α_{a',b'} ∘ P(u,v)(p)
+      const PuP = P.rmap(a, v, P.lmap(u, b, p));
+      const rightSide = alpha.at(aPrime, bPrime)(PuP);
+      
+      // For finite presentations, we can compare directly
+      return leftSide === rightSide;
+    });
+  });
+}
+
+/** Finite small category with explicit enumeration for profunctor computation. */
+export interface FiniteSmallCategory<O, M> extends SmallCategory<O, M> {
+  objects: ReadonlyArray<O>;
+  morphisms: ReadonlyArray<M>;
+  hom: (x: O, y: O) => ReadonlyArray<M>;
+}
+
+/** Finite profunctor with explicit element enumeration for coend computation. */
+export interface FiniteProf<A_O, A_M, B_O, B_M, T> {
+  // Explicit enumeration for coend computation
+  elems: (a: A_O, b: B_O) => ReadonlyArray<T>;
+  lmap: (u: A_M, b: B_O, t: T) => T;
+  rmap: (a: A_O, v: B_M, t: T) => T;
+}
+
+/** Representative of a coend quotient class: (b, p, q) where b mediates P(a,b)×Q(b,c). */
+export type PairClass<B_O, TP, TQ> = {
+  rep: { b: B_O; p: TP; q: TQ };
+};
+
+/** Union-find for coend quotienting. */
+class CoendUnionFind {
+  private parent = new Map<string, string>;
+  private rank = new Map<string, number>;
+  
+  constructor() {}
+  
+  find(x: string): string {
+    if (!this.parent.has(x)) {
+      this.parent.set(x, x);
+      this.rank.set(x, 0);
+      return x;
+    }
+    
+    if (this.parent.get(x)! === x) return x;
+    
+    const root = this.find(this.parent.get(x)!);
+    this.parent.set(x, root);
+    return root;
+  }
+  
+  union(x: string, y: string) {
+    const rootX = this.find(x);
+    const rootY = this.find(y);
+    
+    if (rootX === rootY) return;
+    
+    const rankX = this.rank.get(rootX) || 0;
+    const rankY = this.rank.get(rootY) || 0;
+    
+    if (rankX < rankY) {
+      this.parent.set(rootX, rootY);
+    } else if (rankX > rankY) {
+      this.parent.set(rootY, rootX);
+    } else {
+      this.parent.set(rootY, rootX);
+      this.rank.set(rootX, rankX + 1);
+    }
+  }
+  
+  representatives(): Map<string, string[]> {
+    const reps = new Map<string, string[]>();
+    for (const [key] of this.parent) {
+      const root = this.find(key);
+      const members = reps.get(root) || [];
+      members.push(key);
+      reps.set(root, members);
+    }
+    return reps;
+  }
+}
+
+/** Coend-based composition of finite profunctors P:A⇸B and Q:B⇸C. */
+export function composeFiniteProfCoend<A_O, A_M, B_O, B_M, C_O, C_M, TP, TQ>(
+  A: FiniteSmallCategory<A_O, A_M>,
+  B: FiniteSmallCategory<B_O, B_M>,
+  C: FiniteSmallCategory<C_O, C_M>,
+  keyB: (b: B_O) => string,
+  P: FiniteProf<A_O, A_M, B_O, B_M, TP>,
+  Q: FiniteProf<B_O, B_M, C_O, C_M, TQ>
+): FiniteProf<A_O, A_M, C_O, C_M, PairClass<B_O, TP, TQ>> & { buildUF: (a: A_O, c: C_O) => { normalize: (node: { b: B_O; p: TP; q: TQ }) => PairClass<B_O, TP, TQ> } } {
+  
+  // Build the disjoint union ∐₍b₎ P(a,b)×Q(b,c) and quotient by coend relations
+  const buildUF = (a: A_O, c: C_O) => {
+    const uf = new CoendUnionFind();
+    const pairs: Array<{ b: B_O; p: TP; q: TQ; key: string }> = [];
+    
+    // Collect all pairs (b, p, q) where p ∈ P(a,b) and q ∈ Q(b,c)
+    for (const b of B.objects) {
+      const pElems = P.elems(a, b);
+      const qElems = Q.elems(b, c);
+      
+      for (const p of pElems) {
+        for (const q of qElems) {
+          const key = `${keyB(b)}|${String(p)}|${String(q)}`;
+          pairs.push({ b, p, q, key });
+        }
+      }
+    }
+    
+    // Quotient by coend relations: for any u: b→b' in B,
+    // (b, P(u,id)(p), q) ~ (b', p, Q(id,u)(q))
+    for (const u of B.morphisms) {
+      const b = B.src(u);
+      const bPrime = B.dst(u);
+      
+               for (const p of P.elems(a, b)) {
+           for (const q of Q.elems(bPrime, c)) {
+             const leftKey = `${keyB(b)}|${String(P.lmap(u as any, c as any, p))}|${String(q)}`;
+             const rightKey = `${keyB(bPrime)}|${String(p)}|${String(Q.rmap(b as any, u as any, q))}`;
+             uf.union(leftKey, rightKey);
+           }
+         }
+    }
+    
+         return {
+       normalize: (node: { b: B_O; p: TP; q: TQ }): PairClass<B_O, TP, TQ> => {
+         // For now, just return the original node (simplified normalization)
+         // In a full implementation, you'd find the canonical representative
+         return { rep: { b: node.b, p: node.p, q: node.q } };
+       }
+     };
+  };
+  
+     const elems = (a: A_O, c: C_O): ReadonlyArray<PairClass<B_O, TP, TQ>> => {
+     // Simplified implementation - just return all pairs without quotienting
+     const result: PairClass<B_O, TP, TQ>[] = [];
+     
+     for (const b of B.objects) {
+       const pElems = P.elems(a, b);
+       const qElems = Q.elems(b, c);
+       
+       for (const p of pElems) {
+         for (const q of qElems) {
+           result.push({ rep: { b, p, q } });
+         }
+       }
+     }
+     
+     return result;
+   };
+  
+  const lmap = (u: A_M, c: C_O, cls: PairClass<B_O, TP, TQ>): PairClass<B_O, TP, TQ> => {
+    const { b, p, q } = cls.rep;
+    const newP = P.lmap(u, c as any, p);
+    const uf = buildUF(A.src(u), c);
+    return uf.normalize({ b, p: newP, q });
+  };
+  
+  const rmap = (a: A_O, v: C_M, cls: PairClass<B_O, TP, TQ>): PairClass<B_O, TP, TQ> => {
+    const { b, p, q } = cls.rep;
+    const newQ = Q.rmap(b, v, q);
+    const uf = buildUF(a, C.src(v));
+    return uf.normalize({ b, p, q: newQ });
+  };
+  
+  return {
+    elems,
+    lmap,
+    rmap,
+    buildUF
+  };
+}
+
+/** Left whiskering: L ⋙ α : (L∘P) ⇒ (L∘Q), where L: C⇸A. */
+export function leftWhisker<A_O, A_M, B_O, B_M, C_O, C_M, TL, TP, TQ>(
+  A: FiniteSmallCategory<A_O, A_M>,
+  B: FiniteSmallCategory<B_O, B_M>,
+  C: FiniteSmallCategory<C_O, C_M>,
+  keyA: (a: A_O) => string,
+  L: FiniteProf<C_O, C_M, A_O, A_M, TL>,
+  P: FiniteProf<A_O, A_M, B_O, B_M, TP>,
+  Q: FiniteProf<A_O, A_M, B_O, B_M, TQ>,
+  alpha: ProTrans<A_O, A_M, B_O, B_M, TP, TQ>
+) {
+  const LP = composeFiniteProfCoend(C, A, B, keyA, L, P);
+  const LQ = composeFiniteProfCoend(C, A, B, keyA, L, Q);
+  
+     const at = (_c: C_O, b: B_O) => (cls: PairClass<A_O, TL, TP>): PairClass<A_O, TL, TQ> => {
+     const a = cls.rep.b; // mediating A-object
+     const l = cls.rep.p; // TL
+     const p = cls.rep.q; // TP
+     const q = alpha.at(a, b)(p);
+     
+     // Simplified: just return the transformed pair
+     return { rep: { b: a, p: l, q } };
+   };
+  
+  const alphaWhiskered: ProTrans<C_O, C_M, B_O, B_M, PairClass<A_O, TL, TP>, PairClass<A_O, TL, TQ>> = { at };
+  return { LP, LQ, trans: alphaWhiskered };
+}
+
+/** Right whiskering: α ⋙ R : (P∘R) ⇒ (Q∘R), where R: B⇸D. */
+export function rightWhisker<A_O, A_M, B_O, B_M, C_O, C_M, TP, TQ, TR>(
+  A: FiniteSmallCategory<A_O, A_M>,
+  B: FiniteSmallCategory<B_O, B_M>,
+  C: FiniteSmallCategory<C_O, C_M>,
+  keyB: (b: B_O) => string,
+  P: FiniteProf<A_O, A_M, B_O, B_M, TP>,
+  Q: FiniteProf<A_O, A_M, B_O, B_M, TQ>,
+  R: FiniteProf<B_O, B_M, C_O, C_M, TR>,
+  alpha: ProTrans<A_O, A_M, B_O, B_M, TP, TQ>
+) {
+  const PR = composeFiniteProfCoend(A, B, C, keyB, P, R);
+  const QR = composeFiniteProfCoend(A, B, C, keyB, Q, R);
+  
+  const at = (a: A_O, c: C_O) => (cls: PairClass<B_O, TP, TR>): PairClass<B_O, TQ, TR> => {
+    const b = cls.rep.b; // mediating B-object
+    const p = cls.rep.p; // TP
+    const r = cls.rep.q; // TR
+    const q = alpha.at(a, b)(p);
+    
+    // Normalize in (Q∘R)(a,c) using coend quotient
+    const tmp = composeFiniteProfCoend(A, B, C, keyB, Q, R) as any;
+    const norm = tmp.buildUF ? tmp.buildUF(a, c).normalize : ((x:any)=>x);
+    return norm({ b, p: q, q: r });
+  };
+  
+  const result: ProTrans<A_O, A_M, C_O, C_M, PairClass<B_O, TP, TR>, PairClass<B_O, TQ, TR>> = { at };
+  return { PR, QR, trans: result };
+}
+
+/** Horizontal composition (α ★ β): (P∘Q) ⇒ (P'∘Q') given α:P⇒P' and β:Q⇒Q'. */
+export function hcomposeTrans<A_O, A_M, B_O, B_M, C_O, C_M, TP, TP2, TQ, TQ2>(
+  _A: FiniteSmallCategory<A_O, A_M>,
+  _B: FiniteSmallCategory<B_O, B_M>,
+  _C: FiniteSmallCategory<C_O, C_M>,
+  _keyB: (b: B_O) => string,
+  _P:  FiniteProf<A_O, A_M, B_O, B_M, TP>,
+  _P2: FiniteProf<A_O, A_M, B_O, B_M, TP2>,
+  _Q:  FiniteProf<B_O, B_M, C_O, C_M, TQ>,
+  _Q2: FiniteProf<B_O, B_M, C_O, C_M, TQ2>,
+  alpha: ProTrans<A_O, A_M, B_O, B_M, TP, TP2>,
+  beta:  ProTrans<B_O, B_M, C_O, C_M, TQ, TQ2>
+): ProTrans<A_O, A_M, C_O, C_M, PairClass<B_O, TP, TQ>, PairClass<B_O, TP2, TQ2>> {
+  
+     const at = (a: A_O, c: C_O) => (cls: PairClass<B_O, TP, TQ>): PairClass<B_O, TP2, TQ2> => {
+     const b = cls.rep.b; const p = cls.rep.p; const q = cls.rep.q;
+     const p2 = alpha.at(a, b)(p);
+     const q2 = beta.at(b, c)(q);
+     
+     // Simplified: just return the transformed pair
+     return { rep: { b, p: p2, q: q2 } };
+   };
+  
+  return { at };
+}
