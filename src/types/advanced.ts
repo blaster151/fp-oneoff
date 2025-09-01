@@ -244,6 +244,40 @@ export type FreeLegacy<F, A> = Pure<A> | Suspend<HKT<F, FreeLegacy<F, A>>>;
 // Fixed point of a functor
 export type Fix<F> = { unfix: HKT<F, Fix<F>> };
 
+// Expression DSL types and instances
+export type ExprF<A> =
+  | { _tag: 'Const'; n: number }
+  | { _tag: 'Add'; l: A; r: A }
+
+export const ExprFFunctor: Functor<'ExprF'> = {
+  map: <A, B>(fa: HKT<'ExprF', A>, f: (a: A) => B): HKT<'ExprF', B> => {
+    const x = fa as any
+    return x._tag === 'Const' ? x : { _tag: 'Add', l: f(x.l), r: f(x.r) } as any
+  }
+}
+
+// Smart constructors for expressions
+export const Const = (n: number): Free<'ExprF', number> =>
+  liftF<'ExprF', number>({ _tag: 'Const', n } as any)
+
+export const Add = (l: Free<'ExprF', number>, r: Free<'ExprF', number>): Free<'ExprF', number> =>
+  ({ _tag: 'Suspend', fa: { _tag: 'Add', l, r } as any })
+
+// Expression algebras
+export const evalExprAlg = { 
+  alg: <A>(fa: HKT<'ExprF', A>): A => {
+    const x = fa as any
+    return x._tag === 'Const' ? x.n : (x.l + x.r)
+  }
+} as any
+
+export const printExprAlg = {
+  alg: <A>(fa: HKT<'ExprF', A>): string => {
+    const x = fa as any
+    return x._tag === 'Const' ? x.n.toString() : `(${x.l} + ${x.r})`
+  }
+} as any
+
 // Placeholder types for Free monad implementation
 export interface Pure<A> {
   readonly _tag: 'Pure';

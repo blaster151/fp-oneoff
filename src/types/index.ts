@@ -25,5 +25,8 @@ export * from './foldable';
 // Advanced constructions (arrows, optics, etc.)
 export * from './advanced';
 
+// Profunctor-encoded optics (free implementation)
+export * from './optics-free';
+
 // Value-level instances and implementations
 export * from './instances';
