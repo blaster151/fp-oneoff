@@ -25,8 +25,10 @@ export * from './foldable';
 // Advanced constructions (arrows, optics, etc.)
 export * from './advanced';
 
-// Profunctor-encoded optics (free implementation)
-export * from './optics-free';
+// Profunctor-encoded optics (free implementation) is available under a namespace.
+// This prevents symbol collisions with the canonical typeclass/HKT surface.
+import * as OpticsFree from './optics-free';
+export { OpticsFree };
 export * from './category-to-nerve-sset';
 
 // Value-level instances and implementations

@@ -3,7 +3,7 @@
  * These include arrows, representable functors, free constructions, and optics
  */
 
-import { HKT, HKT2Prof, Either } from './hkt';
+import { HKT, HKT2Prof, Either, Fn } from './hkt';
 import { Category } from './algebraic';
 import { Functor, Applicative } from './functors';
 
@@ -82,7 +82,6 @@ export const prism = <S, T, A, B>(
 // ----- Running optics: concrete profunctors you'll actually use -----
 
 // Function profunctor instance
-type Fn<A, B> = (a: A) => B
 type PFN = 'PFN'
 // Function profunctor implementation (exported for potential use)
 export const functionStrong: Strong<PFN> = {
