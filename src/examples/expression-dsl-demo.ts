@@ -1,64 +1,34 @@
 /**
  * Expression DSL Demo
  * 
- * Demonstrates building an interpretable expression language using Free monads.
- * This shows how to create domain-specific languages with lawful, composable programs.
+ * Demonstrates the simple expression language with evaluation and pretty printing.
  */
 
-import { 
-  ExprFFunctor, 
-  Const, 
-  Add, 
-  evalExprAlg, 
-  printExprAlg, 
-  foldFree 
-} from '../types';
+import { lit, add, mul, evalExpr, printExpr } from '../types';
 
 export function demonstrateExpressionDSL() {
-  console.log('=== Expression DSL Demo ===');
+  console.log('=== Expression DSL Demo ===\n');
   
-  // Create interpreters using the algebras
-  const evalExpr = foldFree(ExprFFunctor, evalExprAlg)
-  const printExpr = foldFree(ExprFFunctor, printExprAlg)
+  // Create a complex expression: (2 * 3) + 4
+  const example = add(mul(lit(2), lit(3)), lit(4));
   
-  // Basic usage
-  const expr = Add(Const(2), Add(Const(3), Const(5))) // 2 + (3 + 5)
-  const result = evalExpr(expr) // 10
-  const printed = printExpr(expr) // "(2 + (3 + 5))"
+  console.log('Expression:', printExpr(example));
+  console.log('Result:', evalExpr(example));
+  console.log();
   
-  console.log('Expression:', printed);
-  console.log('Result:', result);
+  // More complex example: ((1 + 2) * 3) + (4 * 5)
+  const complex = add(
+    mul(add(lit(1), lit(2)), lit(3)),
+    mul(lit(4), lit(5))
+  );
   
-  // More complex example
-  const complexExpr = Add(
-    Add(Const(1), Const(2)),  // (1 + 2)
-    Add(Const(3), Const(4))   // (3 + 4)
-  )
-  const complexResult = evalExpr(complexExpr)
-  const complexPrinted = printExpr(complexExpr)
+  console.log('Complex expression:', printExpr(complex));
+  console.log('Result:', evalExpr(complex));
+  console.log();
   
-  console.log('\nComplex expression:', complexPrinted);
-  console.log('Result:', complexResult);
-  
-  // Nested expressions
-  const nestedExpr = Add(
-    Const(10),
-    Add(
-      Add(Const(5), Const(3)),  // (5 + 3)
-      Add(Const(2), Const(1))   // (2 + 1)
-    )
-  )
-  const nestedResult = evalExpr(nestedExpr)
-  const nestedPrinted = printExpr(nestedExpr)
-  
-  console.log('\nNested expression:', nestedPrinted);
-  console.log('Result:', nestedResult);
-  
-  console.log('\n=== How these pieces click together ===');
-  console.log('• Free monads let you build interpretable, law-carrying programs');
-  console.log('• Different algebras (eval, print) can interpret the same AST');
-  console.log('• The functor instance ensures proper structure preservation');
-  console.log('• Smart constructors provide a clean API for building expressions');
+  // Show how the AST structure works
+  console.log('AST structure:');
+  console.log(JSON.stringify(complex, null, 2));
 }
 
 // Run the demo

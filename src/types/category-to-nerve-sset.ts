@@ -365,3 +365,613 @@ export const i2: QuiverMorphism<Obj> = {
 
 export const PO_Q = pushoutQuiver(i1, i2, (o) => o);
 // PO_Q.objects = ['A','B','C']; PO_Q.edges ~ [A→B, B→C]
+
+// =================================================================================================
+// 10) Quasi-category helpers: inner horns Λ¹² (n=2, i=1), validator, unique filler for Nerve(C)
+// =================================================================================================
+
+/** An inner 2-horn Λ¹² in any simplicial set can be represented (for nerves) by its two 1-faces. 
+ *  Here we model it concretely for the nerve of a category:
+ *    d0 : x1→x2  (drops the first edge)
+ *    d2 : x0→x1  (drops the last edge)
+ *  The missing face d1 is the composite x0→x2.
+ */
+export type InnerHorn2<O, M> = {
+  /** d0 face: the "right" edge x1→x2 */
+  readonly d0: NSimplex<O, M>; // 1-simplex
+  /** d2 face: the "left"  edge x0→x1 */
+  readonly d2: NSimplex<O, M>; // 1-simplex
+};
+
+export function makeInnerHorn2<O, M>(
+  C: SmallCategory<O, M>,
+  m01: M, // x0→x1
+  m12: M  // x1→x2
+): InnerHorn2<O, M> {
+  // build 1-simplices as nerves do
+  const left  = { head: C.src(m01), chain: [m01] }; // d2
+  const right = { head: C.src(m12), chain: [m12] }; // d0
+  return { d0: right, d2: left };
+}
+
+/** Basic well-formedness for a nerve-style Λ¹²: endpoints match so a composite exists. */
+export function validateInnerHorn2<O, M>(
+  C: SmallCategory<O, M>,
+  horn: InnerHorn2<O, M>
+): boolean {
+  // Each face must be a 1-simplex.
+  if (horn.d0.chain.length !== 1 || horn.d2.chain.length !== 1) return false;
+
+  const m01 = horn.d2.chain[0]!; // x0→x1
+  const m12 = horn.d0.chain[0]!; // x1→x2
+
+  // Middle object must match: dst(m01) = src(m12)
+  return C.dst(m01) === C.src(m12);
+}
+
+/** Unique filler for Λ¹² in the Nerve of a 1-category: the 2-simplex (m01, m12). */
+export function fillInnerHorn2_Nerve<O, M>(
+  C: SmallCategory<O, M>,
+  horn: InnerHorn2<O, M>
+): NSimplex<O, M> {
+  if (!validateInnerHorn2(C, horn)) throw new Error("fillInnerHorn2_Nerve: ill-formed horn");
+  const m01 = horn.d2.chain[0]!;
+  const m12 = horn.d0.chain[0]!;
+  const head = C.src(m01); // x0
+  return { head, chain: [m01, m12] }; // 2-simplex ⟨x0; m01, m12⟩
+}
+
+/** For nerves of ordinary categories, inner 2-horns always have a unique filler. */
+export function hasUniqueInnerHorn2_Nerve<O, M>(
+  C: SmallCategory<O, M>,
+  horn: InnerHorn2<O, M>
+): boolean {
+  return validateInnerHorn2(C, horn);
+}
+
+/** A lightweight "quasi-category structure" marker with just Λ¹² fillers. 
+ *  (General quasi-categories require all inner horn fillers for all n≥2; 
+ *   this is a minimal, practical slice you can test on finite nerves.)
+ */
+export interface QuasiCategory<O, M> extends SimplicialSet<O, M> {
+  hasInnerHorn2: (horn: InnerHorn2<O, M>) => boolean;
+  fillInnerHorn2: (horn: InnerHorn2<O, M>) => NSimplex<O, M>;
+}
+
+/** Equip the Nerve(C) with inner-2-horn filler operations. */
+export function asQuasiFromNerve<O, M>(
+  C: SmallCategory<O, M>
+): QuasiCategory<O, M> {
+  const base = Nerve(C);
+  return {
+    ...base,
+    hasInnerHorn2: (h) => hasUniqueInnerHorn2_Nerve(C, h),
+    fillInnerHorn2: (h) => fillInnerHorn2_Nerve(C, h),
+  };
+}
+
+// --- Example (works with your earlier free category C_free, f1: A→B, g1: B→C) ---
+// const horn = makeInnerHorn2(C_free, f1, g1);
+// const Nq = asQuasiFromNerve(C_free);
+// Nq.hasInnerHorn2(horn);              // true
+// const sigma = Nq.fillInnerHorn2(horn) // the 2-simplex [f1, g1]
+
+
+// =================================================================================================
+// 11) (Optional) Inner horn "sanity" for nerves: check the composite face matches d1
+// =================================================================================================
+
+/** For a 2-simplex σ = [m01, m12], d1(σ) is the composed 1-simplex m12∘m01. */
+export function d1_of_2simplex<O, M>(
+  C: SmallCategory<O, M>,
+  s: NSimplex<O, M>
+): NSimplex<O, M> {
+  if (s.chain.length !== 2) throw new Error("d1_of_2simplex: expected a 2-simplex");
+  const comp = C.comp(s.chain[1]!, s.chain[0]!);
+  return { head: s.head, chain: [comp] };
+}
+
+/** In the nerve, the unique filler property for Λ¹² means: 
+ *    d2(σ) = horn.d2, d0(σ) = horn.d0, and d1(σ) equals their composite.
+ */
+export function checkFilledHorn2<O, M>(
+  C: SmallCategory<O, M>,
+  horn: InnerHorn2<O, M>,
+  filler: NSimplex<O, M>
+): boolean {
+  if (filler.chain.length !== 2) return false;
+  const okFaces =
+    // d2 drops last edge → left edge
+    (() => {
+      const d2 = { head: filler.head, chain: [filler.chain[0]!] };
+      return d2.head === horn.d2.head && d2.chain[0] === horn.d2.chain[0]!;
+    })() &&
+    // d0 drops first edge → right edge
+    (() => {
+      const newHead = C.dst(filler.chain[0]!);
+      const d0 = { head: newHead, chain: [filler.chain[1]!] };
+      return d0.head === horn.d0.head && d0.chain[0] === horn.d0.chain[0]!;
+    })();
+
+  const compFace = d1_of_2simplex(C, filler);
+  const expectedComp = C.comp(horn.d0.chain[0]!, horn.d2.chain[0]!); // m12∘m01
+  const compOk = compFace.chain[0] === expectedComp && compFace.head === horn.d2.head;
+  return okFaces && compOk;
+}
+
+
+// =================================================================================================
+// 12) Double categories: types + a concrete "commuting squares" construction from a category
+// =================================================================================================
+
+/** A 2-cell (square) boundary in a strict double category (commuting square shape). */
+export type Square<O, H, V> = {
+  /** top: A ──hTop──▶ B */
+  readonly hTop: H;
+  /** bottom: A' ──hBot──▶ B' */
+  readonly hBot: H;
+  /** left:  A ⇓ vL ⇓ A'  (vertical) */
+  readonly vLeft: V;
+  /** right: B ⇓ vR ⇓ B'  (vertical) */
+  readonly vRight: V;
+  /** Phantom type parameter to satisfy TypeScript */
+  readonly __phantom?: O;
+};
+
+export interface DoubleCategory<O, H, V, S> {
+  /** Horizontal category (objects O, horizontal morphisms H). */
+  readonly H: SmallCategory<O, H>;
+  /** Vertical category (objects O, vertical morphisms V). */
+  readonly V: SmallCategory<O, V>;
+
+  /** Make/check a square (may throw if boundaries are ill-typed). */
+  mkSquare: (b: Square<O, H, V>) => S;
+
+  /** Project boundaries. */
+  top: (s: S) => H;
+  bottom: (s: S) => H;
+  left: (s: S) => V;
+  right: (s: S) => V;
+
+  /** Horizontal and vertical pasting of squares. */
+  hcomp: (beta: S, alpha: S) => S; // paste alpha • beta left-to-right
+  vcomp: (beta: S, alpha: S) => S; // paste alpha over beta top-to-bottom
+
+  /** Identity squares */
+  idVCell: (h: H) => S; // identity in the vertical direction on a horizontal arrow
+  idHCell: (v: V) => S; // identity in the horizontal direction on a vertical arrow
+}
+
+/** Build the strict double category of commuting squares in a single category C:
+ *  - Horizontal == Vertical == morphisms of C (same underlying category)
+ *  - A square is a commutative square in C:
+ *         A --hTop--> B
+ *        vL        vR
+ *        A'--hBot-->B'
+ *    with vR∘hTop = hBot∘vL
+ *  Equality of morphisms is checked via the provided eqM.
+ */
+export function makeCommutingSquaresDouble<O, M>(
+  C: SmallCategory<O, M>,
+  eqM: (x: M, y: M) => boolean
+): DoubleCategory<O, M, M, Square<O, M, M>> {
+  const H = C, V = C;
+
+  const typecheck = (b: Square<O, M, M>) => {
+    // typing: sources/targets match around the square
+    if (C.src(b.hTop) !== C.src(b.vLeft))  throw new Error("Square: src(hTop) != src(vLeft)");
+    if (C.dst(b.hTop) !== C.src(b.vRight)) throw new Error("Square: dst(hTop) != src(vRight)");
+    if (C.dst(b.vLeft) !== C.src(b.hBot))  throw new Error("Square: dst(vLeft) != src(hBot)");
+    if (C.dst(b.vRight) !== C.dst(b.hBot)) throw new Error("Square: dst(vRight) != dst(hBot)");
+  };
+
+  const commuteCheck = (b: Square<O, M, M>) => {
+    const topThenRight = C.comp(b.vRight, b.hTop);
+    const leftThenBot  = C.comp(b.hBot,  b.vLeft);
+    if (!eqM(topThenRight, leftThenBot)) {
+      throw new Error("Square does not commute: vRight ∘ hTop ≠ hBot ∘ vLeft");
+    }
+  };
+
+  const mkSquare = (b: Square<O, M, M>): Square<O, M, M> => {
+    typecheck(b);
+    commuteCheck(b);
+    return b;
+  };
+
+  const hcomp = (beta: Square<O, M, M>, alpha: Square<O, M, M>): Square<O, M, M> => {
+    // right side of alpha must equal left side of beta
+    if (C.src(alpha.hTop) !== C.src(alpha.vLeft)) throw new Error("alpha ill-typed");
+    if (C.src(beta.hTop)  !== C.src(beta.vLeft))  throw new Error("beta ill-typed");
+    if (C.src(alpha.hBot) !== C.src(alpha.vLeft)) throw new Error("alpha ill-typed (bot)");
+    if (C.src(beta.hBot)  !== C.src(beta.vLeft))  throw new Error("beta ill-typed (bot)");
+
+    if (!(C.dst(alpha.hTop) === C.src(beta.hTop) && C.dst(alpha.hBot) === C.src(beta.hBot)))
+      throw new Error("hcomp: horizontal middles must meet");
+    if (C.dst(alpha.vRight) !== C.src(beta.vLeft))
+      throw new Error("hcomp: alpha.vRight must equal beta.vLeft (same object boundary)");
+
+    const hTop = C.comp(beta.hTop, alpha.hTop);
+    const hBot = C.comp(beta.hBot, alpha.hBot);
+    const vLeft  = alpha.vLeft;
+    const vRight = beta.vRight;
+
+    return mkSquare({ hTop, hBot, vLeft, vRight });
+  };
+
+  const vcomp = (beta: Square<O, M, M>, alpha: Square<O, M, M>): Square<O, M, M> => {
+    // bottom of alpha must meet top of beta
+    if (!(C.dst(alpha.vLeft) === C.src(beta.vLeft) && C.dst(alpha.vRight) === C.src(beta.vRight)))
+      throw new Error("vcomp: vertical middles must meet");
+    if (!(C.dst(alpha.hTop) === C.src(beta.hTop) && C.dst(alpha.hBot) === C.src(beta.hBot)))
+      throw new Error("vcomp: horizontal boundaries must align");
+
+    const hTop = alpha.hTop;
+    const hBot = beta.hBot;
+    const vLeft  = C.comp(beta.vLeft,  alpha.vLeft);
+    const vRight = C.comp(beta.vRight, alpha.vRight);
+
+    return mkSquare({ hTop, hBot, vLeft, vRight });
+  };
+
+  const idVCell = (h: M): Square<O, M, M> => {
+    const vLeft  = V.id(C.src(h));
+    const vRight = V.id(C.dst(h));
+    return mkSquare({ hTop: h, hBot: h, vLeft, vRight });
+  };
+
+  const idHCell = (v: M): Square<O, M, M> => {
+    const hTop = H.id(C.src(v));
+    const hBot = H.id(C.dst(v));
+    return mkSquare({ hTop, hBot, vLeft: v, vRight: v });
+  };
+
+  return {
+    H, V,
+    mkSquare,
+    top:    (s) => s.hTop,
+    bottom: (s) => s.hBot,
+    left:   (s) => s.vLeft,
+    right:  (s) => s.vRight,
+    hcomp,
+    vcomp,
+    idVCell,
+    idHCell,
+  };
+}
+
+/** Interchange law checker for commuting-squares double categories:
+ *  (β ∘v α) ∘h (δ ∘v γ)  ==  (β ∘h δ) ∘v (α ∘h γ)
+ */
+export function checkInterchange<O, M>(
+  D: DoubleCategory<O, M, M, Square<O, M, M>>,
+  alpha: Square<O, M, M>,
+  beta:  Square<O, M, M>,
+  gamma: Square<O, M, M>,
+  delta: Square<O, M, M>,
+  eqM: (x: M, y: M) => boolean
+): boolean {
+  const left  = D.hcomp(D.vcomp(beta, alpha), D.vcomp(delta, gamma));
+  const right = D.vcomp(D.hcomp(beta, delta),  D.hcomp(alpha, gamma));
+
+  // Compare boundaries componentwise (commuting-squares construction guarantees commutation)
+  return eqM(left.hTop, right.hTop) &&
+         eqM(left.hBot, right.hBot) &&
+         eqM(left.vLeft, right.vLeft) &&
+         eqM(left.vRight, right.vRight);
+}
+
+// --- Tiny example using your free category (PathMor) where equality is structural ----
+// const eqPath = (x: PathMor<Obj>, y: PathMor<Obj>) =>
+//   x.src===y.src && x.dst===y.dst && x.edges.length===y.edges.length &&
+//   x.edges.every((e,i)=> e===y.edges[i]);
+// const Dsq = makeCommutingSquaresDouble(C_free, eqPath);
+// // Identity squares on f1 and g1
+// const If = Dsq.idVCell(f1);
+// const Ig = Dsq.idVCell(g1);
+// // Interchange on a grid of identities trivially holds:
+// checkInterchange(Dsq, If, If, Ig, Ig, eqPath); // true
+
+// =================================================================================================
+// 13) Double functors (between strict double categories)
+// =================================================================================================
+
+export interface DoubleFunctor<
+  C1_O, C1_H, C1_V, C1_S,
+  C2_O, C2_H, C2_V, C2_S
+> {
+  FH: CategoryFunctor<C1_O, C1_H, C2_O, C2_H>;               // on horizontal arrows
+  FV: CategoryFunctor<C1_O, C1_V, C2_O, C2_V>;               // on vertical arrows
+  onSquare: (s: C1_S) => C2_S;                       // action on 2-cells
+}
+
+// (Optional) lightweight law checker on a sample of squares
+export function checkDoubleFunctorLaws<
+  O1,H1,V1,S1, O2,H2,V2,S2
+>(
+  D1: DoubleCategory<O1,H1,V1,S1>,
+  D2: DoubleCategory<O2,H2,V2,S2>,
+  F: DoubleFunctor<O1,H1,V1,S1, O2,H2,V2,S2>,
+  sampleSquares: ReadonlyArray<S1>
+): { preservesBoundaries: boolean; preservesCompH: boolean; preservesCompV: boolean; preservesIds: boolean } {
+
+  const bd = sampleSquares.every(s => {
+    const img = F.onSquare(s);
+    return D2.top(img)    === F.FH.Fmor(D1.top(s))    &&
+           D2.bottom(img) === F.FH.Fmor(D1.bottom(s)) &&
+           D2.left(img)   === F.FV.Fmor(D1.left(s))   &&
+           D2.right(img)  === F.FV.Fmor(D1.right(s));
+  });
+
+  // try closure under hcomp / vcomp on adjacent pairs from the sample
+  const pairs = sampleSquares.slice(1).map((_,i) => [sampleSquares[i]!, sampleSquares[i+1]!] as const);
+  const ph = pairs.every(([a,b]) => {
+    try {
+      const lhs = F.onSquare(D1.hcomp(b, a));
+      const rhs = D2.hcomp(F.onSquare(b), F.onSquare(a));
+      return D2.top(lhs)===D2.top(rhs) && D2.bottom(lhs)===D2.bottom(rhs) &&
+             D2.left(lhs)===D2.left(rhs) && D2.right(lhs)===D2.right(rhs);
+    } catch { return true; } // ignore non-composable samples
+  });
+
+  const pv = pairs.every(([a,b]) => {
+    try {
+      const lhs = F.onSquare(D1.vcomp(b, a));
+      const rhs = D2.vcomp(F.onSquare(b), F.onSquare(a));
+      return D2.top(lhs)===D2.top(rhs) && D2.bottom(lhs)===D2.bottom(rhs) &&
+             D2.left(lhs)===D2.left(rhs) && D2.right(lhs)===D2.right(rhs);
+    } catch { return true; }
+  });
+
+  const pi = sampleSquares.every(s => {
+    const h = D1.top(s), v = D1.left(s);
+    const idV = F.onSquare(D1.idVCell(h));
+    const idH = F.onSquare(D1.idHCell(v));
+    return D2.top(idV)===F.FH.Fmor(h) && D2.bottom(idV)===F.FH.Fmor(h) &&
+           D2.left(idV)===D2.V.id(D2.H.src(F.FH.Fmor(h))) &&
+           D2.right(idV)===D2.V.id(D2.H.dst(F.FH.Fmor(h))) &&
+           D2.left(idH)===F.FV.Fmor(v) && D2.right(idH)===F.FV.Fmor(v) &&
+           D2.top(idH)===D2.H.id(D2.V.src(F.FV.Fmor(v))) &&
+           D2.bottom(idH)===D2.H.id(D2.V.dst(F.FV.Fmor(v)));
+  });
+
+  return { preservesBoundaries: bd, preservesCompH: ph, preservesCompV: pv, preservesIds: pi };
+}
+
+// =================================================================================================
+// 14) Double category of relations: objects are finite sets, H=relations, V=functions
+// =================================================================================================
+
+export type SetObj<A> = {
+  id: string;
+  elems: ReadonlyArray<A>;
+  eq: (x:A, y:A) => boolean;
+};
+
+// Horizontal morphism: binary relation R ⊆ A×B (as a predicate)
+export type Rel = {
+  src: SetObj<any>;
+  dst: SetObj<any>;
+  holds: (a:any, b:any) => boolean;
+};
+
+// Vertical morphism: total function between the carriers
+export type FnM = {
+  src: SetObj<any>;
+  dst: SetObj<any>;
+  f: (a:any) => any; // must land in dst.elems
+};
+
+const inSet = <A>(S: SetObj<A>, x:A) => S.elems.some(y => S.eq(x,y));
+
+export function RelCat(): SmallCategory<SetObj<any>, Rel> {
+  const id = (A: SetObj<any>): Rel => ({
+    src: A, dst: A,
+    holds: (a:any,b:any) => inSet(A,a) && inSet(A,b) && A.eq(a,b)
+  });
+
+  const src = (r: Rel) => r.src;
+  const dst = (r: Rel) => r.dst;
+
+  const comp = (S: Rel, R: Rel): Rel => {
+    if (R.dst !== S.src) throw new Error("Rel ∘ Rel: cod/domain mismatch");
+    return {
+      src: R.src, dst: S.dst,
+      holds: (a:any, c:any) =>
+        inSet(R.src,a) && inSet(S.dst,c) &&
+        R.dst.elems.some((b:any) => R.holds(a,b) && S.holds(b,c))
+    };
+  };
+
+  return { id, src, dst, comp };
+}
+
+export function FuncCat(): SmallCategory<SetObj<any>, FnM> {
+  const id = (A: SetObj<any>): FnM => ({ src:A, dst:A, f: (a:any)=>a });
+  const src = (f: FnM) => f.src;
+  const dst = (f: FnM) => f.dst;
+  const comp = (g: FnM, f: FnM): FnM => {
+    if (f.dst !== g.src) throw new Error("Fn ∘ Fn: cod/domain mismatch");
+    return { src: f.src, dst: g.dst, f: (a:any) => g.f(f.f(a)) };
+  };
+  return { id, src, dst, comp };
+}
+
+// Diagonal relation on A (identity wrt relational composition)
+export const diagRel = (A: SetObj<any>): Rel => RelCat().id(A);
+
+// Double category of relations: squares witness (vR ∘ R_top) ⊆ (R_bot ∘ vL)
+export function makeRelationsDouble() {
+  const H = RelCat();
+  const V = FuncCat();
+
+  const mkSquare = (b: Square<SetObj<any>, Rel, FnM>) => {
+    // type checks
+    if (b.hTop.src !== b.vLeft.src)  throw new Error("Square typing: src(hTop) != src(vLeft)");
+    if (b.hTop.dst !== b.vRight.src) throw new Error("Square typing: dst(hTop) != src(vRight)");
+    if (b.vLeft.dst !== b.hBot.src)  throw new Error("Square typing: dst(vLeft) != src(hBot)");
+    if (b.vRight.dst !== b.hBot.dst) throw new Error("Square typing: dst(vRight) != dst(hBot)");
+
+    // commutation as inclusion: for all a,b, R_top(a,b) ⇒ R_bot(vL(a), vR(b))
+    const A = b.hTop.src, B = b.hTop.dst;
+    for (const a of A.elems) for (const b0 of B.elems) {
+      if (b.hTop.holds(a,b0)) {
+        const a1 = b.vLeft.f(a);
+        const b1 = b.vRight.f(b0);
+        if (!b.hBot.holds(a1,b1)) throw new Error("Relation square does not commute (inclusion fails)");
+      }
+    }
+    return b;
+  };
+
+  const top    = (s: Square<SetObj<any>,Rel,FnM>) => s.hTop;
+  const bottom = (s: Square<SetObj<any>,Rel,FnM>) => s.hBot;
+  const left   = (s: Square<SetObj<any>,Rel,FnM>) => s.vLeft;
+  const right  = (s: Square<SetObj<any>,Rel,FnM>) => s.vRight;
+
+  const hcomp = (beta: Square<SetObj<any>,Rel,FnM>, alpha: Square<SetObj<any>,Rel,FnM>) =>
+    mkSquare({
+      hTop: H.comp(beta.hTop, alpha.hTop),
+      hBot: H.comp(beta.hBot, alpha.hBot),
+      vLeft: alpha.vLeft,
+      vRight: beta.vRight
+    });
+
+  const vcomp = (beta: Square<SetObj<any>,Rel,FnM>, alpha: Square<SetObj<any>,Rel,FnM>) =>
+    mkSquare({
+      hTop: alpha.hTop,
+      hBot: beta.hBot,
+      vLeft: V.comp(beta.vLeft, alpha.vLeft),
+      vRight: V.comp(beta.vRight, alpha.vRight)
+    });
+
+  const idVCell = (h: Rel) => mkSquare({
+    hTop: h, hBot: h,
+    vLeft: V.id(h.src), vRight: V.id(h.dst)
+  });
+
+  const idHCell = (v: FnM) => mkSquare({
+    hTop: diagRel(v.src),
+    hBot: diagRel(v.dst),
+    vLeft: v, vRight: v
+  });
+
+  const D: DoubleCategory<SetObj<any>, Rel, FnM, Square<SetObj<any>,Rel,FnM>> = {
+    H, V, mkSquare, top, bottom, left, right, hcomp, vcomp, idVCell, idHCell
+  };
+  return D;
+}
+
+// =================================================================================================
+// 15) General inner horns + search-based filler for finite simplicial sets
+// =================================================================================================
+
+/** An inner horn Λᵢⁿ: all faces d_j(σ) for j≠i, each a (n-1)-simplex. */
+export type InnerHornN<O,M> = {
+  n: number;          // n ≥ 2
+  i: number;          // 0 < i < n  (inner)
+  faces: Map<number, NSimplex<O,M>>; // keys are all j≠i
+};
+
+export function makeInnerHornN<O,M>(
+  n: number,
+  i: number,
+  faces: Array<[number, NSimplex<O,M>]>
+): InnerHornN<O,M> {
+  if (n < 2) throw new Error("Inner horn needs n≥2");
+  if (!(0 < i && i < n)) throw new Error("Inner horn index must be inner: 0<i<n");
+  const map = new Map<number, NSimplex<O,M>>(faces);
+  if (map.size !== n) throw new Error("Provide exactly n faces (all j≠i)");
+  return { n, i, faces: map };
+}
+
+/** Finite simplicial set: we can enumerate n-simplices to brute-force match a horn. */
+export interface FiniteSSet<O,M> extends SimplicialSet<O,M> {
+  nSimplices: (n:number) => ReadonlyArray<NSimplex<O,M>>;
+}
+
+/** Try to fill a horn by enumerating all n-simplices and checking faces. */
+export function searchFillInnerHorn<O,M>(
+  S: FiniteSSet<O,M>,
+  horn: InnerHornN<O,M>,
+  eqSimplex: (x: NSimplex<O,M>, y: NSimplex<O,M>) => boolean
+): NSimplex<O,M> | undefined {
+  const { n } = horn;
+  for (const cand of S.nSimplices(n)) {
+    let ok = true;
+    for (const [j, face] of horn.faces.entries()) {
+      const dj = S.d(j, cand);
+      if (!eqSimplex(dj, face)) { ok = false; break; }
+    }
+    if (ok) return cand;
+  }
+  return undefined;
+}
+
+/** Build a finite nerve from a finite category presentation (objects + a finite morphism list). */
+export function FiniteNerve<O,M>(
+  C: SmallCategory<O,M>,
+  objects: ReadonlyArray<O>,
+  morphisms: ReadonlyArray<M>,
+  _eqM: (x:M,y:M)=>boolean
+): FiniteSSet<O,M> {
+  const base = Nerve(C);
+
+  // generate all composable chains of length n starting at any object
+  const chainsOfLen = (n:number): ReadonlyArray<{head:O; chain:M[]}> => {
+    if (n===0) return objects.map(o => ({ head:o, chain:[] as M[] }));
+    const res: {head:O; chain:M[]}[] = [];
+    for (const o of objects) {
+      // start from morphisms with src(o)
+      const firsts = morphisms.filter(m => C.src(m)===o);
+      for (const m0 of firsts) {
+        const grow = (head:O, acc:M[], k:number, last:M) => {
+          if (k===n) { res.push({ head, chain:[...acc] }); return; }
+          const nexts = morphisms.filter(m => C.src(m)===C.dst(last));
+          for (const m of nexts) grow(head, [...acc, m], k+1, m);
+        };
+        if (n===1) { res.push({ head:o, chain:[m0] }); }
+        else grow(o, [m0], 1, m0);
+      }
+    }
+    return res;
+  };
+
+  const nSimplices = (n:number) =>
+    chainsOfLen(n).map(({head,chain}) => base.simplex(head, chain));
+
+  return { ...base, nSimplices };
+}
+
+// =================================================================================================
+// Tiny example: an expression DSL + interpreters
+// =================================================================================================
+
+// A simple expression language
+export type Expr = 
+  | { tag: 'lit'; val: number }
+  | { tag: 'add'; left: Expr; right: Expr }
+  | { tag: 'mul'; left: Expr; right: Expr };
+
+// Smart constructors
+export const lit = (n: number): Expr => ({ tag: 'lit', val: n });
+export const add = (e1: Expr, e2: Expr): Expr => ({ tag: 'add', left: e1, right: e2 });
+export const mul = (e1: Expr, e2: Expr): Expr => ({ tag: 'mul', left: e1, right: e2 });
+
+// Interpreter (evaluator)
+export const evalExpr = (e: Expr): number => {
+  switch (e.tag) {
+    case 'lit': return e.val;
+    case 'add': return evalExpr(e.left) + evalExpr(e.right);
+    case 'mul': return evalExpr(e.left) * evalExpr(e.right);
+  }
+};
+
+// Pretty printer
+export const printExpr = (e: Expr): string => {
+  switch (e.tag) {
+    case 'lit': return e.val.toString();
+    case 'add': return `(${printExpr(e.left)} + ${printExpr(e.right)})`;
+    case 'mul': return `(${printExpr(e.left)} * ${printExpr(e.right)})`;
+  }
+};
