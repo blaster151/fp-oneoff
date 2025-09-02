@@ -1,6 +1,8 @@
 // catkit-equivalence.ts
 // Core equivalences, isomorphisms, natural isomorphisms, and adjoint equivalences
 
+import { eqJSON } from './eq';
+
 // ---------- Core minimal types ----------
 export interface SmallCategory<O,M> {
   id:  (o: O) => M;
@@ -42,7 +44,8 @@ export function checkNaturality<A_O,A_M,B_O,B_M>(
     const a  = A.src(u), a2 = A.dst(u);
     const lhs = B.comp(G.Fmor(u), at(a));
     const rhs = B.comp(at(a2),    F.Fmor(u));
-    return JSON.stringify(lhs)===JSON.stringify(rhs);
+    const eq = eqJSON<any>();
+    return eq(lhs, rhs);
   });
 }
 
@@ -58,7 +61,8 @@ export function checkIso<O,M>(iso: Iso<O,M>): boolean {
   const right = C.id(a);
   const left2 = C.comp(f,g);
   const right2= C.id(b);
-  return JSON.stringify(left)===JSON.stringify(right) && JSON.stringify(left2)===JSON.stringify(right2);
+  const eq = eqJSON<any>();
+  return eq(left, right) && eq(left2, right2);
 }
 
 // ---------- Natural isomorphisms ----------
@@ -95,7 +99,8 @@ export function checkNatIso<A_O,A_M,B_O,B_M>(
     const right = B.id(alpha.F.Fobj(a));
     const left2 = B.comp(f,g);
     const right2= B.id(alpha.G.Fobj(a));
-    return JSON.stringify(left)===JSON.stringify(right) && JSON.stringify(left2)===JSON.stringify(right2);
+    const eq = eqJSON<any>();
+    return eq(left, right) && eq(left2, right2);
   });
   return nat && pointwise;
 }
@@ -117,13 +122,15 @@ export function checkAdjointEquivalence<A_O,A_M,B_O,B_M>(E: AdjointEquivalence<A
     const Fa = F.Fobj(a);
     const left  = B.comp(counit.at(Fa), F.Fmor(unit.at(a)));
     const right = B.id(Fa);
-    return JSON.stringify(left)===JSON.stringify(right);
+    const eq = eqJSON<any>();
+    return eq(left, right);
   });
   const ok2 = (B.objects as B_O[]).every(b => {
     const Gb = G.Fobj(b);
     const left  = A.comp(G.Fmor(counit.at(b)), unit.at(Gb));
     const right = A.id(Gb);
-    return JSON.stringify(left)===JSON.stringify(right);
+    const eq = eqJSON<any>();
+    return eq(left, right);
   });
   return uIso && cIso && ok1 && ok2;
 }

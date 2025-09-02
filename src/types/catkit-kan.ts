@@ -7,6 +7,7 @@
 import { 
   SmallCategory
 } from './category-to-nerve-sset';
+import { eqJSON } from './eq';
 
 // We need hom-set enumeration to compute ends/coends.
 export interface HasHom<O, M> {
@@ -201,7 +202,7 @@ export function RightKan_Set<C_O, C_M, D_O, D_M>(
 
     // Build SetObj out of the passing families
     const elems = okFamilies.map(f => f);
-    const eq = (a:any,b:any) => JSON.stringify(a)===JSON.stringify(b);
+    const eq = eqJSON<any>();
     return { elems, eq };
   };
 

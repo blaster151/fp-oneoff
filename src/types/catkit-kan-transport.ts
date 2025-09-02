@@ -13,6 +13,7 @@ import {
   Functor, HasHom, SetFunctor,
   LeftKan_Set, RightKan_Set
 } from "./catkit-kan";
+import { eqJSON } from './eq';
 import { SmallCategory } from "./category-to-nerve-sset";
 import {
   AdjointEquivalence
@@ -38,8 +39,9 @@ export function checkSetNatIso<O,M>(
     const f = at(o), g = invAt(o);
     const X = F.obj(o).elems;
     const Y = G.obj(o).elems;
-    const gf = X.every(x => JSON.stringify(g(f(x))) === JSON.stringify(x));
-    const fg = Y.every(y => JSON.stringify(f(g(y))) === JSON.stringify(y));
+    const eq = eqJSON<any>();
+    const gf = X.every(x => eq(g(f(x)), x));
+    const fg = Y.every(y => eq(f(g(y)), y));
     return gf && fg;
   });
   if (!bij) return false;
@@ -52,7 +54,8 @@ export function checkSetNatIso<O,M>(
     return F.obj(o).elems.every(x => {
       const lhs = Gm(a(x));
       const rhs = a2(Fm(x));
-      return JSON.stringify(lhs) === JSON.stringify(rhs);
+      const eq = eqJSON<any>();
+      return eq(lhs, rhs);
     });
   });
   return natOK;

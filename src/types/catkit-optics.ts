@@ -37,8 +37,7 @@ const toPValFn = <A, B>(f: Fn<A, B>): PVal<'Fn', A, B> =>
 export const StrongFn: StrongDict<'Fn'> = {
   dimap: (p, l, r) => toPValFn((c) => r(asFn(p)(l(c)))),
   first: (p) =>
-    toPValFn(([a, c]) => [asFn(p)(a), c] as const as [unknown, unknown])
-      as unknown as PVal<'Fn', [unknown, unknown], [unknown, unknown]>,
+    toPValFn(([a, c]) => [asFn(p)(a), c] as const as [unknown, unknown]) as unknown as PVal<'Fn', [unknown, unknown], [unknown, unknown]>,
 };
 
 export type Forget<R, A, _B = unknown> = (a: A) => R;
@@ -92,9 +91,8 @@ export function setL<S, T, A, B>(ln: Lens<S, T, A, B>, b: B): (s: S) => T {
 }
 
 // ---------- Laws (still using deep structural eq for now) ----------
-function deepEq(x: unknown, y: unknown): boolean {
-  return JSON.stringify(x) === JSON.stringify(y);
-}
+import { eqJSON } from './eq';
+const deepEq = eqJSON<unknown>();
 
 export type LensLawReport = { getSet: boolean; setGet: boolean; setSet: boolean };
 
