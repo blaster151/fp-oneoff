@@ -96,5 +96,9 @@ export { OpticsRewrite };
 // Bridge between rewrite system and existing optics infrastructure
 export * from './optics-rewrite-bridge.js';
 
+// Modern FreeApplicative + Coyoneda effect system with natural transformations
+import * as Effects from './freeapp-coyo.js';
+export { Effects };
+
 // Value-level instances and implementations
 export * from './instances.js';
