@@ -112,5 +112,13 @@ export { DoubleFunctor };
 import * as DoubleLax from './double-lax-functor.js';
 export { DoubleLax };
 
+// High-performance bit-packed relations for large-scale computation
+import * as BitRel from './bitrel.js';
+export { BitRel };
+
+// Persistent sequences with FingerTree for efficient manipulation
+import * as FingerTree from './fingertree.js';
+export { FingerTree };
+
 // Value-level instances and implementations
 export * from './instances.js';
