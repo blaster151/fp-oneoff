@@ -1,0 +1,91 @@
+{
+  "timestamp": "2025-09-02T20:46:25.474Z",
+  "config": {
+    "sizes": [
+      32,
+      64
+    ],
+    "densities": [
+      0.05,
+      0.1
+    ],
+    "iterations": 2,
+    "seed": 12345,
+    "output": "bench/rel"
+  },
+  "results": [
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 32,
+      "density": 0.05,
+      "timeMs": 3.1449949983842016,
+      "pairCount": 52
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 32,
+      "density": 0.05,
+      "timeMs": 0.30522264913361763,
+      "pairCount": 52
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 32,
+      "density": 0.1,
+      "timeMs": 3.9765705483879765,
+      "pairCount": 103
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 32,
+      "density": 0.1,
+      "timeMs": 1.1629761385999755,
+      "pairCount": 103
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 2.531093877791488,
+      "pairCount": 205
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 1.0916899731077896,
+      "pairCount": 205
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 3.0455193337347652,
+      "pairCount": 410
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 1.3536106916774515,
+      "pairCount": 410
+    }
+  ],
+  "summary": {
+    "totalTests": 8,
+    "averageSpeedup": {
+      "compose": 4.572918735748104
+    },
+    "medianSpeedup": {
+      "compose": 2.31850977854642
+    }
+  }
+}
