@@ -135,13 +135,23 @@ export { Rope };
 export * from './spec-impl.js';
 
 // Proper surjection types with witness evidence
-export * from './surjection-types.js';
+export { 
+  Surjection, mkSurjection, getSurjection, getSection,
+  // Note: verifySurjection exported from spec-impl.js, avoiding conflict
+} from './surjection-types.js';
 
 // Double lax functor interface for categorical abstractions
-export * from './double-lax-functor-interface.js';
+export { 
+  DoubleLaxFunctor, DoubleLaxFunctorLaws,
+  // Note: Square, checkDoubleFunctorLaws exported from category-to-nerve-sset.js, avoiding conflict
+  inclusionWitness as doubleLaxInclusionWitness
+} from './double-lax-functor-interface.js';
 
 // Refactored SpecImpl as explicit DoubleLaxFunctor
-export * from './spec-impl-refactored.js';
+export { 
+  SpecImplDoubleLaxFunctor,
+  // Note: ObjPair, numericRangeAbstraction exported from spec-impl.js, avoiding conflict
+} from './spec-impl-refactored.js';
 
 // Strong monads with Eilenberg-Moore algebras and monoids
 import * as StrongMonads from './strong-monad.js';
@@ -151,10 +161,18 @@ export { StrongMonads };
 export * from './witnesses.js';
 
 // Enhanced relational law checking with witnesses
-export * from './rel-lawcheck-witnessed.js';
+// Note: Functions are internal, witness types exported from witnesses.js
+// export * from './rel-lawcheck-witnessed.js'; // Commented to avoid conflicts
 
 // Witnessful allegory and Hoare logic
-export * from './allegory-witness.js';
+export { 
+  allegoryLawWitness,
+  equipmentWitness,
+  wpTransportWitness,
+  spTransportWitness,
+  modularLawWitness,
+  // Note: squareWitness exported from witnesses.js, avoiding conflict
+} from './allegory-witness.js';
 
 // Value-level instances and implementations
 export * from './instances.js';

@@ -25,9 +25,8 @@ export class SpecImplFunctor implements DoubleLaxFunctor {
     this.objMap.set(pair.spec, { impl: pair.impl, surj: pair.surj });
     
     // Add to underlying lax functor
-    const p = getSurjection(pair.surj);
-    const s = getSection(pair.surj);
-    this.F.addObject(pair.spec, pair.impl as any, p as any, s as any);
+    const surjection = getSurjection(pair.surj);
+    this.F.addObject(pair.spec, pair.impl as any, surjection as any);
   }
 
   /************ DoubleLaxFunctor interface implementation ************/
@@ -266,7 +265,7 @@ export function verifySpecImplFunctor(
   });
   
   const allSquaresLax = squareResults.every(r => r.holds);
-  const avgCoverage = squareResults.reduce((sum, r) => sum + (r.witness.coverage || 0), 0) / squareResults.length;
+  const avgCoverage = squareResults.reduce((sum, r) => sum + (r.witness.holds ? 1 : 0), 0) / squareResults.length;
   
   return { allSquaresLax, squareResults, avgCoverage };
 }

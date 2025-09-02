@@ -114,8 +114,8 @@ function checkResidualAdjunctions<A, B, C>(
     const T = randomRelSeeded(A, C, rng);
     
     // Check left residual: R ≤ S\T ⟺ R;S ≤ T
-    const leftRes = leftResidual(S, T);
-    const leftHolds = adjunctionLeftHolds(A, B, C, R, S, T);
+    const leftRes = leftResidual(R, T); // R: Rel<A,B>, T: Rel<A,C> -> Rel<B,C>
+    const leftHolds = adjunctionLeftHolds(R, S, T); // R: Rel<A,B>, S: Rel<B,C>, T: Rel<A,C>
     
     if (!leftHolds) {
       leftResidualViolations.push({
@@ -125,8 +125,8 @@ function checkResidualAdjunctions<A, B, C>(
     }
     
     // Check right residual: T ≤ R/S ⟺ R;S ≤ T  
-    const rightRes = rightResidual(R, S);
-    const rightHolds = adjunctionRightHolds(A, B, C, R, S, T);
+    const rightRes = rightResidual(T, S); // T: Rel<A,C>, S: Rel<B,C> -> Rel<A,B>
+    const rightHolds = adjunctionRightHolds(R, S, T); // R: Rel<A,B>, S: Rel<B,C>, T: Rel<A,C>
     
     if (!rightHolds) {
       rightResidualViolations.push({
@@ -284,7 +284,10 @@ function checkAllegoryLaws<A>(
     const daggerOnce = R.converse();
     const daggerTwice = daggerOnce.converse();
     
-    const daggerWitness = relEqWitness(R, daggerTwice);
+    const daggerWitness = relEqWitness(
+      { ...R, toPairs: () => R.toPairs().map(p => [p[0], p[1]] as [A, A]) },
+      { ...daggerTwice, toPairs: () => daggerTwice.toPairs().map(p => [p[0], p[1]] as [A, A]) }
+    );
     if (!daggerWitness.equal) {
       daggerViolations.push({
         R,
@@ -302,7 +305,10 @@ function checkAllegoryLaws<A>(
     const leftAssoc = RS.compose(T);
     const rightAssoc = R.compose(ST);
     
-    const assocWitness = relEqWitness(leftAssoc, rightAssoc);
+    const assocWitness = relEqWitness(
+      { ...leftAssoc, toPairs: () => leftAssoc.toPairs().map(p => [p[0], p[1]] as [A, A]) },
+      { ...rightAssoc, toPairs: () => rightAssoc.toPairs().map(p => [p[0], p[1]] as [A, A]) }
+    );
     if (!assocWitness.equal) {
       assocViolations.push({
         R, S, T,

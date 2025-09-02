@@ -124,12 +124,12 @@ export function allegoryLawWitness<A>(
   const dagger = R.converse();
   const daggerTwice = dagger.converse();
   
-  const daggerInclusion = inclusionWitness(R as any, daggerTwice as any);
-  const daggerReverse = inclusionWitness(daggerTwice as any, R as any);
+  const daggerInclusion = inclusionWitness(R as any, daggerTwice as any) as InclusionWitness<A, A>;
+  const daggerReverse = inclusionWitness(daggerTwice as any, R as any) as InclusionWitness<A, A>;
   
   // Test if R is self-adjoint: R = R†
-  const selfAdjointInclusion = inclusionWitness(R as any, dagger as any);
-  const selfAdjointReverse = inclusionWitness(dagger as any, R as any);
+  const selfAdjointInclusion = inclusionWitness(R as any, dagger as any) as InclusionWitness<A, A>;
+  const selfAdjointReverse = inclusionWitness(dagger as any, R as any) as InclusionWitness<A, A>;
   
   // Test composition associativity (simplified)
   const violations: Array<[A, A, A]> = [];
@@ -174,7 +174,7 @@ export function modularLawWitness<A>(
   const right_term = S.compose(R_intersect_T);
   const right_side = left_term.join(right_term);
   
-  const witness = inclusionWitness(right_side as any, R_intersect_ST as any);
+  const witness = inclusionWitness(right_side as any, R_intersect_ST as any) as InclusionWitness<A, A>;
   
   return {
     holds: witness.holds,
@@ -208,12 +208,12 @@ export function equipmentWitness<A, B>(
   // Unit: id_A ≤ f* ; f_*
   const id_A = Rel.id(A_set);
   const unit_composition = conjoint.compose(graph_f);
-  const unitWitness = inclusionWitness(unit_composition as any, id_A as any);
+  const unitWitness = inclusionWitness(unit_composition as any, id_A as any) as InclusionWitness<A, A>;
   
   // Counit: f_* ; f* ≤ id_B  
   const id_B = Rel.id(B_set);
   const counit_composition = graph_f.compose(conjoint);
-  const counitWitness = inclusionWitness(id_B as any, counit_composition as any);
+  const counitWitness = inclusionWitness(id_B as any, counit_composition as any) as InclusionWitness<B, B>;
   
   return {
     companionConjoint: {
