@@ -89,5 +89,12 @@ export { Relations };
 import * as RelLawCheck from './rel-lawcheck.js';
 export { RelLawCheck };
 
+// Optics-driven program rewriting with Free DSL and rule registry
+import * as OpticsRewrite from './optics-rewrite.js';
+export { OpticsRewrite };
+
+// Bridge between rewrite system and existing optics infrastructure
+export * from './optics-rewrite-bridge.js';
+
 // Value-level instances and implementations
 export * from './instances.js';
