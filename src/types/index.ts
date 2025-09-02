@@ -134,5 +134,18 @@ export { Rope };
 // Spec→Impl abstraction functors with inclusion-based verification
 export * from './spec-impl.js';
 
+// Proper surjection types with witness evidence
+export * from './surjection-types.js';
+
+// Double lax functor interface for categorical abstractions
+export * from './double-lax-functor-interface.js';
+
+// Refactored SpecImpl as explicit DoubleLaxFunctor
+export * from './spec-impl-refactored.js';
+
+// Strong monads with Eilenberg-Moore algebras and monoids
+import * as StrongMonads from './strong-monad.js';
+export { StrongMonads };
+
 // Value-level instances and implementations
 export * from './instances.js';
