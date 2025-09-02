@@ -124,7 +124,9 @@ export function companionHomProf<A_O, A_M, B_O, B_M>(
   return {
     elems: (a, b) => B.hom(F.Fobj(a), b),
     lmap:  (u, b, m) => B.comp(m, F.Fmor(u)),
-    rmap:  (_a, v, m) => B.comp(v, m)
+    rmap:  (_a, v, m) => B.comp(v, m),
+    keyT: (m) => String(m),
+    eqT: eqJSON<B_M>()
   };
 }
 
@@ -136,7 +138,9 @@ export function conjointHomProf<A_O, A_M, B_O, B_M>(
   return {
     elems: (a, b) => B.hom(b, F.Fobj(a)),
     lmap:  (u, b, m) => B.comp(F.Fmor(u), m), // precompose in codomain of m
-    rmap:  (_a, v, m) => B.comp(m, v)       // postcompose
+    rmap:  (_a, v, m) => B.comp(m, v),       // postcompose
+    keyT: (m) => String(m),
+    eqT: eqJSON<B_M>()
   };
 }
 

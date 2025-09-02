@@ -7,13 +7,13 @@ describe('Lens laws (smoke)', () => {
   it('propLens("age") satisfies get-set, set-get, set-set', () => {
     const ageL = propLens<Person, 'age', number>('age');
     const p: Person = { name: 'A', age: 40 };
-    const report = checkLensLaws(ageL, p, 41, 42);
+    const report = checkLensLaws(ageL as any, p, 41, 42);
     expect(report).toEqual({ getSet: true, setGet: true, setSet: true });
 
     // extra sanity
-    expect(view(ageL, p)).toBe(40);
-    expect(setL(ageL, 10)(p).age).toBe(10);
-    expect(over(ageL, n => n + 1)(p).age).toBe(41);
+    expect(view(ageL as any, p)).toBe(40);
+    expect((setL(ageL as any, 10)(p) as Person).age).toBe(10);
+    expect((over(ageL as any, (n: number) => n + 1)(p) as Person).age).toBe(41);
   });
 
   it('fstLens() focuses first element', () => {

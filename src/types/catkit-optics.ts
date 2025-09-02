@@ -36,8 +36,8 @@ const toPValFn = <A, B>(f: Fn<A, B>): PVal<'Fn', A, B> =>
 
 export const StrongFn: StrongDict<'Fn'> = {
   dimap: (p, l, r) => toPValFn((c) => r(asFn(p)(l(c)))),
-  first: (p) =>
-    toPValFn(([a, c]) => [asFn(p)(a), c] as const as [unknown, unknown]) as unknown as PVal<'Fn', [unknown, unknown], [unknown, unknown]>,
+  first: <A, B, C>(p: PVal<'Fn', A, B>) =>
+    toPValFn(([a, c]: [A, C]) => [asFn(p)(a), c] as [B, C]) as PVal<'Fn', [A, C], [B, C]>,
 };
 
 export type Forget<R, A, _B = unknown> = (a: A) => R;
@@ -49,8 +49,10 @@ const toPValForget = <R, A, B>(f: Forget<R, A, B>): PVal<'Forget', A, B> =>
 
 export function StrongForget<R>(): StrongDict<'Forget'> {
   return {
-    dimap: (p, l, _r) => toPValForget<R, unknown, unknown>((c) => asForget<R, unknown, unknown>(p)(l(c))),
-    first: (p) => toPValForget<R, [unknown, unknown], [unknown, unknown]>(([a, _c]) => asForget<R, unknown, unknown>(p)(a)),
+    dimap: <A, B, C, D>(p: PVal<'Forget', A, B>, l: (c: C) => A, _r: (b: B) => D) => 
+      toPValForget<R, C, D>((c: C) => asForget<R, A, B>(p)(l(c))),
+    first: <A, B, C>(p: PVal<'Forget', A, B>) => 
+      toPValForget<R, [A, C], [B, C]>(([a, _c]: [A, C]) => asForget<R, A, B>(p)(a)),
   };
 }
 
@@ -67,8 +69,8 @@ export function lens<S, T, A, B>(
     (pab: PVal<P, A, B>): PVal<P, S, T> => {
       const pre  = (s: S): [A, S] => [get(s), s];
       const post = ([b, s]: [B, S]): T => set(s, b);
-      const fst  = dict.first(pab as unknown as PVal<P, A, B>);
-      return dict.dimap(fst, pre, post);
+      const fst  = dict.first<A, B, S>(pab);
+      return dict.dimap<[A, S], [B, S], S, T>(fst, pre, post);
     };
 }
 
@@ -96,22 +98,22 @@ const deepEq = eqJSON<unknown>();
 
 export type LensLawReport = { getSet: boolean; setGet: boolean; setSet: boolean };
 
-export function checkLensLaws<S, T, A, B>(
-  ln: Lens<S, T, A, B>,
+export function checkLensLaws<S, A>(
+  ln: Lens<S, S, A, A>,
   sampleS: S,
-  b1: B,
-  b2: B
+  a1: A,
+  a2: A
 ): LensLawReport {
-  const get = view(ln as unknown as Lens<S, S, A, A>, sampleS);
+  const get = view(ln, sampleS);
   const gs  = deepEq(setL(ln, get)(sampleS), sampleS);
 
   const sg  = deepEq(
-    view(ln as unknown as Lens<T, T, B, B>, setL(ln, b1)(sampleS)),
-    b1
+    view(ln, setL(ln, a1)(sampleS)),
+    a1
   );
 
-  const ss1 = setL(ln, b2)(setL(ln, b1)(sampleS));
-  const ss2 = setL(ln, b2)(sampleS);
+  const ss1 = setL(ln, a2)(setL(ln, a1)(sampleS));
+  const ss2 = setL(ln, a2)(sampleS);
   const ss  = deepEq(ss1, ss2);
 
   return { getSet: gs, setGet: sg, setSet: ss };
