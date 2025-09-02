@@ -1,150 +1,150 @@
-> If you didn’t paste the “companions/conjoints” helpers earlier, this file inlines small versions.
+// profunctor-calculus-demo.ts
+// Demonstrates profunctor composition, coends, protransformations, and whiskering
 
-```
-// example.ts
 import {
   // Relations/equipment bits
-  SetObj, Rel, FnM, RelCat, FuncCat, diagRel, makeRelationsDouble,
+  SetObj, FnM, RelCat, FuncCat, makeRelationsDouble,
   // Profunctor & coend bits
-  FiniteSmallCategory, FiniteProf, ProTrans,
-  composeFiniteProfCoend, checkProTransNaturality,
-  hcomposeTrans
-} from "./category-to-nerve-sset";
+  ProTrans, composeFiniteProfCoend, checkProTransNaturality,
+  leftWhisker, Disc, tableProf, showClasses,
+  // Category & nerve fundamentals
+  companionOf, conjointOf, trianglesHold
+} from "../types/category-to-nerve-sset";
 
-// ---------- A) Equipment over Set: companions, conjoints, unit/counit, triangles ----------
+console.log("🎯 Profunctor Calculus Demo");
+console.log("===========================\n");
 
-// Inline companions/conjoints (in case you didn’t add them in your module yet)
-const companionRel = (f: FnM): Rel => ({
-  src: f.src, dst: f.dst,
-  holds: (a: any, b: any) => f.dst.eq(f.f(a), b)
-});
-const conjointRel = (f: FnM): Rel => ({
-  src: f.dst, dst: f.src,
-  holds: (b: any, a: any) => f.dst.eq(b, f.f(a))
-});
-const composeRel = (S: Rel, R: Rel): Rel => RelCat().comp(S, R);
+// Build some finite discrete categories for profunctor examples
+const A = Disc(["a1", "a2"] as const);
+const B = Disc(["b1", "b2", "b3"] as const);  
+const C = Disc(["c1", "c2"] as const);
 
-// Small finite sets
-const A: SetObj<number> = { id: "A", elems: [0,1,2], eq: (x,y)=>x===y };
-const B: SetObj<number> = { id: "B", elems: [0,1,2], eq: (x,y)=>x===y };
+console.log("📊 Discrete categories:");
+console.log("A = {a1, a2} (discrete)");
+console.log("B = {b1, b2, b3} (discrete)");
+console.log("C = {c1, c2} (discrete)\n");
 
-// A function f: A → B
-const f: FnM = { src: A, dst: B, f: (x:number)=> (x+1)%3 };
-
-const Drel = makeRelationsDouble();
-const Γ  = companionRel(f);   // graph of f
-const Γd = conjointRel(f);    // cograph of f
-
-// Unit η: id_A ⇒ Γd ∘ Γ
-const eta = Drel.mkSquare({
-  hTop: diagRel(A),
-  hBot: composeRel(Γd, Γ),
-  vLeft: Drel.V.id(A), vRight: Drel.V.id(A)
-});
-
-// Counit ε: Γ ∘ Γd ⇒ id_B
-const eps = Drel.mkSquare({
-  hTop: composeRel(Γ, Γd),
-  hBot: diagRel(B),
-  vLeft: Drel.V.id(B), vRight: Drel.V.id(B)
-});
-
-// Quick equality test of relations by inclusions both ways
-const relsEqualByInclusions = (R: Rel, S: Rel) => {
-  const incl = (top: Rel, bot: Rel) => {
-    try { Drel.mkSquare({ hTop: top, hBot: bot, vLeft: Drel.V.id(top.src), vRight: Drel.V.id(top.dst) }); return true; }
-    catch { return false; }
-  };
-  return incl(R,S) && incl(S,R);
+// Define some profunctors P: A ⇸ B and Q: B ⇸ C as tables
+const P_table = {
+  a1: { b1: ["p11"], b2: ["p12a", "p12b"], b3: [] },
+  a2: { b1: [], b2: ["p22"], b3: ["p23"] }
 };
 
-// Triangle laws (collapse to equality of relations in this equipment)
-const leftTriangle  = relsEqualByInclusions(Γ,  composeRel(composeRel(Γ, Γd), Γ));
-const rightTriangle = relsEqualByInclusions(Γd, composeRel(Γd, composeRel(Γ, Γd)));
-
-console.log("[Equipment] unit ok, counit ok, triangles:", !!eta, !!eps, { leftTriangle, rightTriangle });
-
-// ---------- B) Finite profunctors + coend composition + protransformations ----------
-
-// A *discrete* finite category: objects X, only identities.
-// (Keeps lmap/rmap trivial so we can focus on coend quotient mechanics.)
-function Disc<X extends string>(objs: ReadonlyArray<X>): FiniteSmallCategory<X, {tag:"id", x:X}> {
-  return {
-    objects: objs,
-    morphisms: objs.map(x => ({ tag:"id", x })),
-    id: (o:X)=>({tag:"id", x:o}),
-    src: (m)=>m.x,
-    dst: (m)=>m.x,
-    comp: (g,f)=> (g.x===f.x ? g : (()=>{ throw new Error("impossible in discrete"); })())
-  };
-}
-
-type Id<X extends string> = { tag:"id", x:X };
-
-const A0 = Disc(["a0","a1"] as const);
-const B0 = Disc(["b0","b1"] as const);
-const C0 = Disc(["c0","c1"] as const);
-
-// Finite profunctor helper: table-based elems with identity lmap/rmap
-function tableProf<A extends string, B extends string>(
-  A: FiniteSmallCategory<A, Id<A>>,
-  B: FiniteSmallCategory<B, Id<B>>,
-  table: Record<A, Record<B, string[]>>
-): FiniteProf<A, Id<A>, B, Id<B>, string> {
-  return {
-    elems: (a,b)=> table[a]?.[b] ?? [],
-    lmap: (_u, _b, t)=> t,  // discrete: only identities
-    rmap: (_a, _v, t)=> t,
-    keyT: (t)=> t,
-    eqT: (x,y)=> x===y
-  };
-}
-
-// Define two profunctors P: A⇸B and Q: B⇸C
-const P = tableProf(A0, B0, {
-  a0: { b0: ["p00","p01"], b1: ["p02"] },
-  a1: { b0: [],            b1: ["p11"] }
-} as any);
-
-const Q = tableProf(B0, C0, {
-  b0: { c0: ["q00"], c1: ["q01"] },
-  b1: { c0: ["q10"], c1: [] }
-} as any);
-
-// Compose via coend: (P∘Q)(a,c) = ∫^b P(a,b)×Q(b,c) / ∼
-const keyB = (b: keyof typeof B0.objects extends never ? string : any) => String(b);
-const R = composeFiniteProfCoend(A0, B0, C0, (b:any)=>String(b), P, Q);
-
-// Inspect some components
-function showClasses<A extends string, C extends string>(
-  a: A, c: C, R: ReturnType<typeof composeFiniteProfCoend<any,any,any,any,any,any,any,any>>
-) {
-  const classes = R.elems(a,c);
-  return classes.map((cls:any) => `⟦b=${cls.rep.b}; p=${cls.rep.p}; q=${cls.rep.q}⟧`);
-}
-console.log("[Prof] (P∘Q)(a0,c0) =", showClasses("a0","c0", R));
-console.log("[Prof] (P∘Q)(a0,c1) =", showClasses("a0","c1", R));
-console.log("[Prof] (P∘Q)(a1,c0) =", showClasses("a1","c0", R));
-
-// A protransformation α: P ⇒ P' mapping strings to upper-case strings
-const Pprime: FiniteProf<any, any, any, any, string> = {
-  ...P,
-  elems: P.elems,
-  lmap: P.lmap, rmap: P.rmap,
-  keyT: (t:string)=> t.toUpperCase(),
-  eqT:  (x:string,y:string)=> x.toUpperCase()===y.toUpperCase()
-};
-const alpha: ProTrans<any, any, any, any, string, string> = {
-  at: (_a,_b) => (t:string)=> t.toUpperCase()
+const Q_table = {
+  b1: { c1: ["q11"], c2: [] },
+  b2: { c1: ["q21"], c2: ["q22"] },
+  b3: { c1: [], c2: ["q32"] }
 };
 
-// Naturality is trivial in the discrete case but we can still run the checker:
-const natOK = checkProTransNaturality(A0, B0, P, Pprime, alpha);
-console.log("[ProTrans] α naturality (discrete) =", natOK);
+const P = tableProf(A, B, P_table);
+const Q = tableProf(B, C, Q_table);
 
-// Horizontal composition α ★ id_Q : (P∘Q) ⇒ (P'∘Q)
-const hstar = hcomposeTrans(A0, B0, C0, (b:any)=>String(b), P, Pprime, Q, Q, alpha, { at: (_b,_c)=> (x:any)=> x });
-const img = hstar.at("a0","c0")(R.elems("a0","c0")[0]); // map first class
-console.log("[ProTrans] (α★id)(a0,c0) sends class to key =", img.key);
-```
+console.log("🔗 Profunctors defined:");
+console.log("P: A ⇸ B with elements:", JSON.stringify(P_table, null, 2));
+console.log("Q: B ⇸ C with elements:", JSON.stringify(Q_table, null, 2));
+console.log();
 
+// Compute coend composition R = P ∘ Q : A ⇸ C
+const keyB = (b: string) => b;
+const R = composeFiniteProfCoend(A, B, C, keyB, P, Q);
+
+console.log("⚡ Coend composition R = P ∘ Q:");
+for (const a of A.objects) {
+  for (const c of C.objects) {
+    const classes = showClasses(a, c, R);
+    if (classes.length > 0) {
+      console.log(`R(${a},${c}) = {${classes.join(", ")}}`);
+    }
+  }
+}
+console.log();
+
+// Define a protransformation α: P ⇒ P' (just identity for simplicity)
+const alpha: ProTrans<string, any, string, any, string, string> = {
+  at: (_a, _b) => (p) => `α(${p})`
+};
+
+console.log("🔄 Protransformation α: P ⇒ P' defined");
+console.log("α transforms each element p to α(p)\n");
+
+// Test naturality (trivially holds for discrete categories)
+const sampleMorphisms: Array<{ u: any; v: any }> = [];
+const isNatural = checkProTransNaturality(A, B, P, P, alpha, sampleMorphisms);
+console.log("✅ Naturality check:", isNatural ? "PASS" : "FAIL");
+
+// Demonstrate left whiskering: L ⋙ α where L: C ⇸ A is some simple profunctor
+const L_table = {
+  c1: { a1: ["l11"], a2: [] },
+  c2: { a1: [], a2: ["l22"] }
+};
+const L = tableProf(C, A, L_table);
+
+const keyA = (a: string) => a;
+leftWhisker(A, B, C, keyA, L, P, P, alpha);
+
+console.log("\n🥞 Left whiskering L ⋙ α:");
+console.log("L: C ⇸ A with elements:", JSON.stringify(L_table, null, 2));
+console.log("Result: (L∘P) ⇒ (L∘P') via whiskered transformation");
+
+// Show some concrete Set/Rel examples
+console.log("\n🧮 Concrete Set/Rel Equipment Example:");
+
+// Define some small finite sets
+const set1: SetObj<string> = { id: "X", elems: ["x1", "x2"], eq: (a,b) => a === b };
+const set2: SetObj<string> = { id: "Y", elems: ["y1", "y2", "y3"], eq: (a,b) => a === b };
+
+// Define a function f: X → Y
+const f: FnM = {
+  src: set1,
+  dst: set2,
+  f: (x) => x === "x1" ? "y1" : "y2"
+};
+
+// Compute companion and conjoint
+const companion = companionOf(f);  // graph
+const conjoint = conjointOf(f);    // cograph
+
+console.log("Function f: X → Y maps x1↦y1, x2↦y2");
+console.log("Companion Γ_f (graph): relates x to f(x)");
+console.log("Conjoint Γ_f† (cograph): relates f(x) to x");
+
+// Check triangle laws
+const trianglesOK = trianglesHold(f);
+console.log("Triangle laws hold:", trianglesOK ? "✅ YES" : "❌ NO");
+
+// Build the relations double category and demonstrate squares
+const RelDouble = makeRelationsDouble();
+
+try {
+  RelDouble.mkSquare({
+    hTop: RelCat().id(set1),
+    hBot: RelCat().comp(conjoint, companion),
+    vLeft: FuncCat().id(set1),
+    vRight: FuncCat().id(set1)
+  });
+  console.log("✅ Unit square constructed successfully");
+} catch (e) {
+  console.log("❌ Unit square failed:", (e as Error).message);
+}
+
+try {
+  RelDouble.mkSquare({
+    hTop: RelCat().comp(companion, conjoint),
+    hBot: RelCat().id(set2),
+    vLeft: FuncCat().id(set2),
+    vRight: FuncCat().id(set2)
+  });
+  console.log("✅ Counit square constructed successfully");
+} catch (e) {
+  console.log("❌ Counit square failed:", (e as Error).message);
+}
+
+console.log("\n🎉 Profunctor calculus demo completed!");
+console.log("This demonstrates:");
+console.log("• Discrete categories and table-based profunctors");
+console.log("• Coend-based profunctor composition");
+console.log("• Protransformations and naturality checking");
+console.log("• Left whiskering of protransformations");
+console.log("• Concrete Set/Rel equipment with companions/conjoints");
+console.log("• Triangle laws and double category squares");
+console.log("🚀 The full profunctor bicategory structure is ready for use!");
