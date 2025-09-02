@@ -104,5 +104,13 @@ export { Effects };
 import * as QuiverPushout from './quiver-pushout.js';
 export { QuiverPushout };
 
+// Double categories and 2D reasoning with strict and lax double functors
+import * as DoubleFunctor from './double-functor.js';
+export { DoubleFunctor };
+
+// Interfaces for double categories and lax double functors
+import * as DoubleLax from './double-lax-functor.js';
+export { DoubleLax };
+
 // Value-level instances and implementations
 export * from './instances.js';
