@@ -131,10 +131,11 @@ export function checkPrismLaws<S,T,A,B>(
   a1: B, a2: B
 ): PrismLawReport {
   // build-match
-  const bm = deepEq(match(review(pr, a1)), Right(a1));
+  const reviewedValue = review(pr, a1);
+  const bm = deepEq(match(reviewedValue as any), Right(a1));
 
   // preview-review
-  const prr = deepEq(preview(pr as any, review(pr, a1)), Some(a1 as any));
+  const prr = deepEq(preview(pr as any, reviewedValue as any), Some(a1 as any));
 
   // miss-no-op
   const f = (x:any)=> a1;
@@ -143,7 +144,8 @@ export function checkPrismLaws<S,T,A,B>(
 
   // compFusion on a hit
   const g = (x:any)=> a2;
-  const lhs = over(pr, g)(over(pr, f)(sampleHit));
+  const hitAfterF = over(pr, f)(sampleHit);
+  const lhs = over(pr as any, g)(hitAfterF as any);
   const rhs = over(pr, (x:any)=> g(f(x)))(sampleHit);
   const cf  = deepEq(lhs, rhs);
 
