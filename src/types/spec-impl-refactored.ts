@@ -4,7 +4,8 @@
 
 import { Finite, Rel, Subset, wp, preimageSub, Fun, graph } from "./rel-equipment.js";
 import { SurjectiveLaxDoubleFunctor } from "./double-functor.js";
-import { DoubleLaxFunctor, Square, InclusionWitness, inclusionWitness } from "./double-lax-functor-interface.js";
+import { DoubleLaxFunctor, Square, inclusionWitness } from "./double-lax-functor-interface.js";
+import { InclusionWitness } from "./witnesses.js";
 import { Surjection, mkSurjection, getSurjection, getSection } from "./surjection-types.js";
 
 /************ Object pair with surjection ************/

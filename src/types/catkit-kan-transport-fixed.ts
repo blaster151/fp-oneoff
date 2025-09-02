@@ -292,7 +292,7 @@ export function checkSetNatIsoEnhanced<O,M>(
     const eq = eqJSON<any>();
     
     // Check f ∘ g = id and g ∘ f = id
-    const coherenceCheck = verifyTypeCoherence(f, g, X);
+    const coherenceCheck = verifyTypeCoherence(f, g, [...X]);
     if (!coherenceCheck.coherent) {
       bijectivityCheck = false;
       typeViolations.push(...coherenceCheck.violations);

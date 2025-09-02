@@ -13,7 +13,7 @@
     "declarationMap": true,
     "outDir": "dist",
     "downlevelIteration": true,
-    "types": []
+    "types": ["node"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/examples/**", "dist/**", "node_modules/**"]

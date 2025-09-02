@@ -378,6 +378,11 @@ export function lawCheck<W>(
     : { ok: false, ...(witness !== undefined ? { witness } : {}), ...(note ? { note } : {}) };
 }
 
+/** Create law check for success cases (no witness needed) */
+export function lawCheckSuccess(note?: string): LawCheck<never> {
+  return { ok: true, ...(note ? { note } : {}) };
+}
+
 /** Create law check with automatic witness shrinking */
 export function lawCheckWithShrinking<W>(
   condition: boolean,

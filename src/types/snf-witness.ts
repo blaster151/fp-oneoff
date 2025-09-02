@@ -63,7 +63,7 @@ function isDiagonal(D: Mat): { diagonal: boolean; violations?: Array<{i: number,
   
   return {
     diagonal: violations.length === 0,
-    violations: violations.length > 0 ? violations : undefined
+    ...(violations.length > 0 ? { violations } : {})
   };
 }
 
@@ -93,7 +93,7 @@ function checkDivisibilityChain(D: Mat): {
   
   return {
     valid: violations.length === 0,
-    violations: violations.length > 0 ? violations : undefined
+    ...(violations.length > 0 ? { violations } : {})
   };
 }
 

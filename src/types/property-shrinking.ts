@@ -79,7 +79,7 @@ export function estimateSize(witness: any): number {
   if (Array.isArray(witness)) return witness.length + witness.reduce((sum, item) => sum + estimateSize(item), 0);
   if (typeof witness === 'object') {
     return Object.keys(witness).length + 
-           Object.values(witness).reduce((sum, value) => sum + estimateSize(value), 0);
+           Object.values(witness).reduce((sum: number, value) => sum + estimateSize(value), 0);
   }
   return 1;
 }
@@ -299,7 +299,6 @@ export function shrinkMonadLeftUnitWitness<T>(
   predicate: WitnessPredicate<typeof witness>
 ): ShrinkResult<typeof witness> {
   const strategies: ShrinkStrategy<typeof witness>[] = [
-    shrinkMonadWitness,
     (w) => shrinkValue(w.input).map(input => ({ ...w, input }))
   ];
   
@@ -312,7 +311,6 @@ export function shrinkLensCounterexample<S, A>(
   predicate: WitnessPredicate<typeof witness>
 ): ShrinkResult<typeof witness> {
   const strategies: ShrinkStrategy<typeof witness>[] = [
-    shrinkLensWitness,
     (w) => shrinkValue(w.s).map(s => ({ ...w, s }))
   ];
   
@@ -325,7 +323,14 @@ export function shrinkAdjunctionWitness(
   predicate: WitnessPredicate<typeof witness>
 ): ShrinkResult<typeof witness> {
   const strategies: ShrinkStrategy<typeof witness>[] = [
-    shrinkRelationalWitness
+    // Custom strategy for this specific witness type
+    (w) => {
+      const shrunk: typeof w[] = [];
+      if (w.R && Array.isArray(w.R)) {
+        shrunk.push({ ...w, R: w.R.slice(0, Math.max(1, w.R.length - 1)) });
+      }
+      return shrunk;
+    }
   ];
   
   return minimizeWitness(witness, predicate, strategies);

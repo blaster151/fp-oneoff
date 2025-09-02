@@ -81,10 +81,10 @@ export function squareWitness<A, B, A1, B1>(
 }
 
 /** WP transport witness: P ⊆ wp(R,Q) */
-export function wpTransportWitness<A, B>(
+export function wpTransportWitness<A>(
   P: Subset<A>, 
-  R: Rel<A, B>, 
-  Q: Subset<B>
+  R: Rel<A, A>, 
+  Q: Subset<A>
 ): { ok: boolean; missing: A[]; wp: Subset<A> } {
   const lhs = wp(R, Q);
   const miss: A[] = [];
@@ -97,16 +97,16 @@ export function wpTransportWitness<A, B>(
 }
 
 /** SP transport witness: sp(P,R) ⊆ Q */
-export function spTransportWitness<A, B>(
-  P: Subset<A>, 
-  R: Rel<A, B>, 
-  Q: Subset<B>
-): { ok: boolean; missing: B[]; sp: Subset<B> } {
+export function spTransportWitness<A>(
+  P: Subset<A>,
+  R: Rel<A, A>,
+  Q: Subset<A>
+): { ok: boolean; missing: A[]; sp: Subset<A> } {
   const rhs = sp(P, R);
-  const miss: B[] = [];
-  for (const b of R.B.elems) {
-    if (rhs.contains(b) && !Q.contains(b)) {
-      miss.push(b);
+  const miss: A[] = [];
+  for (const a of R.A.elems) {
+    if (rhs.contains(a) && !Q.contains(a)) {
+      miss.push(a);
     }
   }
   return { ok: miss.length === 0, missing: miss, sp: rhs };

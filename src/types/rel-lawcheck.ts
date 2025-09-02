@@ -99,7 +99,7 @@ export function testResidualLaws(iterations: number = 100): {
         };
         leftResults.push(lawCheck(false, witness, `Left adjunction failed at iteration ${i}`));
       } else {
-        leftResults.push(lawCheck(true, undefined, `Left adjunction passed at iteration ${i}`));
+        leftResults.push({ ok: true, note: `Left adjunction passed at iteration ${i}` });
       }
     } catch (e) {
       const witness: ResidualAdjunctionWitness<any, any, any> = {
@@ -128,7 +128,7 @@ export function testResidualLaws(iterations: number = 100): {
         };
         rightResults.push(lawCheck(false, witness, `Right adjunction failed at iteration ${i}`));
       } else {
-        rightResults.push(lawCheck(true, undefined, `Right adjunction passed at iteration ${i}`));
+        rightResults.push({ ok: true, note: `Right adjunction passed at iteration ${i}` });
       }
     } catch (e) {
       const witness: ResidualAdjunctionWitness<any, any, any> = {
@@ -165,30 +165,30 @@ export function testTransformerLaws(iterations: number = 100): Array<LawCheck<Tr
       const rightHolds = P.leq(wpRQ);
       
       if (leftHolds === rightHolds) {
-        results.push(lawCheck(true, undefined, `wp/sp adjunction passed at iteration ${i}`));
+        results.push({ ok: true, note: `wp/sp adjunction passed at iteration ${i}` });
       } else {
         const witness: TransformerAdjunctionWitness<any> = {
-          P: P.elems,
+          P: P.toArray(),
           R: R.toPairs(),
-          Q: Q.elems,
-          spPR: spPR.elems,
-          wpRQ: wpRQ.elems,
+          Q: Q.toArray(),
+          spPR: spPR.toArray(),
+          wpRQ: wpRQ.toArray(),
           leftHolds,
           rightHolds,
           violatingState: States.elems[0], // First state as example
           shrunk: { 
-            P: P.elems.slice(0, 2), 
+            P: P.toArray().slice(0, 2), 
             R: R.toPairs().slice(0, 2), 
-            Q: Q.elems.slice(0, 2) 
+            Q: Q.toArray().slice(0, 2) 
           }
         };
         results.push(lawCheck(false, witness, `wp/sp adjunction failed at iteration ${i}`));
       }
     } catch (e) {
       const witness: TransformerAdjunctionWitness<any> = {
-        P: P.elems,
+        P: P.toArray(),
         R: R.toPairs(),
-        Q: Q.elems,
+        Q: Q.toArray(),
         spPR: `Error: ${e}`,
         wpRQ: `Error: ${e}`,
         leftHolds: false,
@@ -227,14 +227,14 @@ export function testGaloisLaws(iterations: number = 50): {
       } else {
         const witness: GaloisAdjunctionWitness<any, any> = {
           f,
-          P: P.elems,
-          Q: Q.elems,
-          R: R.elems,
+          P: P.toArray(),
+          Q: Q.toArray(),
+          R: R.toArray(),
           adjunctionType: "exists-preimage",
           leftHolds: false,
           rightHolds: false,
           violatingElement: A.elems[0],
-          shrunk: { P: P.elems.slice(0, 2), Q: Q.elems.slice(0, 2), R: R.elems.slice(0, 2) }
+          shrunk: { P: P.toArray().slice(0, 2), Q: Q.toArray().slice(0, 2), R: R.toArray().slice(0, 2) }
         };
         existsResults.push(lawCheck(false, witness, `∃_f ⊣ f* failed at iteration ${i}`));
       }
@@ -246,14 +246,14 @@ export function testGaloisLaws(iterations: number = 50): {
       } else {
         const witness: GaloisAdjunctionWitness<any, any> = {
           f,
-          P: P.elems,
-          Q: Q.elems,
-          R: R.elems,
+          P: P.toArray(),
+          Q: Q.toArray(),
+          R: R.toArray(),
           adjunctionType: "preimage-forall",
           leftHolds: false,
           rightHolds: false,
           violatingElement: B.elems[0],
-          shrunk: { P: P.elems.slice(0, 2), Q: Q.elems.slice(0, 2), R: R.elems.slice(0, 2) }
+          shrunk: { P: P.toArray().slice(0, 2), Q: Q.toArray().slice(0, 2), R: R.toArray().slice(0, 2) }
         };
         forallResults.push(lawCheck(false, witness, `f* ⊣ ∀_f failed at iteration ${i}`));
       }
