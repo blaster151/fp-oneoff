@@ -21,8 +21,8 @@ export type FunEqWitness<A, B> =
 
 /** Generic law check result with a typed witness payload. */
 export type LawCheck<W = unknown> =
-  | { ok: true }
-  | { ok: false; witness: W };
+  | { ok: true; note?: string }
+  | { ok: false; witness?: W; note?: string };
 
 /** Surjection witness with constructive section. */
 export type SurjectionWitness<A, Â> = { 
@@ -78,6 +78,107 @@ export type EMMonoidWitness<T, A> = {
   algebraUnit: LawCheck<{ input: A; expected: A; actual: A }>;
   multiplicativity: LawCheck<{ ta: T; tb: T; expected: A; actual: A }>;
   unitMorphism: LawCheck<{ input: T; expected: A; actual: A }>;
+};
+
+/** Specific witness types for different law violations */
+export type MonadLeftUnitWitness<T> = {
+  input: any;
+  k: (a: any) => T;
+  leftSide: T;  // chain(of(input), k)
+  rightSide: T; // k(input)
+  shrunk?: { input: any }; // minimal failing case if available
+};
+
+export type MonadRightUnitWitness<T> = {
+  input: T;
+  leftSide: T;  // chain(input, of)
+  rightSide: T; // input
+  shrunk?: { input: T };
+};
+
+export type MonadAssociativityWitness<T> = {
+  m: T;
+  k: (a: any) => T;
+  h: (b: any) => T;
+  leftSide: T;  // chain(chain(m, k), h)
+  rightSide: T; // chain(m, x => chain(k(x), h))
+  shrunk?: { m: T; k: any; h: any };
+};
+
+export type StrengthUnitWitness<T> = {
+  a: any;
+  b: any;
+  leftSide: T;  // strength(a, of(b))
+  rightSide: T; // of([a, b])
+  shrunk?: { a: any; b: any };
+};
+
+export type EMAlgebraUnitWitness<T, A> = {
+  input: A;
+  leftSide: A;  // alg(of(input))
+  rightSide: A; // input
+  shrunk?: { input: A };
+};
+
+export type EMMultiplicativityWitness<T, A> = {
+  ta: T;
+  tb: T;
+  leftSide: A;  // alg(map(concat, prod(ta, tb)))
+  rightSide: A; // concat(alg(ta), alg(tb))
+  shrunk?: { ta: T; tb: T };
+};
+
+export type EMUnitMorphismWitness<T, A> = {
+  input: T;
+  leftSide: A;  // alg(map(_ => empty, input))
+  rightSide: A; // empty
+  shrunk?: { input: T };
+};
+
+/** Relational law witnesses */
+export type ResidualAdjunctionWitness<A, B, C> = {
+  R: any;  // Relation A -> B
+  X: any;  // Relation B -> C  
+  S: any;  // Relation A -> C
+  leftSide: boolean;   // R;X ≤ S
+  rightSide: boolean;  // X ≤ R\S (or R ≤ S/X for right adjunction)
+  violatingPair?: readonly [any, any]; // concrete pair that fails the adjunction
+  shrunk?: { R: any; X: any; S: any };
+};
+
+export type TransformerAdjunctionWitness<State> = {
+  P: any;    // Precondition
+  R: any;    // Relation  
+  Q: any;    // Postcondition
+  spPR: any; // sp(P, R)
+  wpRQ: any; // wp(R, Q)
+  leftHolds: boolean;  // sp(P,R) ⊆ Q
+  rightHolds: boolean; // P ⊆ wp(R,Q)
+  violatingState?: State;
+  shrunk?: { P: any; R: any; Q: any };
+};
+
+export type GaloisAdjunctionWitness<A, B> = {
+  f: (a: A) => B;
+  P: any; // Subset of A
+  Q: any; // Subset of B
+  R: any; // Subset of A
+  adjunctionType: "exists-preimage" | "preimage-forall";
+  leftHolds: boolean;
+  rightHolds: boolean;
+  violatingElement?: A | B;
+  shrunk?: { P: any; Q: any; R: any };
+};
+
+export type AllegoryLawWitness<A, B, C> = {
+  lawType: "dagger-involution" | "modular-left" | "composition-associativity";
+  R?: any; // Relations involved
+  S?: any;
+  T?: any;
+  leftSide: any;
+  rightSide: any;
+  violatingPair?: readonly [any, any];
+  shrunk?: { R: any; S: any; T: any };
 };
 
 /************ Witness computation helpers ************/
@@ -264,14 +365,15 @@ export function combineInclusionWitnesses<A, B>(
     : { holds: false, missing: allMissing };
 }
 
-/** Create law check from boolean with optional witness. */
+/** Create law check from boolean with optional witness and note. */
 export function lawCheck<W>(
   condition: boolean,
-  witness?: W
+  witness?: W,
+  note?: string
 ): LawCheck<W> {
   return condition 
-    ? { ok: true }
-    : { ok: false, witness: witness! };
+    ? { ok: true, ...(note ? { note } : {}) }
+    : { ok: false, ...(witness !== undefined ? { witness } : {}), ...(note ? { note } : {}) };
 }
 
 /** Extract counterexamples from witness. */
@@ -312,7 +414,24 @@ export function formatWitness(witness: any): string {
     }
     
     if ('ok' in witness) {
-      return witness.ok ? "✅ Law satisfied" : `❌ Law violated: ${JSON.stringify(witness.witness)}`;
+      if (witness.ok) {
+        return "✅ Law satisfied" + (witness.note ? ` (${witness.note})` : "");
+      } else {
+        let result = "❌ Law violated";
+        if (witness.note) result += ` (${witness.note})`;
+        if (witness.witness) {
+          // Format specific witness types
+          const w = witness.witness;
+          if ('input' in w && 'leftSide' in w && 'rightSide' in w) {
+            result += `: input=${JSON.stringify(w.input)}, got=${JSON.stringify(w.leftSide)}, expected=${JSON.stringify(w.rightSide)}`;
+          } else if ('violatingPair' in w) {
+            result += `: violating pair=${JSON.stringify(w.violatingPair)}`;
+          } else {
+            result += `: ${JSON.stringify(w)}`;
+          }
+        }
+        return result;
+      }
     }
   }
   

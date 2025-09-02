@@ -74,23 +74,30 @@ export function demo() {
   
   console.log("\nOption + Sum monoid verification:");
   const optionSumResult = checkEMMonoid(StrongOption, testCarriers.numbers, optionSumEMMonoid, enumOption);
-  console.log("  All laws satisfied:", 
-    optionSumResult.monoid && optionSumResult.algebraUnit && 
-    optionSumResult.mulHom && optionSumResult.unitHom ? "✅" : "❌");
+  console.log("  Monoid laws:", optionSumResult.monoidLaws.ok ? "✅" : "❌");
+  console.log("  Algebra unit:", optionSumResult.algebraUnit.ok ? "✅" : "❌");
+  console.log("  Multiplicativity:", optionSumResult.multiplicativity.ok ? "✅" : "❌");
+  console.log("  Unit morphism:", optionSumResult.unitMorphism.ok ? "✅" : "❌");
+  
+  if (!optionSumResult.monoidLaws.ok) {
+    console.log("    Monoid violation:", JSON.stringify(optionSumResult.monoidLaws.witness));
+  }
   
   console.log("\nArray + String concatenation monoid verification:");
   const arrayStringResult = checkEMMonoid(StrongArray, testCarriers.strings, arrayStringEMMonoid, 
     (F) => enumArray(F, 2));
-  console.log("  All laws satisfied:", 
-    arrayStringResult.monoid && arrayStringResult.algebraUnit && 
-    arrayStringResult.mulHom && arrayStringResult.unitHom ? "✅" : "❌");
+  console.log("  Monoid laws:", arrayStringResult.monoidLaws.ok ? "✅" : "❌");
+  console.log("  Algebra unit:", arrayStringResult.algebraUnit.ok ? "✅" : "❌");
+  console.log("  Multiplicativity:", arrayStringResult.multiplicativity.ok ? "✅" : "❌");
+  console.log("  Unit morphism:", arrayStringResult.unitMorphism.ok ? "✅" : "❌");
   
   console.log("\nOption + Max monoid verification:");
   const numberCarrier = { elems: [-1, 0, 1] } as Finite<number>;
   const optionMaxResult = checkEMMonoid(StrongOption, numberCarrier, optionMaxEMMonoid, enumOption);
-  console.log("  All laws satisfied:", 
-    optionMaxResult.monoid && optionMaxResult.algebraUnit && 
-    optionMaxResult.mulHom && optionMaxResult.unitHom ? "✅" : "❌");
+  console.log("  Monoid laws:", optionMaxResult.monoidLaws.ok ? "✅" : "❌");
+  console.log("  Algebra unit:", optionMaxResult.algebraUnit.ok ? "✅" : "❌");
+  console.log("  Multiplicativity:", optionMaxResult.multiplicativity.ok ? "✅" : "❌");
+  console.log("  Unit morphism:", optionMaxResult.unitMorphism.ok ? "✅" : "❌");
 
   console.log("\n6. STRONG MONAD LAW VERIFICATION");
   
@@ -103,13 +110,19 @@ export function demo() {
   );
   
   console.log("Strong Option monad laws:");
-  console.log("  Left unit:", lawResults.monadLaws.leftUnit ? "✅" : "❌");
-  console.log("  Right unit:", lawResults.monadLaws.rightUnit ? "✅" : "❌");
-  console.log("  Associativity:", lawResults.monadLaws.associativity ? "✅" : "❌");
-  console.log("  Strength unit:", lawResults.strengthLaws.unit ? "✅" : "❌");
+  console.log("  Left unit:", lawResults.monadLaws.leftUnit.ok ? "✅" : "❌");
+  console.log("  Right unit:", lawResults.monadLaws.rightUnit.ok ? "✅" : "❌");
+  console.log("  Associativity:", lawResults.monadLaws.associativity.ok ? "✅" : "❌");
+  console.log("  Strength unit:", lawResults.strengthLaws.unit.ok ? "✅" : "❌");
   
-  if (lawResults.errors.length > 0) {
-    console.log("  Errors:", lawResults.errors.slice(0, 2));
+  if (!lawResults.monadLaws.leftUnit.ok) {
+    console.log("    Left unit violation:", JSON.stringify(lawResults.monadLaws.leftUnit.witness));
+  }
+  if (!lawResults.monadLaws.rightUnit.ok) {
+    console.log("    Right unit violation:", JSON.stringify(lawResults.monadLaws.rightUnit.witness));
+  }
+  if (!lawResults.strengthLaws.unit.ok) {
+    console.log("    Strength unit violation:", JSON.stringify(lawResults.strengthLaws.unit.witness));
   }
 
   console.log("\n7. PRACTICAL APPLICATIONS");
@@ -144,8 +157,10 @@ export function demo() {
     (F) => enumArray(F, 2));
   
   console.log("Custom Array + Sum EM monoid:");
-  console.log("  Verification:", customResult.monoid && customResult.algebraUnit && 
-    customResult.mulHom && customResult.unitHom ? "✅" : "❌");
+  console.log("  Monoid laws:", customResult.monoidLaws.ok ? "✅" : "❌");
+  console.log("  Algebra unit:", customResult.algebraUnit.ok ? "✅" : "❌");
+  console.log("  Multiplicativity:", customResult.multiplicativity.ok ? "✅" : "❌");
+  console.log("  Unit morphism:", customResult.unitMorphism.ok ? "✅" : "❌");
   
   // Demonstrate composition
   console.log("\nStrength composition examples:");
