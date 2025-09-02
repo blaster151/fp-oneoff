@@ -120,5 +120,19 @@ export { BitRel };
 import * as FingerTree from './fingertree.js';
 export { FingerTree };
 
+// Common interface for Rel/BitRel with drop-in factory pattern
+export * from './rel-common.js';
+
+// Measured FingerTree with monoidal measures for indexed operations
+import * as MeasuredFingerTree from './measured-fingertree.js';
+export { MeasuredFingerTree };
+
+// Rope persistent text structure built on measured FingerTree
+import * as Rope from './rope.js';
+export { Rope };
+
+// Spec→Impl abstraction functors with inclusion-based verification
+export * from './spec-impl.js';
+
 // Value-level instances and implementations
 export * from './instances.js';
