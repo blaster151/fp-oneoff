@@ -74,5 +74,12 @@ export { Posets };
 // Integration bridge between comma categories and Kan extensions
 export * from './catkit-comma-kan-bridge.js';
 
+// Quasi-category checking and inner horn enumeration
+import * as QuasiCategory from './sset-quasicat.js';
+export { QuasiCategory };
+
+// Bridge between nerve construction and quasi-category checking
+export * from './nerve-quasicat-bridge.js';
+
 // Value-level instances and implementations
 export * from './instances.js';
