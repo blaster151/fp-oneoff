@@ -12,8 +12,12 @@
 //   npx tsx examples/torus-homology-demo.ts
 //   ts-node examples/torus-homology-demo.ts
 
-// ---- Adjust this import to match your library location if needed ----
-import { smithNormalForm } from "../types/catkit-homology.js";
+// ---- Using the new surface API for clean, witness-based verification ----
+import { 
+  smithNormalForm, verifySNF, explainDiagonal, 
+  printSNFVerification, printDiagonalExplanation,
+  computeAndVerifySNF, homologyRankFromSNF
+} from "../types/snf-surface-api.js";
 
 // ---------- tiny integer-matrix helpers (pure TS) ----------
 type Mat = number[][];
@@ -102,34 +106,26 @@ function torusExample() {
   console.log("∂₂ (C₂ → C₁):", d2);
   console.log("∂₁ (C₁ → C₀):", d1);
 
-  const { U: U2, D: D2, V: V2 } = smithNormalForm(d2);
-  const { U: U1, D: D1, V: V1 } = smithNormalForm(d1);
-
-  const cert2 = verifySNF(U2, d2, V2, D2);
-  const cert1 = verifySNF(U1, d1, V1, D1);
+  const snf2 = computeAndVerifySNF(d2);
+  const snf1 = computeAndVerifySNF(d1);
 
   console.log("\n=== Torus T^2: SNF certificates ===");
-  console.log("∂2 certificate:", cert2.ok ? "✅ OK" : `❌ FAIL at ${cert2.loc} got ${cert2.got} expected ${cert2.expected}`);
-  console.log("∂1 certificate:", cert1.ok ? "✅ OK" : `❌ FAIL at ${cert1.loc} got ${cert1.got} expected ${cert1.expected}`);
+  printSNFVerification("∂₂ certificate", snf2.verification);
+  printSNFVerification("∂₁ certificate", snf1.verification);
 
   console.log("\nSmith Normal Forms:");
-  console.log("SNF(∂₂) =", D2);
-  console.log("SNF(∂₁) =", D1);
+  console.log("SNF(∂₂) =", snf2.snf.D);
+  console.log("SNF(∂₁) =", snf1.snf.D);
 
   // dims: C2=1, C1=2, C0=1
-  const H2_rank = homologyRanksFromSNF(1, D2, zeros(0, 0)); // d3 is 0
-  const H1_rank = homologyRanksFromSNF(2, D1, D2);
-  const H0_rank = homologyRanksFromSNF(1, zeros(1, 1), D1); // d0=0, but we don't use it
+  const H2_rank = homologyRankFromSNF(1, d2, zeros(0, 0)); // d3 is 0
+  const H1_rank = homologyRankFromSNF(2, d1, d2);
+  const H0_rank = homologyRankFromSNF(1, zeros(1, 1), d1); // d0=0, but we don't use it
 
-  console.log("\n=== Torus T^2: Homology (ranks) ===");
-  console.log(`H₂ rank: ${H2_rank}`);
-  console.log(`H₁ rank: ${H1_rank}`);
-  console.log(`H₀ rank: ${H0_rank}`);
-
-  console.log("\nPretty form:");
-  console.log("H₂ ≅", prettyGroup(H2_rank));
-  console.log("H₁ ≅", prettyGroup(H1_rank));
-  console.log("H₀ ≅", prettyGroup(H0_rank));
+  console.log("\n=== Torus T^2: Homology ===");
+  printDiagonalExplanation("H₂", explainDiagonal([[H2_rank]]));
+  printDiagonalExplanation("H₁", explainDiagonal([[H1_rank, 0]]));
+  printDiagonalExplanation("H₀", explainDiagonal([[H0_rank]]));
   
   console.log("\n🎯 TORUS TOPOLOGY:");
   console.log("• T² = S¹ × S¹ has fundamental group Z²");
@@ -153,32 +149,31 @@ function rp2Example() {
   console.log("∂₂ (C₂ → C₁):", d2);
   console.log("∂₁ (C₁ → C₀):", d1);
 
-  const { U: U2, D: D2, V: V2 } = smithNormalForm(d2);
-  const { U: U1, D: D1, V: V1 } = smithNormalForm(d1);
-
-  const cert2 = verifySNF(U2, d2, V2, D2);
-  const cert1 = verifySNF(U1, d1, V1, D1);
+  const snf2 = computeAndVerifySNF(d2);
+  const snf1 = computeAndVerifySNF(d1);
 
   console.log("\n=== RP^2: SNF certificates ===");
-  console.log("∂2 certificate:", cert2.ok ? "✅ OK" : `❌ FAIL at ${cert2.loc} got ${cert2.got} expected ${cert2.expected}`);
-  console.log("∂1 certificate:", cert1.ok ? "✅ OK" : `❌ FAIL at ${cert1.loc} got ${cert1.got} expected ${cert1.expected}`);
+  printSNFVerification("∂₂ certificate", snf2.verification);
+  printSNFVerification("∂₁ certificate", snf1.verification);
 
   console.log("\nSmith Normal Forms:");
-  console.log("SNF(∂₂) =", D2);
-  console.log("SNF(∂₁) =", D1);
+  console.log("SNF(∂₂) =", snf2.snf.D);
+  console.log("SNF(∂₁) =", snf1.snf.D);
 
   // dims: C2=1, C1=1, C0=1
-  const H2_rank = homologyRanksFromSNF(1, D2, zeros(0, 0)); // no d3
-  const H1_rank = homologyRanksFromSNF(1, D1, D2);
-  const H0_rank = homologyRanksFromSNF(1, zeros(1, 1), D1);
+  const H2_rank = homologyRankFromSNF(1, d2, zeros(0, 0)); // no d3
+  const H1_rank = homologyRankFromSNF(1, d1, d2);
+  const H0_rank = homologyRankFromSNF(1, zeros(1, 1), d1);
 
-  // Torsion in H1 comes from non-unit invariant factors of ∂2 since ∂1 = 0 here.
-  const H1_torsion = torsionInHnm1_whenPrevBoundaryIsZero(D2);
+  // Enhanced explanation with torsion detection
+  const H2_explanation = explainDiagonal([[H2_rank]]);
+  const H1_explanation = explainDiagonal(snf2.snf.D); // Torsion from ∂₂
+  const H0_explanation = explainDiagonal([[H0_rank]]);
 
-  console.log("\n=== RP^2: Homology (ranks + torsion) ===");
-  console.log(`H₂ ≅ ${prettyGroup(H2_rank)}`);
-  console.log(`H₁ ≅ ${prettyGroup(H1_rank, H1_torsion)}   (torsion factors from SNF(∂2): ${H1_torsion.join(", ") || "none"})`);
-  console.log(`H₀ ≅ ${prettyGroup(H0_rank)}`);
+  console.log("\n=== RP^2: Homology (with torsion) ===");
+  printDiagonalExplanation("H₂", H2_explanation);
+  printDiagonalExplanation("H₁", H1_explanation);
+  printDiagonalExplanation("H₀", H0_explanation);
   
   console.log("\n🎯 RP² TOPOLOGY:");
   console.log("• RP² is the quotient of S² by antipodal identification");
@@ -216,6 +211,18 @@ export function demonstrateTorusHomology(): void {
   console.log("• Homology groups measure 'holes' in different dimensions");
   console.log("• Torsion elements capture twisting and non-orientability");
   console.log("• Betti numbers count free generators in each dimension");
+  
+  console.log("\n6. FAILURE CASE DEMONSTRATION");
+  
+  // Test the surface API with a broken SNF for demonstration
+  console.log("\nTesting broken SNF verification:");
+  const brokenA: number[][] = [[1, 2], [3, 4]];
+  const brokenU: number[][] = [[1, 0], [0, 1]];
+  const brokenV: number[][] = [[1, 0], [0, 1]];
+  const brokenD: number[][] = [[1, 2], [3, 5]]; // Wrong: should be [[1, 2], [3, 4]]
+  
+  const brokenVerification = verifySNF(brokenA, brokenU, brokenV, brokenD);
+  printSNFVerification("Broken SNF test", brokenVerification);
 }
 
 function main() {
