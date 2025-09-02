@@ -56,5 +56,12 @@ export { CatkitTraversal };
 import * as Eq from './eq.js';
 export { Eq };
 
+// Homology computation for nerves and chain complexes - use namespace to avoid conflicts
+import * as Homology from './catkit-homology.js';
+export { Homology };
+
+// Bridge between nerve construction and homology computation
+export * from './catkit-homology-bridge.js';
+
 // Value-level instances and implementations
 export * from './instances.js';
