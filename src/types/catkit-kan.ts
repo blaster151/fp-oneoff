@@ -9,6 +9,9 @@ import {
 } from './category-to-nerve-sset.js';
 import { eqJSON } from './eq.js';
 
+// Helper for generating unique keys from values
+const keyFromValue = (x: unknown): string => JSON.stringify(x);
+
 // We need hom-set enumeration to compute ends/coends.
 export interface HasHom<O, M> {
   hom: (x: O, y: O) => ReadonlyArray<M>;
@@ -59,7 +62,7 @@ export function LeftKan_Set<C_O, C_M, D_O, D_M>(
       const hom = D.hom(F.Fobj(c), d);
       const Hc  = H.obj(c).elems;
       for (const f of hom) for (const x of Hc) {
-        const key = `${keyC(c)}|f=${keyDMor(f)}|x=${JSON.stringify(x)}`;
+        const key = `${keyC(c)}|f=${keyDMor(f)}|x=${keyFromValue(x)}`;
         nodes.set(key, { c, f, x });
       }
     }
@@ -75,8 +78,8 @@ export function LeftKan_Set<C_O, C_M, D_O, D_M>(
         const f1 = D.comp(h, F.Fmor(u)); // F(u): Fc→Fcp;  h∘F(u): Fc→d
         const Huxs = H.obj(c).elems.map(x => ({ x, x2: Hu(x) }));
         for (const {x, x2} of Huxs) {
-          const kLeft  = `${keyC(c)}|f=${keyDMor(f1)}|x=${JSON.stringify(x)}`;
-          const kRight = `${keyC(cp)}|f=${keyDMor(h)}|x=${JSON.stringify(x2)}`;
+          const kLeft  = `${keyC(c)}|f=${keyDMor(f1)}|x=${keyFromValue(x)}`;
+          const kRight = `${keyC(cp)}|f=${keyDMor(h)}|x=${keyFromValue(x2)}`;
           if (nodes.has(kLeft) && nodes.has(kRight)) uf.union(kLeft, kRight);
         }
       }
@@ -90,7 +93,7 @@ export function LeftKan_Set<C_O, C_M, D_O, D_M>(
     }
 
     const normalize = (node: CoendNode<C_O,D_M>): CoendClass<C_O,D_M> => {
-      const k = `${keyC(node.c)}|f=${keyDMor(node.f)}|x=${JSON.stringify(node.x)}`;
+      const k = `${keyC(node.c)}|f=${keyDMor(node.f)}|x=${keyFromValue(node.x)}`;
       const r = uf.find(k);
       return classes.get(r)!;
     };
@@ -194,7 +197,8 @@ export function RightKan_Set<C_O, C_M, D_O, D_M>(
         for (const g of D.hom(d, F.Fobj(c))) {
           const left  = Hu(alpha_c.get(keyDMor(g)));
           const right = alpha_cp.get(keyDMor( D.comp(F.Fmor(u), g) ));
-          if (JSON.stringify(left) !== JSON.stringify(right)) return false;
+          const eq = eqJSON<unknown>();
+          if (!eq(left, right)) return false;
         }
         return true;
       });

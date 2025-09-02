@@ -14,6 +14,9 @@ import {
   LeftKan_Set, RightKan_Set
 } from "./catkit-kan.js";
 import { eqJSON } from './eq.js';
+
+// Helper for generating unique keys from values
+const keyFromValue = (x: unknown): string => JSON.stringify(x);
 import { SmallCategory } from "./category-to-nerve-sset.js";
 import {
   AdjointEquivalence
@@ -98,7 +101,7 @@ function classifyLeftKan<C_O, C_M, D_O, D_M>(
   for (const c of C.objects) {
     for (const f of D.hom(F.Fobj(c), d)) {
       for (const x of H.obj(c).elems) {
-        const k = `${keyC(c)}|f=${keyDMor(f)}|x=${JSON.stringify(x)}`;
+        const k = `${keyC(c)}|f=${keyDMor(f)}|x=${keyFromValue(x)}`;
         nodes.set(k, { c, f, x });
       }
     }
@@ -111,8 +114,8 @@ function classifyLeftKan<C_O, C_M, D_O, D_M>(
       const f1 = D.comp(h, F.Fmor(u));
       for (const x of H.obj(c).elems) {
         const x2 = Hu(x);
-        const kL = `${keyC(c)}|f=${keyDMor(f1)}|x=${JSON.stringify(x)}`;
-        const kR = `${keyC(cp)}|f=${keyDMor(h)}|x=${JSON.stringify(x2)}`;
+        const kL = `${keyC(c)}|f=${keyDMor(f1)}|x=${keyFromValue(x)}`;
+        const kR = `${keyC(cp)}|f=${keyDMor(h)}|x=${keyFromValue(x2)}`;
         if (nodes.has(kL) && nodes.has(kR)) uf.union(kL,kR);
       }
     }
@@ -123,7 +126,7 @@ function classifyLeftKan<C_O, C_M, D_O, D_M>(
     if (!classes.has(r)) classes.set(r, { rep: nodes.get(k)!, key:r });
   }
   const normalize = (node: CoendNode<C_O,D_M>): CoendClass<C_O,D_M> => {
-    const k = `${keyC(node.c)}|f=${keyDMor(node.f)}|x=${JSON.stringify(node.x)}`;
+    const k = `${keyC(node.c)}|f=${keyDMor(node.f)}|x=${keyFromValue(node.x)}`;
     const r = uf.find(k);
     return classes.get(r)!;
   };
