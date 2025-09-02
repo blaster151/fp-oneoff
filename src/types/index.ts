@@ -147,5 +147,11 @@ export * from './spec-impl-refactored.js';
 import * as StrongMonads from './strong-monad.js';
 export { StrongMonads };
 
+// Unified witness system for counterexample reporting
+export * from './witnesses.js';
+
+// Enhanced relational law checking with witnesses
+export * from './rel-lawcheck-witnessed.js';
+
 // Value-level instances and implementations
 export * from './instances.js';

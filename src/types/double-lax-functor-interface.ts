@@ -17,36 +17,17 @@ export type Square<A, B, A1, B1> = {
 };
 
 /************ Inclusion witness for lax preservation ************/
-export type InclusionWitness<A, B> = {
-  holds: boolean;
-  counterexamples?: Array<[A, B]>;  // pairs in left but not in right
-  coverage?: number;                 // |left ∩ right| / |left|
-};
+import { InclusionWitness, inclusionWitness as baseInclusionWitness } from "./witnesses.js";
 
+// Adapter for Rel-based inclusion witness
 export function inclusionWitness<A, B>(
   left: Rel<A, B>, 
   right: Rel<A, B>
 ): InclusionWitness<A, B> {
-  const leftPairs = left.toPairs();
-  const counterexamples: Array<[A, B]> = [];
-  let covered = 0;
-  
-  for (const [a, b] of leftPairs) {
-    if (right.has(a, b)) {
-      covered++;
-    } else {
-      counterexamples.push([a, b]);
-    }
-  }
-  
-  const holds = counterexamples.length === 0;
-  const coverage = leftPairs.length > 0 ? covered / leftPairs.length : 1;
-  
-  return {
-    holds,
-    counterexamples: counterexamples.length > 0 ? counterexamples : undefined,
-    coverage
-  };
+  return baseInclusionWitness(
+    { has: (a: A, b: B) => left.has(a, b), A: left.A, B: left.B },
+    { has: (a: A, b: B) => right.has(a, b), A: right.A, B: right.B }
+  );
 }
 
 /************ Double lax functor interface ************/
@@ -61,7 +42,7 @@ export interface DoubleLaxFunctor {
   onH<A, B>(R: Rel<A, B>): Rel<any, any>;
   
   // Lax square preservation: F(R);F(g) ⊆ F(f);F(R1)
-  // Returns inclusion witness with detailed information
+  // Returns inclusion witness with detailed counterexamples
   squareLax<A, B, A1, B1>(sq: Square<A, B, A1, B1>): {
     left: Rel<any, any>;      // F(R);F(g)
     right: Rel<any, any>;     // F(f);F(R1)
