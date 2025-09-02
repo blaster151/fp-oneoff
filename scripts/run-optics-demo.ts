@@ -1,0 +1,1 @@
+import '../src/examples/optics-example';

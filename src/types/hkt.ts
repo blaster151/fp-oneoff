@@ -29,7 +29,7 @@ export interface HKT2Prof<URI, A, B> {
 export type Either<L, R> = { _tag: 'Left'; left: L } | { _tag: 'Right'; right: R }
 
 // URI type for concrete libraries to narrow to string unions
-export type URIS = any;
+export type URIS = string;
 
 // Function type alias for cleaner signatures
 export type Fn<A, B> = (a: A) => B;
