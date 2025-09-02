@@ -436,6 +436,9 @@ export function hasFailures(witnesses: Array<{ holds?: boolean; ok?: boolean; eq
 
 /** Format witness for human-readable output. */
 export function formatWitness(witness: any): string {
+  // Enhanced formatter - delegated to display-helpers for consistency
+  // This function is kept for backward compatibility
+  
   if (typeof witness === 'boolean') {
     return witness ? "✅" : "❌";
   }
@@ -460,7 +463,6 @@ export function formatWitness(witness: any): string {
         let result = "❌ Law violated";
         if (witness.note) result += ` (${witness.note})`;
         if (witness.witness) {
-          // Format specific witness types
           const w = witness.witness;
           if ('input' in w && 'leftSide' in w && 'rightSide' in w) {
             result += `: input=${JSON.stringify(w.input)}, got=${JSON.stringify(w.leftSide)}, expected=${JSON.stringify(w.rightSide)}`;

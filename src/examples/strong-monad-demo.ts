@@ -110,20 +110,14 @@ export function demo() {
   );
   
   console.log("Strong Option monad laws:");
-  console.log("  Left unit:", lawResults.monadLaws.leftUnit.ok ? "✅" : "❌");
-  console.log("  Right unit:", lawResults.monadLaws.rightUnit.ok ? "✅" : "❌");
-  console.log("  Associativity:", lawResults.monadLaws.associativity.ok ? "✅" : "❌");
-  console.log("  Strength unit:", lawResults.strengthLaws.unit.ok ? "✅" : "❌");
   
-  if (!lawResults.monadLaws.leftUnit.ok) {
-    console.log("    Left unit violation:", JSON.stringify(lawResults.monadLaws.leftUnit.witness));
-  }
-  if (!lawResults.monadLaws.rightUnit.ok) {
-    console.log("    Right unit violation:", JSON.stringify(lawResults.monadLaws.rightUnit.witness));
-  }
-  if (!lawResults.strengthLaws.unit.ok) {
-    console.log("    Strength unit violation:", JSON.stringify(lawResults.strengthLaws.unit.witness));
-  }
+  // Use uniform display helpers for consistent formatting
+  const { printLawCheck, formatMonadLaws } = await import("../types/display-helpers.js");
+  
+  printLawCheck("Left Unit", lawResults.monadLaws.leftUnit);
+  printLawCheck("Right Unit", lawResults.monadLaws.rightUnit);
+  printLawCheck("Associativity", lawResults.monadLaws.associativity);
+  printLawCheck("Strength Unit", lawResults.strengthLaws.unit);
 
   console.log("\n7. PRACTICAL APPLICATIONS");
   
