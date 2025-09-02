@@ -1,7 +1,7 @@
 // catkit-equivalence.ts
 // Core equivalences, isomorphisms, natural isomorphisms, and adjoint equivalences
 
-import { eqJSON } from './eq';
+import { eqJSON } from './eq.js';
 
 // ---------- Core minimal types ----------
 export interface SmallCategory<O,M> {

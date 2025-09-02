@@ -6,8 +6,8 @@
 // Import existing types to avoid conflicts
 import { 
   SmallCategory
-} from './category-to-nerve-sset';
-import { eqJSON } from './eq';
+} from './category-to-nerve-sset.js';
+import { eqJSON } from './eq.js';
 
 // We need hom-set enumeration to compute ends/coends.
 export interface HasHom<O, M> {

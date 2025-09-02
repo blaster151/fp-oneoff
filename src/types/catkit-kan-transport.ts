@@ -12,12 +12,12 @@
 import {
   Functor, HasHom, SetFunctor,
   LeftKan_Set, RightKan_Set
-} from "./catkit-kan";
-import { eqJSON } from './eq';
-import { SmallCategory } from "./category-to-nerve-sset";
+} from "./catkit-kan.js";
+import { eqJSON } from './eq.js';
+import { SmallCategory } from "./category-to-nerve-sset.js";
 import {
   AdjointEquivalence
-} from "./catkit-equivalence";
+} from "./catkit-equivalence.js";
 
 // ---------- Set-valued natural isomorphisms ----------
 

@@ -12,33 +12,41 @@
  */
 
 // HKT plumbing and basic types
-export * from './hkt';
+export * from './hkt.js';
 
 // Algebraic structures and basic type classes
-export * from './algebraic';
+export * from './algebraic.js';
 
 // Functor family and monadic structures
-export * from './functors';
+export * from './functors.js';
 
 // Foldable, traversable, and comonad structures
-export * from './foldable';
+export * from './foldable.js';
 
 // Advanced constructions (arrows, optics, etc.)
-export * from './advanced';
+export * from './advanced.js';
 
 // Profunctor-encoded optics (free implementation) is available under a namespace.
 // This prevents symbol collisions with the canonical typeclass/HKT surface.
-import * as OpticsFree from './optics-free';
+import * as OpticsFree from './optics-free.js';
 export { OpticsFree };
-export * from './category-to-nerve-sset';
+export * from './category-to-nerve-sset.js';
 
 // Category theory and adjunction theory (hom-set companions/conjoints, mates)
 // Note: Some types from catkit-adjunction conflict with existing types
-// export * from './catkit-adjunction';
+// export * from './catkit-adjunction.js';
 
 // Kan extensions via ends/coends
 // Note: Some types from catkit-kan conflict with existing types  
-// export * from './catkit-kan';
+// export * from './catkit-kan.js';
+
+// Catkit optics (profunctor lenses) - use namespace to avoid conflicts
+import * as CatkitOptics from './catkit-optics.js';
+export { CatkitOptics };
+
+// Equality helpers - use namespace to avoid conflicts
+import * as Eq from './eq.js';
+export { Eq };
 
 // Value-level instances and implementations
-export * from './instances';
+export * from './instances.js';

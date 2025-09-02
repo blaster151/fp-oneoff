@@ -93,7 +93,7 @@ export function setL<S, T, A, B>(ln: Lens<S, T, A, B>, b: B): (s: S) => T {
 }
 
 // ---------- Laws (still using deep structural eq for now) ----------
-import { eqJSON } from './eq';
+import { eqJSON } from './eq.js';
 const deepEq = eqJSON<unknown>();
 
 export type LensLawReport = { getSet: boolean; setGet: boolean; setSet: boolean };

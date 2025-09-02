@@ -3,7 +3,7 @@
 // natural transformations, adjunctions, and the mates correspondence.
 // This extends the existing category theory foundation with adjunction theory.
 
-import { eqJSON } from './eq';
+import { eqJSON } from './eq.js';
 
 // ---- Base: SmallCategory is assumed (from existing types). Re-declare minimal types here for isolation. ----
 export interface SmallCategory<O, M> {
