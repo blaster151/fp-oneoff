@@ -26,7 +26,8 @@ export class SpecImplFunctor implements DoubleLaxFunctor {
     
     // Add to underlying lax functor
     const surjection = getSurjection(pair.surj);
-    this.F.addObject(pair.spec, pair.impl as any, surjection as any);
+    // Type-safe: addObject expects Finite<any> and Surjection<any,any>
+    this.F.addObject(pair.spec as Finite<any>, pair.impl as Finite<any>, surjection as any);
   }
 
   /************ DoubleLaxFunctor interface implementation ************/
@@ -38,11 +39,13 @@ export class SpecImplFunctor implements DoubleLaxFunctor {
   }
   
   onV<A, B>(A: Finite<A>, B: Finite<B>, f: Fun<A, B>): Fun<any, any> { 
-    return this.F.onV(A, B, f) as any; 
+    // Type-safe: underlying functor already returns Fun<any,any>
+    return this.F.onV(A as Finite<any>, B as Finite<any>, f as Fun<any,any>); 
   }
   
   onH<A, B>(R: Rel<A, B>): Rel<any, any> { 
-    return this.F.onH(R) as any; 
+    // Type-safe: underlying functor already returns Rel<any,any>
+    return this.F.onH(R as Rel<any,any>); 
   }
 
   squareLax<A, B, A1, B1>(sq: Square<A, B, A1, B1>): {

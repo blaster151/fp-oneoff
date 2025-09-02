@@ -5,14 +5,65 @@
 import { Finite, Rel, Subset, Fun, graph, wp, sp } from "./rel-equipment.js";
 import { InclusionWitness, inclusionWitness, RelEqWitness, relEqWitness } from "./witnesses.js";
 
+/************ Type-Safe Witness Helpers ************/
+
+/** Type-safe inclusion witness for relations */
+function safeInclusionWitness<A, B>(
+  left: Rel<A, B>,
+  right: Rel<A, B>
+): InclusionWitness<A, B> {
+  const relToWitnessFormat = (rel: Rel<A, B>) => ({
+    has: (a: A, b: B) => rel.has(a, b),
+    A: { elems: rel.A.elems },
+    B: { elems: rel.B.elems }
+  });
+  
+  return inclusionWitness(relToWitnessFormat(left), relToWitnessFormat(right));
+}
+
+/** Type-safe inclusion witness for different relation types */
+function safeInclusionWitnessGeneral<A, B, C, D>(
+  left: Rel<A, B>,
+  right: Rel<C, D>
+): InclusionWitness<any, any> {
+  const leftFormat = {
+    has: (a: any, b: any) => left.has(a, b),
+    A: { elems: left.A.elems },
+    B: { elems: left.B.elems }
+  };
+  
+  const rightFormat = {
+    has: (a: any, b: any) => right.has(a, b),
+    A: { elems: right.A.elems },
+    B: { elems: right.B.elems }
+  };
+  
+  return inclusionWitness(leftFormat, rightFormat);
+}
+
 /** Refinement witness: R ⊆ S (pairs in R but not S). */
 export function refines<A, B>(R: Rel<A, B>, S: Rel<A, B>): InclusionWitness<A, B> {
-  return inclusionWitness(S as any, R as any);
+  // Type-safe conversion using proper witness interface
+  const relToWitnessFormat = (rel: Rel<A, B>) => ({
+    has: (a: A, b: B) => rel.has(a, b),
+    A: { elems: rel.A.elems },
+    B: { elems: rel.B.elems }
+  });
+  
+  return inclusionWitness(relToWitnessFormat(S), relToWitnessFormat(R));
 }
 
 /** Equality witness for relations. */
 export function relEqual<A, B>(R: Rel<A, B>, S: Rel<A, B>): RelEqWitness<A, B> {
-  return relEqWitness(R as any, S as any);
+  // Type-safe conversion using proper witness interface
+  const relToWitnessFormat = (rel: Rel<A, B>) => ({
+    toPairs: () => rel.toPairs().map(p => [p[0], p[1]] as [A, B]),
+    has: (a: A, b: B) => rel.has(a, b),
+    A: { elems: rel.A.elems },
+    B: { elems: rel.B.elems }
+  });
+  
+  return relEqWitness(relToWitnessFormat(R), relToWitnessFormat(S));
 }
 
 /** Hoare-style witnesses (finite demonic/angelic). */
@@ -77,7 +128,7 @@ export function squareWitness<A, B, A1, B1>(
 ): InclusionWitness<A, B1> {
   const left = graph(A, A1, f).compose(R1);
   const right = R.compose(graph(B, B1, g));
-  return inclusionWitness(left as any, right as any);
+  return safeInclusionWitnessGeneral(left, right);
 }
 
 /** WP transport witness: P ⊆ wp(R,Q) */
@@ -124,12 +175,12 @@ export function allegoryLawWitness<A>(
   const dagger = R.converse();
   const daggerTwice = dagger.converse();
   
-  const daggerInclusion = inclusionWitness(R as any, daggerTwice as any) as InclusionWitness<A, A>;
-  const daggerReverse = inclusionWitness(daggerTwice as any, R as any) as InclusionWitness<A, A>;
+  const daggerInclusion = safeInclusionWitness(R, daggerTwice);
+  const daggerReverse = safeInclusionWitness(daggerTwice, R);
   
   // Test if R is self-adjoint: R = R†
-  const selfAdjointInclusion = inclusionWitness(R as any, dagger as any) as InclusionWitness<A, A>;
-  const selfAdjointReverse = inclusionWitness(dagger as any, R as any) as InclusionWitness<A, A>;
+  const selfAdjointInclusion = safeInclusionWitness(R, dagger);
+  const selfAdjointReverse = safeInclusionWitness(dagger, R);
   
   // Test composition associativity (simplified)
   const violations: Array<[A, A, A]> = [];
@@ -174,7 +225,7 @@ export function modularLawWitness<A>(
   const right_term = S.compose(R_intersect_T);
   const right_side = left_term.join(right_term);
   
-  const witness = inclusionWitness(right_side as any, R_intersect_ST as any) as InclusionWitness<A, A>;
+  const witness = safeInclusionWitness(right_side, R_intersect_ST);
   
   return {
     holds: witness.holds,
@@ -208,12 +259,12 @@ export function equipmentWitness<A, B>(
   // Unit: id_A ≤ f* ; f_*
   const id_A = Rel.id(A_set);
   const unit_composition = conjoint.compose(graph_f);
-  const unitWitness = inclusionWitness(unit_composition as any, id_A as any) as InclusionWitness<A, A>;
+  const unitWitness = safeInclusionWitness(unit_composition, id_A);
   
   // Counit: f_* ; f* ≤ id_B  
   const id_B = Rel.id(B_set);
   const counit_composition = graph_f.compose(conjoint);
-  const counitWitness = inclusionWitness(id_B as any, counit_composition as any) as InclusionWitness<B, B>;
+  const counitWitness = safeInclusionWitness(id_B, counit_composition);
   
   return {
     companionConjoint: {
