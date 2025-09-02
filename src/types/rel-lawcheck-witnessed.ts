@@ -159,9 +159,9 @@ function checkTransformerAdjunctions<State>(
     const P = randomSubsetSeeded(States, rng);
     const Q = randomSubsetSeeded(States, rng);
     
-    // Check wp/sp adjunction: P ≤ wp(prog, Q) ⟺ sp(prog, P) ≤ Q
+    // Check wp/sp adjunction: P ≤ wp(prog, Q) ⟺ sp(P, prog) ≤ Q
     const wpResult = wp(prog, Q);
-    const spResult = sp(prog, P);
+    const spResult = sp(P, prog);
     
     const leftSide = P.leq(wpResult);
     const rightSide = spResult.leq(Q);
@@ -231,7 +231,7 @@ function checkGaloisConnections<A, B>(
     
     // Check f* ⊣ ∀_f: f*(Q) ≤ P ⟺ Q ≤ ∀_f(P)
     const forallResult = forallAlong(A, B, f, P);
-    const adjHolds2 = adjunctionPreimageForallHolds(A, B, f, P, Q);
+    const adjHolds2 = adjunctionPreimageForallHolds(A, B, f, Q, P);
     if (!adjHolds2) {
       preimageForallViolations.push({
         f, P, Q,
@@ -285,8 +285,18 @@ function checkAllegoryLaws<A>(
     const daggerTwice = daggerOnce.converse();
     
     const daggerWitness = relEqWitness(
-      { ...R, toPairs: () => R.toPairs().map(p => [p[0], p[1]] as [A, A]) },
-      { ...daggerTwice, toPairs: () => daggerTwice.toPairs().map(p => [p[0], p[1]] as [A, A]) }
+      { 
+        toPairs: () => R.toPairs().map(p => [p[0], p[1]] as [A, A]),
+        has: (a: A, b: A) => R.has(a, b),
+        A: { elems: R.A.elems },
+        B: { elems: R.B.elems }
+      },
+      { 
+        toPairs: () => daggerTwice.toPairs().map(p => [p[0], p[1]] as [A, A]),
+        has: (a: A, b: A) => daggerTwice.has(a, b),
+        A: { elems: daggerTwice.A.elems },
+        B: { elems: daggerTwice.B.elems }
+      }
     );
     if (!daggerWitness.equal) {
       daggerViolations.push({
@@ -306,8 +316,18 @@ function checkAllegoryLaws<A>(
     const rightAssoc = R.compose(ST);
     
     const assocWitness = relEqWitness(
-      { ...leftAssoc, toPairs: () => leftAssoc.toPairs().map(p => [p[0], p[1]] as [A, A]) },
-      { ...rightAssoc, toPairs: () => rightAssoc.toPairs().map(p => [p[0], p[1]] as [A, A]) }
+      { 
+        toPairs: () => leftAssoc.toPairs().map(p => [p[0], p[1]] as [A, A]),
+        has: (a: A, b: A) => leftAssoc.has(a, b),
+        A: { elems: leftAssoc.A.elems },
+        B: { elems: leftAssoc.B.elems }
+      },
+      { 
+        toPairs: () => rightAssoc.toPairs().map(p => [p[0], p[1]] as [A, A]),
+        has: (a: A, b: A) => rightAssoc.has(a, b),
+        A: { elems: rightAssoc.A.elems },
+        B: { elems: rightAssoc.B.elems }
+      }
     );
     if (!assocWitness.equal) {
       assocViolations.push({

@@ -439,8 +439,35 @@ export function exampleObjectShrinking(): void {
   };
   
   const strategies: ShrinkStrategy<typeof complexObject>[] = [
-    shrinkObject,
-    (obj) => obj.values ? [{ ...obj, values: shrinkArray(obj.values).find(arr => arr.length > 0) || [] }] : []
+    // Custom shrinking strategy that maintains required properties
+    (obj) => {
+      const shrunk: typeof obj[] = [];
+      
+      // Shrink the values array while keeping required structure
+      if (obj.values && obj.values.length > 1) {
+        const smallerArrays = shrinkArray(obj.values);
+        for (const smallerArray of smallerArrays) {
+          if (smallerArray.length > 0) {
+            shrunk.push({ ...obj, values: smallerArray });
+          }
+        }
+      }
+      
+      // Simplify nested object while keeping required properties  
+      if (obj.nested) {
+        shrunk.push({
+          ...obj,
+          nested: { x: obj.nested.x, y: 0, z: 0 } // Simplify but keep structure
+        });
+      }
+      
+      // Simplify name
+      if (obj.name.length > 5) {
+        shrunk.push({ ...obj, name: "obj" });
+      }
+      
+      return shrunk;
+    }
   ];
   
   console.log("Original object keys:", Object.keys(complexObject));

@@ -223,7 +223,7 @@ export function testGaloisLaws(iterations: number = 50): {
       // Test ∃_f ⊣ f*
       const existsHolds = adjunctionExistsPreimageHolds(A, B, f, P, Q);
       if (existsHolds) {
-        existsResults.push(lawCheck(true, undefined, `∃_f ⊣ f* passed at iteration ${i}`));
+        existsResults.push({ ok: true, note: `∃_f ⊣ f* passed at iteration ${i}` } as LawCheck<GaloisAdjunctionWitness<any, any>>);
       } else {
         const witness: GaloisAdjunctionWitness<any, any> = {
           f,
@@ -242,7 +242,7 @@ export function testGaloisLaws(iterations: number = 50): {
       // Test f* ⊣ ∀_f  
       const forallHolds = adjunctionPreimageForallHolds(A, B, f, Q, R);
       if (forallHolds) {
-        forallResults.push(lawCheck(true, undefined, `f* ⊣ ∀_f passed at iteration ${i}`));
+        forallResults.push({ ok: true, note: `f* ⊣ ∀_f passed at iteration ${i}` } as LawCheck<GaloisAdjunctionWitness<any, any>>);
       } else {
         const witness: GaloisAdjunctionWitness<any, any> = {
           f,
@@ -260,9 +260,9 @@ export function testGaloisLaws(iterations: number = 50): {
     } catch (e) {
       const errorWitness: GaloisAdjunctionWitness<any, any> = {
         f,
-        P: P.elems,
-        Q: Q.elems,
-        R: R.elems,
+        P: P.toArray(),
+        Q: Q.toArray(),
+        R: R.toArray(),
         adjunctionType: "exists-preimage",
         leftHolds: false,
         rightHolds: false,
@@ -296,7 +296,7 @@ export function testAllegoryLaws(iterations: number = 100): {
       // Test dagger involution: R†† = R
       const daggerHolds = RelOrder.daggerInvolutive(R);
       if (daggerHolds) {
-        daggerResults.push(lawCheck(true, undefined, `Dagger involution passed at iteration ${i}`));
+        daggerResults.push({ ok: true, note: `Dagger involution passed at iteration ${i}` } as LawCheck<AllegoryLawWitness<any, any, any>>);
       } else {
         const witness: AllegoryLawWitness<any, any, any> = {
           lawType: "dagger-involution",
@@ -312,7 +312,7 @@ export function testAllegoryLaws(iterations: number = 100): {
       // Test modular law: R;(S∩T) ≤ R;S ∩ R;T
       const modularHolds = RelOrder.modularLeft(R, S, T);
       if (modularHolds) {
-        modularResults.push(lawCheck(true, undefined, `Modular law passed at iteration ${i}`));
+        modularResults.push({ ok: true, note: `Modular law passed at iteration ${i}` } as LawCheck<AllegoryLawWitness<any, any, any>>);
       } else {
         const witness: AllegoryLawWitness<any, any, any> = {
           lawType: "modular-left",
@@ -369,7 +369,7 @@ export function testCompositionLaws(iterations: number = 100): {
       const right = R.compose(S.compose(T));
       
       if (JSON.stringify(left.toPairs()) === JSON.stringify(right.toPairs())) {
-        assocResults.push(lawCheck(true, undefined, `Composition associativity passed at iteration ${i}`));
+        assocResults.push({ ok: true, note: `Composition associativity passed at iteration ${i}` } as LawCheck<AllegoryLawWitness<any, any, any>>);
       } else {
         const witness: AllegoryLawWitness<any, any, any> = {
           lawType: "composition-associativity",
@@ -396,7 +396,7 @@ export function testCompositionLaws(iterations: number = 100): {
       
       if (JSON.stringify(R.toPairs()) === JSON.stringify(leftId.toPairs()) &&
           JSON.stringify(R.toPairs()) === JSON.stringify(rightId.toPairs())) {
-        idResults.push(lawCheck(true, undefined, `Identity law passed at iteration ${i}`));
+        idResults.push({ ok: true, note: `Identity law passed at iteration ${i}` } as LawCheck<AllegoryLawWitness<any, any, any>>);
       } else {
         const witness: AllegoryLawWitness<any, any, any> = {
           lawType: "composition-associativity", // Reusing for identity
