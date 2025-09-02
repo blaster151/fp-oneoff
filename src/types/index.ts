@@ -81,5 +81,9 @@ export { QuasiCategory };
 // Bridge between nerve construction and quasi-category checking
 export * from './nerve-quasicat-bridge.js';
 
+// Relational equipment: double category of relations with allegory structure
+import * as Relations from './rel-equipment.js';
+export { Relations };
+
 // Value-level instances and implementations
 export * from './instances.js';

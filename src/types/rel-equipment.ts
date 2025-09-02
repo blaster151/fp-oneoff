@@ -387,6 +387,170 @@ export function printSubset<T>(S: Subset<T>, name?: string): void {
   console.log(`${name || 'Subset'}: {${elems.join(', ')}}`);
 }
 
+/************ Advanced relational operations ************/
+
+/** Pre-image of a subset Y⊆B under R: { a | ∃b∈Y. a R b } */
+export function preImage<A,B>(R: Rel<A,B>, Y: Iterable<B>): A[] {
+  const maskB = Array(R.B.elems.length).fill(false);
+  for(const b of Y){ const j=R.B.indexOf(b); if (j>=0) maskB[j]=true; }
+  const out:boolean[] = Array(R.A.elems.length).fill(false);
+  for(let j=0;j<R.B.elems.length;j++) if(maskB[j]!){
+    for(let i=0;i<R.A.elems.length;i++) if(R.mat[i]![j]!) out[i]=true;
+  }
+  return R.A.elems.filter((_,i)=>out[i]!);
+}
+
+/** Domain of a relation: { a | ∃b. a R b } */
+export function domain<A,B>(R: Rel<A,B>): A[] {
+  return R.A.elems.filter(a => R.B.elems.some(b => R.has(a,b)));
+}
+
+/** Range of a relation: { b | ∃a. a R b } */
+export function range<A,B>(R: Rel<A,B>): B[] {
+  return R.B.elems.filter(b => R.A.elems.some(a => R.has(a,b)));
+}
+
+/** Relational division: R / S = largest T such that T ; S ⊆ R */
+export function divide<A,B,C>(R: Rel<A,C>, S: Rel<B,C>): Rel<A,B> {
+  const result = Rel.empty(R.A, S.A);
+  // For each (a,b), check if for all c: b S c implies a R c
+  for(let i=0;i<R.A.elems.length;i++){
+    for(let j=0;j<S.A.elems.length;j++){
+      let valid = true;
+      for(let k=0;k<S.B.elems.length;k++){
+        if (S.mat[j]![k]! && !R.mat[i]![k]!) {
+          valid = false;
+          break;
+        }
+      }
+      if (valid) (result as any).mat[i]![j] = true;
+    }
+  }
+  return result;
+}
+
+/************ Residuals (liftings) & adjunction laws ************/
+// Left residual R \ S is the greatest X with R;X ≤ S  (types: R:A→B, S:A→C, R\S:B→C)
+// Right residual S / X is the greatest R with R;X ≤ S (types: X:B→C, S:A→C, S/X:A→B)
+export function leftResidual<A,B,C>(R: Rel<A,B>, S: Rel<A,C>): Rel<B,C> {
+  if (R.A!==S.A) throw new Error("leftResidual: domain mismatch");
+  const Bf = R.B, Cf = S.B;
+  const pairs: [B, C][] = [];
+  
+  for (const b of Bf.elems){
+    for (const c of Cf.elems){
+      // keep (b, c) iff ∀a: a R b ⇒ a S c
+      let ok = true;
+      for (const a of R.A.elems){
+        if (R.has(a, b) && !S.has(a, c)) { ok=false; break; }
+      }
+      if (ok) pairs.push([b, c]);
+    }
+  }
+  return Rel.fromPairs(Bf, Cf, pairs);
+}
+
+export function rightResidual<A,B,C>(S: Rel<A,C>, X: Rel<B,C>): Rel<A,B> {
+  if (S.B!==X.B) throw new Error("rightResidual: codomain mismatch");
+  const Af = S.A, Bf = X.A;
+  const pairs: [A, B][] = [];
+  
+  for (const a of Af.elems){
+    for (const b of Bf.elems){
+      // include (a,b) iff ∀c: b X c ⇒ a S c
+      let ok = true;
+      for (const c of S.B.elems){
+        if (X.has(b, c) && !S.has(a, c)) { ok=false; break; }
+      }
+      if (ok) pairs.push([a, b]);
+    }
+  }
+  return Rel.fromPairs(Af, Bf, pairs);
+}
+
+// Adjunction property checks
+export function adjunctionLeftHolds<A,B,C>(R:Rel<A,B>, X:Rel<B,C>, S:Rel<A,C>): boolean {
+  const lhs = R.compose(X).leq(S);
+  const rhs = X.leq(leftResidual(R,S));
+  return lhs===rhs;
+}
+
+export function adjunctionRightHolds<A,B,C>(R:Rel<A,B>, X:Rel<B,C>, S:Rel<A,C>): boolean {
+  const lhs = R.compose(X).leq(S);
+  const rhs = R.leq(rightResidual(S,X));
+  return lhs===rhs;
+}
+
+// Liftings along functions via companions
+export function leftLiftingAlong<A,B,C>(A0:Finite<A>, B0:Finite<B>, f:Fun<A,B>, S:Rel<A,C>): Rel<B,C> {
+  return leftResidual(companion(A0,B0,f), S);
+}
+
+export function rightLiftingAlong<A,B,C>(B0:Finite<B>, C0:Finite<C>, f:Fun<B,C>, S:Rel<A,C>): Rel<A,B> {
+  return rightResidual(S, companion(B0,C0,f));
+}
+
+/************ Predicate transformer semantics ************/
+
+/** Weakest precondition: wp(prog, post) = { s | ∀s'. s prog s' ⇒ s' ∈ post } */
+export function wp<State>(
+  prog: Rel<State,State>, 
+  post: Subset<State>
+): Subset<State> {
+  return Subset.by(prog.A, s => {
+    const image = prog.image([s]);
+    return image.every(sPrime => post.contains(sPrime));
+  });
+}
+
+/** Strongest postcondition: sp(pre, prog) = { s' | ∃s ∈ pre. s prog s' } */
+export function sp<State>(
+  pre: Subset<State>,
+  prog: Rel<State,State>
+): Subset<State> {
+  const image = prog.image(pre.toArray());
+  return Subset.from(prog.B, image);
+}
+
+/************ Equipment laws and adjunctions ************/
+
+/** Check if f ⊣ g as an adjunction between posets (via Galois connection) */
+export function checkRelationalAdjunction<A,B>(
+  A_set: Finite<A>, B_set: Finite<B>,
+  f: Fun<A,B>, g: Fun<B,A>
+): { isAdjunction: boolean; violations: Array<{a:A; b:B; reason:string}> } {
+  const violations: Array<{a:A; b:B; reason:string}> = [];
+  
+  // For relational adjunction: f(a) ≤ b iff a ≤ g(b)
+  // Here we interpret ≤ as equality (discrete order)
+  for (const a of A_set.elems) {
+    for (const b of B_set.elems) {
+      const fa_eq_b = A_set.eq(f(a) as any, b as any);
+      const a_eq_gb = B_set.eq(a as any, g(b) as any);
+      
+      if (fa_eq_b !== a_eq_gb) {
+        violations.push({
+          a, b,
+          reason: `f(${a}) = ${f(a)} ${fa_eq_b ? '=' : '≠'} ${b} but ${a} ${a_eq_gb ? '=' : '≠'} g(${b}) = ${g(b)}`
+        });
+      }
+    }
+  }
+  
+  return { isAdjunction: violations.length === 0, violations };
+}
+
+/************ Pretty printing helpers ************/
+export function printRel<A,B>(R: Rel<A,B>, name?: string): void {
+  const pairs = R.toPairs();
+  console.log(`${name || 'Relation'}: {${pairs.map(([a,b]) => `${a}→${b}`).join(', ')}}`);
+}
+
+export function printSubset<T>(S: Subset<T>, name?: string): void {
+  const elems = S.toArray();
+  console.log(`${name || 'Subset'}: {${elems.join(', ')}}`);
+}
+
 /************ Tiny demo ************/
 export function demo() {
   console.log("=".repeat(80));
@@ -468,6 +632,23 @@ export function demo() {
   printSubset(weakest, "wp(Prog, ≤2)");
   printSubset(strongest, "sp(even, Prog)");
 
+  console.log("\n8. RESIDUALS & ADJUNCTION LAWS");
+  
+  // Test residuals with a simple example
+  const testR = Rel.fromPairs(A, B, [[0,"x"], [1,"y"], [2,"z"]]);
+  const testS = Rel.fromPairs(A, C, [[0,"X"], [1,"Y"], [2,"Z"]]);
+  
+  const leftRes = leftResidual(testR, testS);
+  printRel(leftRes, "Left residual R\\S");
+  
+  const rightRes = rightResidual(testS, testR.compose(Rel.fromPairs(B, C, [["x","X"], ["y","Y"], ["z","Z"]])));
+  printRel(rightRes, "Right residual S/X");
+  
+  // Check adjunction laws
+  const testX = Rel.fromPairs(B, C, [["x","X"], ["y","Y"]]);
+  console.log("Left adjunction R;X ≤ S ⟺ X ≤ R\\S:", adjunctionLeftHolds(testR, testX, testS));
+  console.log("Right adjunction R;X ≤ S ⟺ R ≤ S/X:", adjunctionRightHolds(testR, testX, testS));
+
   console.log("\n" + "=".repeat(80));
   console.log("RELATIONAL EQUIPMENT FEATURES:");
   console.log("✓ Double category of relations with functions as companions/conjoints");
@@ -476,5 +657,7 @@ export function demo() {
   console.log("✓ Square refinement checking for program verification");
   console.log("✓ Relational Hoare logic with pre/post conditions");
   console.log("✓ Predicate transformers (wp/sp) for program analysis");
+  console.log("✓ Residuals (left/right liftings) with adjunction verification");
+  console.log("✓ Advanced relational operations (domain, range, division)");
   console.log("=".repeat(80));
 }
