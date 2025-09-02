@@ -1,8 +1,7 @@
 /**
- * Examples demonstrating Free and Cofree
- * 
- * This shows how to implement and use Free monads and Cofree comonads
- * with their associated algebras and coalgebras.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { Free, FreeAlgebra, foldFree } from '../types';
@@ -115,7 +114,7 @@ const streamFunctor: Functor<'Stream'> = {
 // };
 
 // Usage examples
-export function demonstrateFree() {
+function demonstrateFree() {
   console.log('=== Free Monad Examples ===');
   
   // Create a simple console program
@@ -130,7 +129,7 @@ export function demonstrateFree() {
   console.log('Program result:', result);
 }
 
-export function demonstrateCofree() {
+function demonstrateCofree() {
   console.log('\n=== Cofree Comonad Examples ===');
   
   // Create a simple Cofree example without infinite recursion

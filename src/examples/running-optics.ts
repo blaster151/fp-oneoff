@@ -1,8 +1,7 @@
 /**
- * Examples demonstrating running optics with concrete profunctors
- * 
- * This shows how to implement Function and Forget profunctors
- * and use them to execute optics with over, set, and view operations.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { HKT2Prof } from '../types';
@@ -50,19 +49,19 @@ const lens = <S, T, A, B>(
 // ----- Helper Functions -----
 
 // over: apply function to focus
-export const over = <S, T, A, B>(o: SimpleLens<S, T, A, B>, f: (a: A) => B) =>
+const over = <S, T, A, B>(o: SimpleLens<S, T, A, B>, f: (a: A) => B) =>
   o(FunctionStrong)(f) as (s: S) => T;
 
-export const set = <S, T, A>(o: SimpleLens<S, T, A, A>, b: A) =>
+const set = <S, T, A>(o: SimpleLens<S, T, A, A>, b: A) =>
   over(o, _ => b);
 
 // view (lens): use Forget with R=A
-export const view = <S, A>(_o: SimpleLens<S, S, A, A>) =>
+const view = <S, A>(_o: SimpleLens<S, S, A, A>) =>
   (s: S): A => s as any; // Simplified implementation
 
 // ----- Examples -----
 
-export function demonstrateRunningOptics() {
+function demonstrateRunningOptics() {
   console.log('=== Running Optics Examples ===');
   
   // Define a simple record type
@@ -93,7 +92,7 @@ export function demonstrateRunningOptics() {
   console.log('View name:', name);
 }
 
-export function demonstrateNestedLens() {
+function demonstrateNestedLens() {
   console.log('\n=== Nested Lens Examples ===');
   
   // Define nested structure
@@ -155,7 +154,7 @@ type SimpleCoyoneda<A> = { fea: any; k: (x: any) => A };
 
 const liftCoy = <A>(fa: any): SimpleCoyoneda<A> => ({ fea: fa, k: (x: any) => x });
 
-export function demonstrateFreeStructures() {
+function demonstrateFreeStructures() {
   console.log('\n=== Free Structures Examples ===');
   
   // Demonstrate Free Monad

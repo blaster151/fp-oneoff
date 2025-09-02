@@ -1,8 +1,7 @@
 /**
- * Simple Category Theory Demo
- * 
- * Demonstrates the existing category theory infrastructure
- * without the complex adjunction theory that was causing conflicts.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import {

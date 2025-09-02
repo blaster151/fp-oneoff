@@ -1,8 +1,7 @@
 /**
- * Examples demonstrating profunctor-encoded optics
- * 
- * This shows how to implement and use profunctor-based optics
- * including Profunctor, Strong, Choice, and the smart constructors.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { Profunctor2, Strong, Choice, iso, lens, prism, PIso, PLens, PPrism } from '../types';
@@ -49,7 +48,7 @@ const functionChoice: Choice<'Function'> = {
 };
 
 // Example 2: Using the smart constructors
-export function demonstrateIso() {
+function demonstrateIso() {
   console.log('=== Profunctor-encoded Iso Examples ===');
   
   // Create an iso that converts between string and number
@@ -72,7 +71,7 @@ export function demonstrateIso() {
   console.log('Result type:', typeof stringDoubleFunc.run('10'));
 }
 
-export function demonstrateLens() {
+function demonstrateLens() {
   console.log('\n=== Profunctor-encoded Lens Examples ===');
   
   // Define a simple record type
@@ -100,7 +99,7 @@ export function demonstrateLens() {
   console.log('After lifting uppercase through name lens:', result);
 }
 
-export function demonstratePrism() {
+function demonstratePrism() {
   console.log('\n=== Profunctor-encoded Prism Examples ===');
   
   // Define a sum type
@@ -137,7 +136,7 @@ export function demonstratePrism() {
 }
 
 // Example 3: Composing optics
-export function demonstrateComposition() {
+function demonstrateComposition() {
   console.log('\n=== Profunctor-encoded Optics Composition ===');
   
   // Define a nested structure
