@@ -44,6 +44,14 @@ export * from './category-to-nerve-sset.js';
 import * as CatkitOptics from './catkit-optics.js';
 export { CatkitOptics };
 
+// Catkit prisms (profunctor prisms with Choice) - use namespace to avoid conflicts
+import * as CatkitPrisms from './catkit-prisms.js';
+export { CatkitPrisms };
+
+// Catkit traversals (profunctor traversals with Wander + unified helpers) - use namespace to avoid conflicts
+import * as CatkitTraversal from './catkit-traversal.js';
+export { CatkitTraversal };
+
 // Equality helpers - use namespace to avoid conflicts
 import * as Eq from './eq.js';
 export { Eq };
