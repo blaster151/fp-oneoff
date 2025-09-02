@@ -85,5 +85,9 @@ export * from './nerve-quasicat-bridge.js';
 import * as Relations from './rel-equipment.js';
 export { Relations };
 
+// Relational law checking: property testing suite for mathematical correctness
+import * as RelLawCheck from './rel-lawcheck.js';
+export { RelLawCheck };
+
 // Value-level instances and implementations
 export * from './instances.js';

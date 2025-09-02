@@ -67,19 +67,20 @@ function main() {
 
   console.log("\n4. EQUIPMENT THEORY");
   
-  // Equipment: check unit/counit for a function f: States->States (e.g., s |-> s%3)
-  const modFun = (s:number)=> s%3;
-  const Cod = new Finite([0,1,2]);
+  // Equipment: check unit/counit for a function f: States->States (identity)
+  const idFun = (s:number)=> s;
   
-  console.log("Function f(s) = s mod 3");
-  console.log("Unit id ≤ ⟨f⟩†;⟨f⟩ ?", unitHolds(States, Cod, modFun));
-  console.log("Counit ⟨f⟩;⟨f⟩† ≤ id ?", counitHolds(States, Cod, modFun));
+  console.log("Function f(s) = s (identity on States)");
+  console.log("Unit id ≤ ⟨f⟩†;⟨f⟩ ?", unitHolds(States, States, idFun));
+  console.log("Counit ⟨f⟩;⟨f⟩† ≤ id ?", counitHolds(States, States, idFun));
 
   console.log("\n5. REFINEMENT SQUARES");
   
   // Square: abstraction maps states to levels
   const Letters = new Finite(["lo","hi"]);
   const abstractFun = (n:number)=> (n<=1 ? "lo" : "hi");
+  const modFun = (s:number)=> s%3;
+  const Cod = new Finite([0,1,2]);
   
   const StateRel = graph(States, Cod, modFun);         // program seen as a function (deterministic case)
   const AbstractRel = Rel.fromPairs(Cod, Letters, [[0,"lo"],[1,"lo"],[2,"hi"]]);

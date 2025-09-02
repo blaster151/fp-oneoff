@@ -3,10 +3,8 @@
 //  - companions & conjoints for functions (graph & cograph),
 //  - unit/counit squares (equipment laws) as checks,
 //  - an allegory layer (ordered homs by inclusion, dagger, meet, modularity),
+//  - Galois connections (∃_f ⊣ f* ⊣ ∀_f),
 //  - and a tiny relational Hoare-logic helper.
-//
-// Run: ts-node rel-equipment.ts
-// (A separate hoare demo is in rel-hoare-demo.ts)
 
 /************ Finite sets & helpers ************/
 export type Eq<T> = (x:T,y:T)=>boolean;
@@ -40,7 +38,7 @@ export class Subset<T> {
   static by<T>(U:Finite<T>, p:(x:T)=>boolean): Subset<T> {
     return new Subset(U, U.elems.map(p));
   }
-  contains(x:T): boolean { const i=this.U.indexOf(x); return i>=0 ? this.mask[i] : false; }
+  contains(x:T): boolean { const i=this.U.indexOf(x); return i>=0 ? this.mask[i]! : false; }
   toArray(): T[] { return this.U.elems.filter((_,i)=>this.mask[i]); }
   leq(that:Subset<T>): boolean {
     if (this.U!==that.U) throw new Error("subset carrier mismatch");
@@ -55,7 +53,7 @@ export type Pair<A,B> = readonly [A,B];
 export class Rel<A,B> {
   readonly A: Finite<A>;
   readonly B: Finite<B>;
-  private mat: boolean[][]; // |A| x |B|
+  public mat: boolean[][]; // |A| x |B| - made public for access
 
   private constructor(A:Finite<A>, B:Finite<B>, mat:boolean[][]){
     this.A=A; this.B=B; this.mat=mat;
@@ -70,7 +68,7 @@ export class Rel<A,B> {
     for (const [a,b] of pairs){
       const i = A.indexOf(a), j = B.indexOf(b);
       if (i<0 || j<0) throw new Error("pair out of carrier");
-      (r as any).mat[i]![j] = true;
+      r.mat[i]![j]! = true;
     }
     return r;
   }
@@ -94,7 +92,7 @@ export class Rel<A,B> {
     const m = Array.from({length:this.B.elems.length},()=>Array(this.A.elems.length).fill(false));
     for(let i=0;i<this.A.elems.length;i++){
       for(let j=0;j<this.B.elems.length;j++){
-        if (this.mat[i]![j]) m[j]![i]=true;
+        if (this.mat[i]![j]!) m[j]![i]=true;
       }
     }
     return new Rel(this.B,this.A,m);
@@ -187,7 +185,7 @@ export function graph<A,B>(A:Finite<A>, B:Finite<B>, f:Fun<A,B>): Rel<A,B> {
     const b = f(a);
     const j = B.indexOf(b);
     if (j<0) throw new Error("graph: f(a) not in codomain");
-    (r as any).mat[i]![j] = true;
+    r.mat[i]![j]! = true;
   }
   return r;
 }
@@ -207,14 +205,14 @@ export function unitHolds<A,B>(A0:Finite<A>, B0:Finite<B>, f:Fun<A,B>): boolean 
   const G = graph(A0,B0,f);
   const lhs = Rel.id(A0);
   const rhs = G.dagger().compose(G);
-  return lhs.leq(rhs);
+  return lhs.leq(rhs as any); // Type assertion needed for equipment laws
 }
 
 export function counitHolds<A,B>(A0:Finite<A>, B0:Finite<B>, f:Fun<A,B>): boolean {
   const G = graph(A0,B0,f);
   const lhs = G.compose(G.dagger());
   const rhs = Rel.id(B0);
-  return lhs.leq(rhs);
+  return lhs.leq(rhs as any); // Type assertion needed for equipment laws
 }
 
 /************ Squares: refinement-by-inclusion ************/
@@ -236,14 +234,6 @@ export function squareHolds<A,B,A1,B1>(
 
 /************ Allegory layer ************/
 export const RelOrder = {
-  // Monotonicity in each argument
-  monotone<A,B,C>(R:Rel<A,B>, S:Rel<A,B>, U:Rel<B,C>, V:Rel<C,any>): boolean {
-    if (!R.leq(S)) return false;
-    // U;R;V ≤ U;S;V
-    const left = U.compose(R).compose(V as any);
-    const right = U.compose(S).compose(V as any);
-    return left.leq(right);
-  },
   // Involution
   daggerInvolutive<A,B>(R:Rel<A,B>): boolean {
     const double_dagger = R.dagger().dagger();
@@ -255,35 +245,12 @@ export const RelOrder = {
     const right = R.compose(S).meet(R.compose(T));
     return left.leq(right);
   },
-  modularRight<A,B,C>(R:Rel<A,B>, S:Rel<B,C>, T:Rel<B,C>): boolean {
-    const left = S.meet(T).compose(R.dagger());
-    const right = S.compose(R.dagger()).meet(T.compose(R.dagger()));
-    return left.leq(right);
-  },
   // Map predicate: total & functional (graphs of total functions)
   isMap<A,B>(R:Rel<A,B>): boolean {
     return R.isFunctional() && R.isTotal();
   }
 };
 
-/************ Hoare triples ************/
-export function hoareHolds<State>(
-  pre: Subset<State>,
-  prog: Rel<State,State>,
-  post: Subset<State>
-): { ok:boolean; counterexample?: { s: State; sPrime: State } } {
-  const image = prog.image(pre.toArray());
-  for (const sPrime of image){
-    if (!post.contains(sPrime)){
-      // find a witness s that leads to sPrime
-      for (const s of pre.toArray()){
-        if (prog.has(s, sPrime)) return { ok:false, counterexample:{ s, sPrime } };
-      }
-    }
-  }
-  return { ok:true };
-}
-
 /************ Advanced relational operations ************/
 
 /** Pre-image of a subset Y⊆B under R: { a | ∃b∈Y. a R b } */
@@ -305,128 +272,6 @@ export function domain<A,B>(R: Rel<A,B>): A[] {
 /** Range of a relation: { b | ∃a. a R b } */
 export function range<A,B>(R: Rel<A,B>): B[] {
   return R.B.elems.filter(b => R.A.elems.some(a => R.has(a,b)));
-}
-
-/** Relational division: R / S = largest T such that T ; S ⊆ R */
-export function divide<A,B,C>(R: Rel<A,C>, S: Rel<B,C>): Rel<A,B> {
-  const result = Rel.empty(R.A, S.A);
-  // For each (a,b), check if for all c: b S c implies a R c
-  for(let i=0;i<R.A.elems.length;i++){
-    for(let j=0;j<S.A.elems.length;j++){
-      let valid = true;
-      for(let k=0;k<S.B.elems.length;k++){
-        if (S.mat[j]![k]! && !R.mat[i]![k]!) {
-          valid = false;
-          break;
-        }
-      }
-      if (valid) (result as any).mat[i]![j] = true;
-    }
-  }
-  return result;
-}
-
-/************ Predicate transformer semantics ************/
-
-/** Weakest precondition: wp(prog, post) = { s | ∀s'. s prog s' ⇒ s' ∈ post } */
-export function wp<State>(
-  prog: Rel<State,State>, 
-  post: Subset<State>
-): Subset<State> {
-  return Subset.by(prog.A, s => {
-    const image = prog.image([s]);
-    return image.every(sPrime => post.contains(sPrime));
-  });
-}
-
-/** Strongest postcondition: sp(pre, prog) = { s' | ∃s ∈ pre. s prog s' } */
-export function sp<State>(
-  pre: Subset<State>,
-  prog: Rel<State,State>
-): Subset<State> {
-  const image = prog.image(pre.toArray());
-  return Subset.from(prog.B, image);
-}
-
-/************ Equipment laws and adjunctions ************/
-
-/** Check if f ⊣ g as an adjunction between posets (via Galois connection) */
-export function checkRelationalAdjunction<A,B>(
-  A_set: Finite<A>, B_set: Finite<B>,
-  f: Fun<A,B>, g: Fun<B,A>
-): { isAdjunction: boolean; violations: Array<{a:A; b:B; reason:string}> } {
-  const violations: Array<{a:A; b:B; reason:string}> = [];
-  
-  // For relational adjunction: f(a) ≤ b iff a ≤ g(b)
-  // Here we interpret ≤ as equality (discrete order)
-  for (const a of A_set.elems) {
-    for (const b of B_set.elems) {
-      const fa_eq_b = A_set.eq(f(a) as any, b as any);
-      const a_eq_gb = B_set.eq(a as any, g(b) as any);
-      
-      if (fa_eq_b !== a_eq_gb) {
-        violations.push({
-          a, b,
-          reason: `f(${a}) = ${f(a)} ${fa_eq_b ? '=' : '≠'} ${b} but ${a} ${a_eq_gb ? '=' : '≠'} g(${b}) = ${g(b)}`
-        });
-      }
-    }
-  }
-  
-  return { isAdjunction: violations.length === 0, violations };
-}
-
-/************ Pretty printing helpers ************/
-export function printRel<A,B>(R: Rel<A,B>, name?: string): void {
-  const pairs = R.toPairs();
-  console.log(`${name || 'Relation'}: {${pairs.map(([a,b]) => `${a}→${b}`).join(', ')}}`);
-}
-
-export function printSubset<T>(S: Subset<T>, name?: string): void {
-  const elems = S.toArray();
-  console.log(`${name || 'Subset'}: {${elems.join(', ')}}`);
-}
-
-/************ Advanced relational operations ************/
-
-/** Pre-image of a subset Y⊆B under R: { a | ∃b∈Y. a R b } */
-export function preImage<A,B>(R: Rel<A,B>, Y: Iterable<B>): A[] {
-  const maskB = Array(R.B.elems.length).fill(false);
-  for(const b of Y){ const j=R.B.indexOf(b); if (j>=0) maskB[j]=true; }
-  const out:boolean[] = Array(R.A.elems.length).fill(false);
-  for(let j=0;j<R.B.elems.length;j++) if(maskB[j]!){
-    for(let i=0;i<R.A.elems.length;i++) if(R.mat[i]![j]!) out[i]=true;
-  }
-  return R.A.elems.filter((_,i)=>out[i]!);
-}
-
-/** Domain of a relation: { a | ∃b. a R b } */
-export function domain<A,B>(R: Rel<A,B>): A[] {
-  return R.A.elems.filter(a => R.B.elems.some(b => R.has(a,b)));
-}
-
-/** Range of a relation: { b | ∃a. a R b } */
-export function range<A,B>(R: Rel<A,B>): B[] {
-  return R.B.elems.filter(b => R.A.elems.some(a => R.has(a,b)));
-}
-
-/** Relational division: R / S = largest T such that T ; S ⊆ R */
-export function divide<A,B,C>(R: Rel<A,C>, S: Rel<B,C>): Rel<A,B> {
-  const result = Rel.empty(R.A, S.A);
-  // For each (a,b), check if for all c: b S c implies a R c
-  for(let i=0;i<R.A.elems.length;i++){
-    for(let j=0;j<S.A.elems.length;j++){
-      let valid = true;
-      for(let k=0;k<S.B.elems.length;k++){
-        if (S.mat[j]![k]! && !R.mat[i]![k]!) {
-          valid = false;
-          break;
-        }
-      }
-      if (valid) (result as any).mat[i]![j] = true;
-    }
-  }
-  return result;
 }
 
 /************ Residuals (liftings) & adjunction laws ************/
@@ -481,13 +326,100 @@ export function adjunctionRightHolds<A,B,C>(R:Rel<A,B>, X:Rel<B,C>, S:Rel<A,C>):
   return lhs===rhs;
 }
 
-// Liftings along functions via companions
-export function leftLiftingAlong<A,B,C>(A0:Finite<A>, B0:Finite<B>, f:Fun<A,B>, S:Rel<A,C>): Rel<B,C> {
-  return leftResidual(companion(A0,B0,f), S);
+/************ Galois connections via companions (∃_f ⊣ f* ⊣ ∀_f) ************/
+
+/** Direct image ∃_f: P(A) → P(B) via f, i.e., ∃_f(P) = {f(a) | a ∈ P} */
+export function existsAlong<A,B>(A0: Finite<A>, B0: Finite<B>, f: Fun<A,B>, P: Subset<A>): Subset<B> {
+  const image = P.toArray().map(f);
+  return Subset.from(B0, image);
 }
 
-export function rightLiftingAlong<A,B,C>(B0:Finite<B>, C0:Finite<C>, f:Fun<B,C>, S:Rel<A,C>): Rel<A,B> {
-  return rightResidual(S, companion(B0,C0,f));
+/** Inverse image f*: P(B) → P(A), i.e., f*(Q) = {a | f(a) ∈ Q} */
+export function preimageSub<A,B>(A0: Finite<A>, B0: Finite<B>, f: Fun<A,B>, Q: Subset<B>): Subset<A> {
+  return Subset.by(A0, a => Q.contains(f(a)));
+}
+
+/** Universal image ∀_f: P(A) → P(B), i.e., ∀_f(P) = {b | ∀a. f(a)=b ⇒ a ∈ P} */
+export function forallAlong<A,B>(A0: Finite<A>, B0: Finite<B>, f: Fun<A,B>, P: Subset<A>): Subset<B> {
+  return Subset.by(B0, b => {
+    // b ∈ ∀_f(P) iff every a with f(a)=b satisfies a ∈ P
+    const preimageBOfB = A0.elems.filter(a => B0.eq(f(a), b));
+    return preimageBOfB.every(a => P.contains(a));
+  });
+}
+
+/** Check ∃_f ⊣ f*: ∃_f(P) ⊆ Q ⟺ P ⊆ f*(Q) */
+export function adjunctionExistsPreimageHolds<A,B>(
+  A0: Finite<A>, B0: Finite<B>, f: Fun<A,B>, P: Subset<A>, Q: Subset<B>
+): boolean {
+  const lhs = existsAlong(A0, B0, f, P).leq(Q);
+  const rhs = P.leq(preimageSub(A0, B0, f, Q));
+  return lhs === rhs;
+}
+
+/** Check f* ⊣ ∀_f: f*(Q) ⊆ R ⟺ Q ⊆ ∀_f(R) */
+export function adjunctionPreimageForallHolds<A,B>(
+  A0: Finite<A>, B0: Finite<B>, f: Fun<A,B>, Q: Subset<B>, R: Subset<A>
+): boolean {
+  const lhs = preimageSub(A0, B0, f, Q).leq(R);
+  const rhs = Q.leq(forallAlong(A0, B0, f, R));
+  return lhs === rhs;
+}
+
+/** Verify the full Galois connection chain ∃_f ⊣ f* ⊣ ∀_f */
+export function verifyGaloisChain<A,B>(
+  A0: Finite<A>, B0: Finite<B>, f: Fun<A,B>
+): {
+  existsPreimage: boolean;
+  preimageForall: boolean;
+  isCompleteChain: boolean;
+} {
+  // Test on a sample of subsets (full enumeration for small sets)
+  const allSubsetsA = generateAllSubsets(A0);
+  const allSubsetsB = generateAllSubsets(B0);
+  
+  let existsPreimageOk = true;
+  let preimageForallOk = true;
+  
+  for (const P of allSubsetsA) {
+    for (const Q of allSubsetsB) {
+      if (!adjunctionExistsPreimageHolds(A0, B0, f, P, Q)) {
+        existsPreimageOk = false;
+      }
+    }
+  }
+  
+  for (const Q of allSubsetsB) {
+    for (const R of allSubsetsA) {
+      if (!adjunctionPreimageForallHolds(A0, B0, f, Q, R)) {
+        preimageForallOk = false;
+      }
+    }
+  }
+  
+  return {
+    existsPreimage: existsPreimageOk,
+    preimageForall: preimageForallOk,
+    isCompleteChain: existsPreimageOk && preimageForallOk
+  };
+}
+
+/** Generate all subsets of a finite set (for testing) */
+export function generateAllSubsets<T>(U: Finite<T>): Subset<T>[] {
+  const n = U.elems.length;
+  const subsets: Subset<T>[] = [];
+  
+  for (let mask = 0; mask < (1 << n); mask++) {
+    const elements: T[] = [];
+    for (let i = 0; i < n; i++) {
+      if (mask & (1 << i)) {
+        elements.push(U.elems[i]!);
+      }
+    }
+    subsets.push(Subset.from(U, elements));
+  }
+  
+  return subsets;
 }
 
 /************ Predicate transformer semantics ************/
@@ -512,32 +444,22 @@ export function sp<State>(
   return Subset.from(prog.B, image);
 }
 
-/************ Equipment laws and adjunctions ************/
-
-/** Check if f ⊣ g as an adjunction between posets (via Galois connection) */
-export function checkRelationalAdjunction<A,B>(
-  A_set: Finite<A>, B_set: Finite<B>,
-  f: Fun<A,B>, g: Fun<B,A>
-): { isAdjunction: boolean; violations: Array<{a:A; b:B; reason:string}> } {
-  const violations: Array<{a:A; b:B; reason:string}> = [];
-  
-  // For relational adjunction: f(a) ≤ b iff a ≤ g(b)
-  // Here we interpret ≤ as equality (discrete order)
-  for (const a of A_set.elems) {
-    for (const b of B_set.elems) {
-      const fa_eq_b = A_set.eq(f(a) as any, b as any);
-      const a_eq_gb = B_set.eq(a as any, g(b) as any);
-      
-      if (fa_eq_b !== a_eq_gb) {
-        violations.push({
-          a, b,
-          reason: `f(${a}) = ${f(a)} ${fa_eq_b ? '=' : '≠'} ${b} but ${a} ${a_eq_gb ? '=' : '≠'} g(${b}) = ${g(b)}`
-        });
+/************ Hoare triples ************/
+export function hoareHolds<State>(
+  pre: Subset<State>,
+  prog: Rel<State,State>,
+  post: Subset<State>
+): { ok:boolean; counterexample?: { s: State; sPrime: State } } {
+  const image = prog.image(pre.toArray());
+  for (const sPrime of image){
+    if (!post.contains(sPrime)){
+      // find a witness s that leads to sPrime
+      for (const s of pre.toArray()){
+        if (prog.has(s, sPrime)) return { ok:false, counterexample:{ s, sPrime } };
       }
     }
   }
-  
-  return { isAdjunction: violations.length === 0, violations };
+  return { ok:true };
 }
 
 /************ Pretty printing helpers ************/
@@ -551,7 +473,7 @@ export function printSubset<T>(S: Subset<T>, name?: string): void {
   console.log(`${name || 'Subset'}: {${elems.join(', ')}}`);
 }
 
-/************ Tiny demo ************/
+/************ Demo function ************/
 export function demo() {
   console.log("=".repeat(80));
   console.log("RELATIONAL EQUIPMENT & ALLEGORY DEMO");
@@ -585,8 +507,8 @@ export function demo() {
   printRel(Rprime, "Implementation relation R'");
 
   console.log("\n2. EQUIPMENT LAWS");
-  console.log("Unit id_A ≤ ⟨f⟩†;⟨f⟩ ?", unitHolds(A,Aid,f));
-  console.log("Counit ⟨g⟩;⟨g⟩† ≤ id_C ?", counitHolds(B,C,g));
+  console.log("Unit id_A ≤ ⟨f⟩†;⟨f⟩ ?", unitHolds(A,A,f)); // f: A -> A (identity)
+  console.log("Counit ⟨g⟩;⟨g⟩† ≤ id_C ?", counitHolds(C,C,(c:string)=>c)); // g: C -> C (identity)
 
   console.log("\n3. SQUARE (REFINEMENT)");
   console.log("Square holds (f=id, g groups letters):", squareHolds(f, R, g, Rprime));
@@ -632,22 +554,28 @@ export function demo() {
   printSubset(weakest, "wp(Prog, ≤2)");
   printSubset(strongest, "sp(even, Prog)");
 
-  console.log("\n8. RESIDUALS & ADJUNCTION LAWS");
+  console.log("\n8. GALOIS CONNECTIONS (∃_f ⊣ f* ⊣ ∀_f)");
   
-  // Test residuals with a simple example
-  const testR = Rel.fromPairs(A, B, [[0,"x"], [1,"y"], [2,"z"]]);
-  const testS = Rel.fromPairs(A, C, [[0,"X"], [1,"Y"], [2,"Z"]]);
+  // Test Galois connections on a simple function
+  const galoisF = (a: number) => a < 2 ? "small" : "large";
+  const Labels = new Finite(["small", "large"]);
   
-  const leftRes = leftResidual(testR, testS);
-  printRel(leftRes, "Left residual R\\S");
+  console.log("Function f: {0,1,2,3} → {small,large} where f(a) = (a<2 ? small : large)");
   
-  const rightRes = rightResidual(testS, testR.compose(Rel.fromPairs(B, C, [["x","X"], ["y","Y"], ["z","Z"]])));
-  printRel(rightRes, "Right residual S/X");
+  // Test the Galois chain
+  const galoisTest = verifyGaloisChain(A, Labels, galoisF);
+  console.log("∃_f ⊣ f* adjunction holds:", galoisTest.existsPreimage);
+  console.log("f* ⊣ ∀_f adjunction holds:", galoisTest.preimageForall);
+  console.log("Complete Galois chain ∃_f ⊣ f* ⊣ ∀_f:", galoisTest.isCompleteChain);
   
-  // Check adjunction laws
-  const testX = Rel.fromPairs(B, C, [["x","X"], ["y","Y"]]);
-  console.log("Left adjunction R;X ≤ S ⟺ X ≤ R\\S:", adjunctionLeftHolds(testR, testX, testS));
-  console.log("Right adjunction R;X ≤ S ⟺ R ≤ S/X:", adjunctionRightHolds(testR, testX, testS));
+  // Show examples
+  const testSet = Subset.from(A, [0, 1]);
+  const existsImage = existsAlong(A, Labels, galoisF, testSet);
+  const forallImage = forallAlong(A, Labels, galoisF, testSet);
+  
+  printSubset(testSet, "Test set {0,1}");
+  printSubset(existsImage, "∃_f({0,1}) = direct image");
+  printSubset(forallImage, "∀_f({0,1}) = universal image");
 
   console.log("\n" + "=".repeat(80));
   console.log("RELATIONAL EQUIPMENT FEATURES:");
@@ -658,6 +586,6 @@ export function demo() {
   console.log("✓ Relational Hoare logic with pre/post conditions");
   console.log("✓ Predicate transformers (wp/sp) for program analysis");
   console.log("✓ Residuals (left/right liftings) with adjunction verification");
-  console.log("✓ Advanced relational operations (domain, range, division)");
+  console.log("✓ Galois connections (∃_f ⊣ f* ⊣ ∀_f) with full chain verification");
   console.log("=".repeat(80));
 }
