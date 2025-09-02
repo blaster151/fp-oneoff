@@ -63,5 +63,16 @@ export { Homology };
 // Bridge between nerve construction and homology computation
 export * from './catkit-homology-bridge.js';
 
+// Comma categories and slice/coslice constructions
+import * as CommaCategories from './catkit-comma-categories.js';
+export { CommaCategories };
+
+// Posets as thin categories with Galois connections
+import * as Posets from './catkit-posets.js';
+export { Posets };
+
+// Integration bridge between comma categories and Kan extensions
+export * from './catkit-comma-kan-bridge.js';
+
 // Value-level instances and implementations
 export * from './instances.js';
