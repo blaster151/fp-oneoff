@@ -84,6 +84,7 @@ function matNegCol(A:number[][], j:number): void {
 
 function matMul(A:number[][], B:number[][]): number[][] { 
   if(A.length === 0 || B.length === 0) return [];
+  if(A[0]!.length === 0 || B[0]!.length === 0) return [];
   const m=A.length, n=A[0]!.length, p=B[0]!.length; 
   const C=zeros(m,p);
   for(let i=0;i<m;i++) {
@@ -91,8 +92,15 @@ function matMul(A:number[][], B:number[][]): number[][] {
     const rowC = C[i]!;
     for(let k=0;k<n;k++){ 
       const aik=rowA[k]!; 
-      if(aik===0) continue; 
-      for(let j=0;j<p;j++) rowC[j]! += aik*B[k]![j]!; 
+      if(aik===0) continue;
+      const rowB = B[k];
+      if(!rowB) continue;
+      for(let j=0;j<p;j++) {
+        const bkj = rowB[j];
+        if(bkj !== undefined) {
+          rowC[j]! += aik * bkj; 
+        }
+      }
     }
   }
   return C;
@@ -294,13 +302,19 @@ export function smithNormalForm(Ain:number[][]): { U:number[][], D:number[][], V
 
 // Certificate: verify U*A*V === D exactly
 export function certifySNF(A:number[][], U:number[][], D:number[][], V:number[][]): { ok:boolean, diff?: number[][] } {
-  const left = matMul(U, matMul(A, V));
-  const ok = matEq(left, D);
-  if (ok) {
-    return { ok };
-  } else {
-    const diff = left.map((row,i)=> row.map((x,j)=> x - (D[i]?.[j] ?? 0)));
-    return { ok, diff };
+  try {
+    const AV = matMul(A, V);
+    const left = matMul(U, AV);
+    const ok = matEq(left, D);
+    if (ok) {
+      return { ok };
+    } else {
+      const diff = left.map((row,i)=> row.map((x,j)=> x - (D[i]?.[j] ?? 0)));
+      return { ok, diff };
+    }
+  } catch (e) {
+    // Matrix dimensions incompatible or other error
+    return { ok: false };
   }
 }
 
