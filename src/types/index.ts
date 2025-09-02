@@ -142,14 +142,16 @@ export {
 
 // Double lax functor interface for categorical abstractions
 export { 
-  DoubleLaxFunctor, DoubleLaxFunctorLaws,
+  DoubleLaxFunctor,
   // Note: Square, checkDoubleFunctorLaws exported from category-to-nerve-sset.js, avoiding conflict
   inclusionWitness as doubleLaxInclusionWitness
 } from './double-lax-functor-interface.js';
 
 // Refactored SpecImpl as explicit DoubleLaxFunctor
 export { 
-  SpecImplDoubleLaxFunctor,
+  SpecImplFunctor,
+  createSpecImplFunctor,
+  verifySpecImplFunctor,
   // Note: ObjPair, numericRangeAbstraction exported from spec-impl.js, avoiding conflict
 } from './spec-impl-refactored.js';
 
