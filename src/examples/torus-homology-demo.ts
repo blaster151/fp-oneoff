@@ -89,7 +89,7 @@ const torsionInHnm1_whenPrevBoundaryIsZero = (Dn: Mat) =>
 // ---------- Example 1: Torus T^2 ----------
 function torusExample() {
   console.log("=".repeat(60));
-  console.log("TORUS T^2 HOMOLOGY COMPUTATION");
+  console.log("TORUS T² HOMOLOGY COMPUTATION");
   console.log("=".repeat(60));
   
   // CW model: 1 vertex v, 2 edges a,b, 1 face c with boundary aba^{-1}b^{-1}.
@@ -218,7 +218,11 @@ export function demonstrateTorusHomology(): void {
   console.log("• Betti numbers count free generators in each dimension");
 }
 
-// Run demo if executed directly
-if (typeof process !== 'undefined' && process.argv && process.argv[1]?.includes('torus-homology-demo')) {
+function main() {
   demonstrateTorusHomology();
+}
+
+// Run if executed directly
+if (typeof process !== 'undefined' && process.argv && process.argv[1]?.includes('torus-homology-demo')) {
+  main();
 }
