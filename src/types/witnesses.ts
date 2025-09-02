@@ -2,6 +2,8 @@
 // Standard witness types + helpers for finite Set/Rel world.
 // Unified witness system with counterexample reporting for all categorical structures.
 
+import { minimizeWitness, shrinkMonadWitness, shrinkLensWitness, applyShrinking, estimateSize } from './property-shrinking.js';
+
 /************ Core witness types ************/
 
 /** Inclusion: right ⊆ left (pairs missing from left). */
@@ -374,6 +376,39 @@ export function lawCheck<W>(
   return condition 
     ? { ok: true, ...(note ? { note } : {}) }
     : { ok: false, ...(witness !== undefined ? { witness } : {}), ...(note ? { note } : {}) };
+}
+
+/** Create law check with automatic witness shrinking */
+export function lawCheckWithShrinking<W>(
+  condition: boolean,
+  witness: W | undefined,
+  validator: (w: W) => boolean,
+  note?: string
+): LawCheck<W> {
+  if (condition) {
+    return { ok: true, ...(note ? { note } : {}) };
+  }
+  
+  if (witness === undefined) {
+    return { ok: false, ...(note ? { note } : {}) };
+  }
+  
+  // Apply shrinking to minimize the witness
+  try {
+    const shrunkWitness = applyShrinking(witness, validator);
+    const shrinkingNote = note ? 
+      `${note} (shrunk from size ${estimateSize(witness)} to ${estimateSize(shrunkWitness)})` : 
+      undefined;
+    
+    return { 
+      ok: false, 
+      witness: shrunkWitness, 
+      ...(shrinkingNote ? { note: shrinkingNote } : {}) 
+    };
+  } catch {
+    // If shrinking fails, return original witness
+    return { ok: false, witness, ...(note ? { note } : {}) };
+  }
 }
 
 /** Extract counterexamples from witness. */

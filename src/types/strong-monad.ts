@@ -3,10 +3,11 @@
 // Includes Option, Array, Reader, State, Writer instances + comprehensive law-check helpers
 
 import { 
-  LawCheck, lawCheck,
+  LawCheck, lawCheck, lawCheckWithShrinking,
   MonadLeftUnitWitness, MonadRightUnitWitness, MonadAssociativityWitness,
   StrengthUnitWitness, EMAlgebraUnitWitness, EMMultiplicativityWitness, EMUnitMorphismWitness
 } from './witnesses.js';
+import { applyShrinking } from './property-shrinking.js';
 
 /************ Base types ************/
 export type Option<A> = { tag: "none" } | { tag: "some"; value: A };
@@ -342,14 +343,44 @@ export function checkStrongMonadLaws<TF>(
     if (strengthUnitWitness) break;
   }
   
+  // Apply shrinking to witnesses for minimal counterexamples
+  const shrunkLeftUnit = leftUnitWitness ? applyShrinking(leftUnitWitness, (w) => {
+    try {
+      const leftSide = T.chain(T.of(w.input), w.k);
+      const rightSide = w.k(w.input);
+      return JSON.stringify(leftSide) !== JSON.stringify(rightSide);
+    } catch {
+      return false;
+    }
+  }) : undefined;
+  
+  const shrunkRightUnit = rightUnitWitness ? applyShrinking(rightUnitWitness, (w) => {
+    try {
+      const leftSide = T.chain(w.input, T.of);
+      return JSON.stringify(leftSide) !== JSON.stringify(w.input);
+    } catch {
+      return false;
+    }
+  }) : undefined;
+  
+  const shrunkStrengthUnit = strengthUnitWitness ? applyShrinking(strengthUnitWitness, (w) => {
+    try {
+      const leftSide = T.strength(w.a, T.of(w.b));
+      const rightSide = T.of([w.a, w.b]);
+      return JSON.stringify(leftSide) !== JSON.stringify(rightSide);
+    } catch {
+      return false;
+    }
+  }) : undefined;
+
   return {
     monadLaws: {
-      leftUnit: lawCheck(!leftUnitWitness, leftUnitWitness, "Left unit: chain(of(a), k) = k(a)"),
-      rightUnit: lawCheck(!rightUnitWitness, rightUnitWitness, "Right unit: chain(m, of) = m"),
+      leftUnit: lawCheck(!leftUnitWitness, shrunkLeftUnit, "Left unit: chain(of(a), k) = k(a)"),
+      rightUnit: lawCheck(!rightUnitWitness, shrunkRightUnit, "Right unit: chain(m, of) = m"),
       associativity: lawCheck(!assocWitness, assocWitness, "Associativity: chain(chain(m, k), h) = chain(m, x => chain(k(x), h))")
     },
     strengthLaws: {
-      unit: lawCheck(!strengthUnitWitness, strengthUnitWitness, "Strength unit: strength(a, of(b)) = of([a, b])")
+      unit: lawCheck(!strengthUnitWitness, shrunkStrengthUnit, "Strength unit: strength(a, of(b)) = of([a, b])")
     }
   };
 }
