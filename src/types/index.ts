@@ -56,5 +56,105 @@ export { CatkitTraversal };
 import * as Eq from './eq.js';
 export { Eq };
 
+// Homology computation for nerves and chain complexes - use namespace to avoid conflicts
+import * as Homology from './catkit-homology.js';
+export { Homology };
+
+// Bridge between nerve construction and homology computation
+export * from './catkit-homology-bridge.js';
+
+// Comma categories and slice/coslice constructions
+import * as CommaCategories from './catkit-comma-categories.js';
+export { CommaCategories };
+
+// Posets as thin categories with Galois connections
+import * as Posets from './catkit-posets.js';
+export { Posets };
+
+// Integration bridge between comma categories and Kan extensions
+export * from './catkit-comma-kan-bridge.js';
+
+// Quasi-category checking and inner horn enumeration
+import * as QuasiCategory from './sset-quasicat.js';
+export { QuasiCategory };
+
+// Bridge between nerve construction and quasi-category checking
+export * from './nerve-quasicat-bridge.js';
+
+// Relational equipment: double category of relations with allegory structure
+import * as Relations from './rel-equipment.js';
+export { Relations };
+
+// Relational law checking: property testing suite for mathematical correctness
+import * as RelLawCheck from './rel-lawcheck.js';
+export { RelLawCheck };
+
+// Optics-driven program rewriting with Free DSL and rule registry
+import * as OpticsRewrite from './optics-rewrite.js';
+export { OpticsRewrite };
+
+// Bridge between rewrite system and existing optics infrastructure
+export * from './optics-rewrite-bridge.js';
+
+// Modern FreeApplicative + Coyoneda effect system with natural transformations
+import * as Effects from './freeapp-coyo.js';
+export { Effects };
+
+// Quiver pushouts and coequalizers for schema/graph merging
+import * as QuiverPushout from './quiver-pushout.js';
+export { QuiverPushout };
+
+// Double categories and 2D reasoning with strict and lax double functors
+import * as DoubleFunctor from './double-functor.js';
+export { DoubleFunctor };
+
+// Interfaces for double categories and lax double functors
+import * as DoubleLax from './double-lax-functor.js';
+export { DoubleLax };
+
+// High-performance bit-packed relations for large-scale computation
+import * as BitRel from './bitrel.js';
+export { BitRel };
+
+// Persistent sequences with FingerTree for efficient manipulation
+import * as FingerTree from './fingertree.js';
+export { FingerTree };
+
+// Common interface for Rel/BitRel with drop-in factory pattern
+export * from './rel-common.js';
+
+// Measured FingerTree with monoidal measures for indexed operations
+import * as MeasuredFingerTree from './measured-fingertree.js';
+export { MeasuredFingerTree };
+
+// Rope persistent text structure built on measured FingerTree
+import * as Rope from './rope.js';
+export { Rope };
+
+// Spec→Impl abstraction functors with inclusion-based verification
+export * from './spec-impl.js';
+
+// Proper surjection types with witness evidence
+export * from './surjection-types.js';
+
+// Double lax functor interface for categorical abstractions
+export * from './double-lax-functor-interface.js';
+
+// Refactored SpecImpl as explicit DoubleLaxFunctor
+export * from './spec-impl-refactored.js';
+
+// Strong monads with Eilenberg-Moore algebras and monoids
+import * as StrongMonads from './strong-monad.js';
+export { StrongMonads };
+
+// Unified witness system for counterexample reporting
+export * from './witnesses.js';
+
+// Enhanced relational law checking with witnesses
+export * from './rel-lawcheck-witnessed.js';
+
+// Witnessful allegory and Hoare logic
+export * from './allegory-witness.js';
+
 // Value-level instances and implementations
 export * from './instances.js';
