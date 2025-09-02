@@ -100,5 +100,9 @@ export * from './optics-rewrite-bridge.js';
 import * as Effects from './freeapp-coyo.js';
 export { Effects };
 
+// Quiver pushouts and coequalizers for schema/graph merging
+import * as QuiverPushout from './quiver-pushout.js';
+export { QuiverPushout };
+
 // Value-level instances and implementations
 export * from './instances.js';
