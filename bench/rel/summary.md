@@ -1,26 +1,26 @@
 # Rel vs BitRel Benchmark Results
 
-**Timestamp:** 2025-09-02T20:51:04.675Z
+**Timestamp:** 2025-09-02T20:59:23.205Z
 **Total Tests:** 18
 
 ## Configuration
 
-- **Sizes:** 32
-- **Densities:** 0.1
+- **Sizes:** 64
+- **Densities:** 0.05
 - **Iterations:** 3
-- **Seed:** 999
+- **Seed:** 777
 
 ## Performance Summary
 
 | Operation | Average Speedup | Median Speedup |
 |-----------|----------------|----------------|
-| compose | 4.52x | 4.52x |
-| union | 3.58x | 3.58x |
-| intersect | 3.85x | 3.85x |
+| compose | 3.65x | 3.65x |
+| union | 3.20x | 3.20x |
+| intersect | 3.23x | 3.23x |
 
 ## Key Insights
 
-- **Best Performance:** compose shows 4.52x average speedup
-- **Reproducible:** All results generated with seed 999
+- **Best Performance:** compose shows 3.65x average speedup
+- **Reproducible:** All results generated with seed 777
 - **Memory Efficiency:** BitRel uses ~8x less memory than Rel
 - **Scale:** Performance improvements increase with matrix size
