@@ -1,8 +1,7 @@
 /**
- * Optics-Free Demo
- * 
- * Demonstrates the profunctor-encoded optics system with lenses, prisms, 
- * traversals, and a Free-based mini DSL.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { OpticsFree } from '../types';
@@ -12,41 +11,41 @@ import { OpticsFree } from '../types';
 // -------------------------------------------------------------------------------------
 
 // Lens over nested record
-export type Person = { name: { first: string; last: string }; age: number };
+type Person = { name: { first: string; last: string }; age: number };
 
-export const _first = OpticsFree.lensFree(
+const _first = OpticsFree.lensFree(
   (p: Person) => p.name.first,
   (p: Person, b: string) => ({ ...p, name: { ...p.name, first: b } })
 );
 
 // Prism over Either<number, string> that focuses the string
-export const _RightString = OpticsFree.prismFree(
+const _RightString = OpticsFree.prismFree(
   (e: { _tag: 'Left'; left: number } | { _tag: 'Right'; right: string }) => 
     e._tag === 'Right' ? OpticsFree.leftFree(e.right) : OpticsFree.rightFree(e),  // Left focus carries A
   (s: string) => OpticsFree.rightFree<number, string>(s)
 );
 
 // Traversal over array elements
-export const _each = OpticsFree.eachFree<any, any>();
+const _each = OpticsFree.eachFree<any, any>();
 
 // Free "ExprF" DSL
-export type ExprFOptics<A> =
+type ExprFOptics<A> =
   | { _tag: 'Const'; n: number }
   | { _tag: 'Add';   l: A; r: A };
 
-export const ConstOptics = (n: number): OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number> =>
+const ConstOptics = (n: number): OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number> =>
   OpticsFree.liftFOptics<OpticsFree.URI_ExprF, number>(OpticsFree.ExprFFunctorOptics)({ _tag:'Const', n });
 
-export const AddOptics = (l: OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number>, r: OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number>): OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number> =>
+const AddOptics = (l: OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number>, r: OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number>): OpticsFree.FreeOptics<OpticsFree.URI_ExprF, number> =>
   ({ _tag:'Suspend', fa: { _tag:'Add', l, r } });
 
 // Algebra to evaluate expressions
-export const evalAlgOptics = (fa: ExprFOptics<number>): number =>
+const evalAlgOptics = (fa: ExprFOptics<number>): number =>
   fa._tag === 'Const' ? fa.n : (fa.l + fa.r);
 
-export const evalExprOptics = OpticsFree.foldFreeOptics(OpticsFree.ExprFFunctorOptics)<number>(evalAlgOptics);
+const evalExprOptics = OpticsFree.foldFreeOptics(OpticsFree.ExprFFunctorOptics)<number>(evalAlgOptics);
 
-export function demonstrateOpticsFree() {
+function demonstrateOpticsFree() {
   console.log('=== Optics-Free Demo ===');
   
   // Example usage

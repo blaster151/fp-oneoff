@@ -1,3 +1,9 @@
+/**
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
+ */
+
 // kan-transport-iso-example.ts
 import { Functor, HasHom, SetFunctor, SetObj } from "../types/catkit-kan";
 import { SmallCategory } from "../types/category-to-nerve-sset";

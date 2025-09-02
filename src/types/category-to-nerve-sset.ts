@@ -3,6 +3,8 @@
 // Category → Nerve (simplicial set) mini-toolkit
 // -------------------------------------------------------------------------------------
 
+import { eqJSON } from './eq.js';
+
 // 1) Core small-category primitives ---------------------------------------------------
 
 /** A small category with objects O and morphisms M. */
@@ -68,7 +70,8 @@ export function checkFunctorLaws<C_O, C_M, D_O, D_M>(
 ): { preservesId: boolean; preservesComp: boolean } {
   const preservesId = samples.every(m => {
     const x = C.src(m);
-    return D.src(F.Fmor(C.id(x))) === F.Fobj(x) && D.dst(F.Fmor(C.id(x))) === F.Fobj(x);
+    const eq = eqJSON<unknown>();
+    return eq(D.src(F.Fmor(C.id(x))), F.Fobj(x)) && eq(D.dst(F.Fmor(C.id(x))), F.Fobj(x));
   });
   const preservesComp = samples.every(m => {
     // try composing with an identity on either side as a lightweight check
@@ -76,8 +79,9 @@ export function checkFunctorLaws<C_O, C_M, D_O, D_M>(
     const lhs = F.Fmor(C.comp(m, C.id(x))); // m ∘ id_x = m
     const rhs = F.Fmor(m);
     const lhsD = D.comp(F.Fmor(m), F.Fmor(C.id(x))); // F m ∘ F id_x
-    return D.src(lhs) === D.src(rhs) && D.dst(lhs) === D.dst(rhs) &&
-           D.src(lhsD) === D.src(rhs) && D.dst(lhsD) === D.dst(rhs);
+    const eq = eqJSON<unknown>();
+    return eq(D.src(lhs), D.src(rhs)) && eq(D.dst(lhs), D.dst(rhs)) &&
+           eq(D.src(lhsD), D.src(rhs)) && eq(D.dst(lhsD), D.dst(rhs));
   });
   return { preservesId, preservesComp };
 }
@@ -95,7 +99,8 @@ export function checkNaturality<C_O, C_M, D_O, D_M>(
     const x = C.src(m), y = C.dst(m);
     const left  = D.comp(G.Fmor(m), eta.eta(x));
     const right = D.comp(eta.eta(y), F.Fmor(m));
-    return D.src(left) === D.src(right) && D.dst(left) === D.dst(right);
+    const eq = eqJSON<unknown>();
+    return eq(D.src(left), D.src(right)) && eq(D.dst(left), D.dst(right));
   });
 }
 
@@ -697,10 +702,11 @@ export function checkDoubleFunctorLaws<
 
   const bd = sampleSquares.every(s => {
     const img = F.onSquare(s);
-    return D2.top(img)    === F.FH.Fmor(D1.top(s))    &&
-           D2.bottom(img) === F.FH.Fmor(D1.bottom(s)) &&
-           D2.left(img)   === F.FV.Fmor(D1.left(s))   &&
-           D2.right(img)  === F.FV.Fmor(D1.right(s));
+    const eq = eqJSON<unknown>();
+    return eq(D2.top(img), F.FH.Fmor(D1.top(s))) &&
+           eq(D2.bottom(img), F.FH.Fmor(D1.bottom(s))) &&
+           eq(D2.left(img), F.FV.Fmor(D1.left(s))) &&
+           eq(D2.right(img), F.FV.Fmor(D1.right(s)));
   });
 
   // try closure under hcomp / vcomp on adjacent pairs from the sample
@@ -709,8 +715,9 @@ export function checkDoubleFunctorLaws<
     try {
       const lhs = F.onSquare(D1.hcomp(b, a));
       const rhs = D2.hcomp(F.onSquare(b), F.onSquare(a));
-      return D2.top(lhs)===D2.top(rhs) && D2.bottom(lhs)===D2.bottom(rhs) &&
-             D2.left(lhs)===D2.left(rhs) && D2.right(lhs)===D2.right(rhs);
+      const eq = eqJSON<unknown>();
+      return eq(D2.top(lhs), D2.top(rhs)) && eq(D2.bottom(lhs), D2.bottom(rhs)) &&
+             eq(D2.left(lhs), D2.left(rhs)) && eq(D2.right(lhs), D2.right(rhs));
     } catch { return true; } // ignore non-composable samples
   });
 
@@ -718,8 +725,9 @@ export function checkDoubleFunctorLaws<
     try {
       const lhs = F.onSquare(D1.vcomp(b, a));
       const rhs = D2.vcomp(F.onSquare(b), F.onSquare(a));
-      return D2.top(lhs)===D2.top(rhs) && D2.bottom(lhs)===D2.bottom(rhs) &&
-             D2.left(lhs)===D2.left(rhs) && D2.right(lhs)===D2.right(rhs);
+      const eq = eqJSON<unknown>();
+      return eq(D2.top(lhs), D2.top(rhs)) && eq(D2.bottom(lhs), D2.bottom(rhs)) &&
+             eq(D2.left(lhs), D2.left(rhs)) && eq(D2.right(lhs), D2.right(rhs));
     } catch { return true; }
   });
 
@@ -727,12 +735,13 @@ export function checkDoubleFunctorLaws<
     const h = D1.top(s), v = D1.left(s);
     const idV = F.onSquare(D1.idVCell(h));
     const idH = F.onSquare(D1.idHCell(v));
-    return D2.top(idV)===F.FH.Fmor(h) && D2.bottom(idV)===F.FH.Fmor(h) &&
-           D2.left(idV)===D2.V.id(D2.H.src(F.FH.Fmor(h))) &&
-           D2.right(idV)===D2.V.id(D2.H.dst(F.FH.Fmor(h))) &&
-           D2.left(idH)===F.FV.Fmor(v) && D2.right(idH)===F.FV.Fmor(v) &&
-           D2.top(idH)===D2.H.id(D2.V.src(F.FV.Fmor(v))) &&
-           D2.bottom(idH)===D2.H.id(D2.V.dst(F.FV.Fmor(v)));
+    const eq = eqJSON<unknown>();
+    return eq(D2.top(idV), F.FH.Fmor(h)) && eq(D2.bottom(idV), F.FH.Fmor(h)) &&
+           eq(D2.left(idV), D2.V.id(D2.H.src(F.FH.Fmor(h)))) &&
+           eq(D2.right(idV), D2.V.id(D2.H.dst(F.FH.Fmor(h)))) &&
+           eq(D2.left(idH), F.FV.Fmor(v)) && eq(D2.right(idH), F.FV.Fmor(v)) &&
+           eq(D2.top(idH), D2.H.id(D2.V.src(F.FV.Fmor(v)))) &&
+           eq(D2.bottom(idH), D2.H.id(D2.V.dst(F.FV.Fmor(v))));
   });
 
   return { preservesBoundaries: bd, preservesCompH: ph, preservesCompV: pv, preservesIds: pi };
@@ -1127,7 +1136,8 @@ export function checkProTransNaturality<A_O, A_M, B_O, B_M, TP, TQ>(
       const rightSide = alpha.at(aPrime, bPrime)(PuP);
       
       // For finite presentations, we can compare directly
-      return leftSide === rightSide;
+      const eq = eqJSON<unknown>();
+      return eq(leftSide, rightSide);
     });
   });
 }

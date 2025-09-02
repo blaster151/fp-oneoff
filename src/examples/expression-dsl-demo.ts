@@ -1,12 +1,12 @@
 /**
- * Expression DSL Demo
- * 
- * Demonstrates the simple expression language with evaluation and pretty printing.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { lit, add, mul, evalExpr, printExpr } from '../types';
 
-export function demonstrateExpressionDSL() {
+function demonstrateExpressionDSL() {
   console.log('=== Expression DSL Demo ===\n');
   
   // Create a complex expression: (2 * 3) + 4

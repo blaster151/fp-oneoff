@@ -1,11 +1,13 @@
 /**
- * Demonstration of the Free Applicative defined in advanced.ts
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { FreeAp, apAp, foldFreeAp } from '../types';
 import { HKT, Applicative } from '../types';
 
-export function demonstrateFreeApplicative() {
+function demonstrateFreeApplicative() {
   console.log('=== Free Applicative Demo ===\n');
   
   // Create some Free Applicative values

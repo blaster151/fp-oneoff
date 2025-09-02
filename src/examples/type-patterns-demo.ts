@@ -1,11 +1,12 @@
 /**
- * Demonstration of different type implementation patterns
- * and when to use each approach.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { ForgetProfunctor, createForgetStrong, forgetStrong } from '../types';
 
-export function demonstrateTypePatterns() {
+function demonstrateTypePatterns() {
   console.log('=== Type Implementation Patterns Demo ===\n');
 
   // Pattern 1: Named First-Class Types
@@ -74,7 +75,7 @@ export function demonstrateTypePatterns() {
 }
 
 // Additional example: Type-level vs Value-level
-export function demonstrateTypeLevelVsValueLevel() {
+function demonstrateTypeLevelVsValueLevel() {
   console.log('\n=== Type-level vs Value-level ===\n');
   
   // Type-level: Exists only during compilation

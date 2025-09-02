@@ -1,15 +1,14 @@
 /**
- * Profunctors-as-Processes Demo
- * 
- * Demonstrates the bicategory/equipment route with companions/conjoints
- * and the universal cells that make relations into a proper equipment.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { 
   Q_ABC
 } from '../types';
 
-export function demonstrateProfunctorsAsProcesses() {
+function demonstrateProfunctorsAsProcesses() {
   console.log('=== Profunctors-as-Processes Demo ===\n');
   
   console.log('1. Basic Category Theory Setup');

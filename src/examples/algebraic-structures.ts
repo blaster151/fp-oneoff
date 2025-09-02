@@ -1,8 +1,7 @@
 /**
- * Examples demonstrating algebraic structures
- * 
- * This shows how to implement and use Action, Algebra, Coalgebra,
- * LeftModule, and LeftComodule interfaces.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { Action, Algebra, Coalgebra, LeftModule, LeftComodule } from '../types';
@@ -98,7 +97,7 @@ const identityLeftComodule: LeftComodule<'Identity', 'Identity'> = {
 };
 
 // Usage examples
-export function demonstrateAction() {
+function demonstrateAction() {
   console.log('=== Action Examples ===');
   
   console.log('String number action:');
@@ -107,7 +106,7 @@ export function demonstrateAction() {
   console.log('act(2, "x") =', stringNumberAction.act(2, 'x'));
 }
 
-export function demonstrateAlgebra() {
+function demonstrateAlgebra() {
   console.log('\n=== Algebra Examples ===');
   
   const list: List<number> = [1, 2, 3, 4, 5];
@@ -116,7 +115,7 @@ export function demonstrateAlgebra() {
   console.log('List algebra fold on [1,2,3,4,5]:', result);
 }
 
-export function demonstrateCoalgebra() {
+function demonstrateCoalgebra() {
   console.log('\n=== Coalgebra Examples ===');
   
   const stream = streamCoalgebra.unfold('hello') as Stream<string>;
@@ -127,7 +126,7 @@ export function demonstrateCoalgebra() {
   console.log('tail().tail().head:', stream.tail().tail().head);
 }
 
-export function demonstrateLeftModule() {
+function demonstrateLeftModule() {
   console.log('\n=== Left Module Examples ===');
   
   const innerIdentity = new Identity<number>(42);
@@ -137,7 +136,7 @@ export function demonstrateLeftModule() {
   console.log('Identity left module act result:', result);
 }
 
-export function demonstrateLeftComodule() {
+function demonstrateLeftComodule() {
   console.log('\n=== Left Comodule Examples ===');
   
   const identity = new Identity<string>('hello');

@@ -1,8 +1,7 @@
 /**
- * Relations Companion/Conjoint Demo
- * 
- * Demonstrates the standard graph/cograph construction for functions
- * and the unit/counit squares that witness the adjunction.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import {
@@ -15,7 +14,7 @@ function finite<T>(id: string, elems: T[], eq: (x:T,y:T)=>boolean): SetObj<T> {
   return { id, elems, eq };
 }
 
-export function demonstrateCompanions() {
+function demonstrateCompanions() {
   console.log('=== Relations Companion/Conjoint Demo ===\n');
   
   const A = finite('A', [0,1,2], (x,y)=>x===y);
@@ -70,6 +69,4 @@ export function demonstrateCompanions() {
 }
 
 // Run the demo
-if (require.main === module) {
-  demonstrateCompanions();
-}
+demonstrateCompanions();

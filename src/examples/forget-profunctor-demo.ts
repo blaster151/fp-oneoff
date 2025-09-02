@@ -1,13 +1,12 @@
 /**
- * Demonstration of the preserved ForgetProfunctor implementation
- * 
- * This shows the difference between the simplified HKT-compatible version
- * and the original well-formed implementation that was preserved.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { createForgetStrong, ForgetProfunctor } from '../types';
 
-export function demonstrateForgetProfunctor() {
+function demonstrateForgetProfunctor() {
   console.log('=== ForgetProfunctor Implementation Demo ===');
   
   // Create a ForgetStrong instance for extracting numbers
@@ -49,6 +48,4 @@ export function demonstrateForgetProfunctor() {
 }
 
 // Run the demo
-if (require.main === module) {
-  demonstrateForgetProfunctor();
-}
+demonstrateForgetProfunctor();

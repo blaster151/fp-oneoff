@@ -7,6 +7,9 @@ import { HKT, HKT2Prof, Either, Fn } from './hkt';
 import { Category } from './algebraic';
 import { Functor, Applicative } from './functors';
 
+// Localized unsafe coercion helper for unavoidable conversions
+const unsafeCoerce = <X, Y>(x: X): Y => x as unknown as Y;
+
 // Arrows (generalized computations beyond Monad)
 export interface Arrow<P> extends Category {
   arr: <A, B>(f: Fn<A, B>) => HKT<P, [A, B]>
@@ -51,7 +54,7 @@ export interface Closed<P> extends Profunctor2<P> {
 
 // Profunctor-encoded optics (rank-2)
 // General pattern: an optic says: for every P with capability X, lift p A B to p S T.
-export type POptic<P, S, T, A, B> = (P: any) => (pab: HKT2Prof<P, A, B>) => HKT2Prof<P, S, T>
+export type POptic<P, S, T, A, B> = (P: unknown) => (pab: HKT2Prof<P, A, B>) => HKT2Prof<P, S, T>
 
 export type PIso<S, T, A, B> = <P>(P: Profunctor2<P>) => (pab: HKT2Prof<P, A, B>) => HKT2Prof<P, S, T>
 export type PLens<S, T, A, B> = <P>(P: Strong<P>) => (pab: HKT2Prof<P, A, B>) => HKT2Prof<P, S, T>
@@ -63,21 +66,21 @@ export const iso = <S, T, A, B>(
   _get: (s: S) => A,
   _rev: (b: B) => T
 ): PIso<S, T, A, B> =>
-  ((_P: any) => (pab: any) => pab) as any
+  unsafeCoerce((_P: unknown) => (pab: unknown) => pab)
 
 // LENS (simplified)
 export const lens = <S, T, A, B>(
   _get: (s: S) => A,
   _set: (s: S, b: B) => T
 ): PLens<S, T, A, B> =>
-  ((_P: any) => (pab: any) => pab) as any
+  unsafeCoerce((_P: unknown) => (pab: unknown) => pab)
 
 // PRISM (simplified)
 export const prism = <S, T, A, B>(
   _match: (s: S) => Either<A, T>,     // Left: focus A, Right: already T
   _build: (b: B) => T
 ): PPrism<S, T, A, B> =>
-  ((_P: any) => (pab: any) => pab) as any
+  unsafeCoerce((_P: unknown) => (pab: unknown) => pab)
 
 // ----- Running optics: concrete profunctors you'll actually use -----
 
@@ -85,8 +88,16 @@ export const prism = <S, T, A, B>(
 type PFN = 'PFN'
 // Function profunctor implementation (exported for potential use)
 export const functionStrong: Strong<PFN> = {
-  dimap: (pab: any, l: any, r: any) => ((c: any) => r(pab(l(c)))) as any,
-  first: (pab: any) => (([a, c]: [any, any]) => [pab(a), c]) as any
+  dimap: (pab: unknown, l: unknown, r: unknown) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    const lFn = unsafeCoerce<unknown, (x: unknown) => unknown>(l);
+    const rFn = unsafeCoerce<unknown, (x: unknown) => unknown>(r);
+    return unsafeCoerce((c: unknown) => rFn(pabFn(lFn(c))));
+  },
+  first: (pab: unknown) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    return unsafeCoerce(([a, c]: [unknown, unknown]) => [pabFn(a), c]);
+  }
 }
 
 // Forget profunctor (for getting/folding)
@@ -95,12 +106,19 @@ export type ForgetProfunctor<R, A, B> = HKT2Prof<PFG, A, B> & ((a: A) => R)
 
 // Simplified versions for the HKT system
 const forgetProfunctor = (): Profunctor2<PFG> => ({
-  dimap: (pab: any, l: any, _r: any) => ((c: any) => pab(l(c))) as any
+  dimap: (pab: unknown, l: unknown, _r: unknown) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    const lFn = unsafeCoerce<unknown, (x: unknown) => unknown>(l);
+    return unsafeCoerce((c: unknown) => pabFn(lFn(c)));
+  }
 })
 
 export const forgetStrong = (): Strong<PFG> => ({
   ...forgetProfunctor(),
-  first: (pab: any) => (([a, _]: [any, any]) => pab(a)) as any
+  first: (pab: unknown) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    return unsafeCoerce(([a, _]: [unknown, unknown]) => pabFn(a));
+  }
 })
 
 // Original well-formed ForgetStrong implementation (preserved as requested)
@@ -116,15 +134,15 @@ export const createForgetStrong = <R>() => ({
 
 // Helpers
 // Helper functions (simplified for type compatibility)
-export const over = <S, T, A, B>(_o: any, _f: (a: A) => B): ((s: S) => T) =>
-  ((s: S) => s as any) as any // Simplified implementation
+export const over = <S, T, A, B>(_o: unknown, _f: (a: A) => B): ((s: S) => T) =>
+  unsafeCoerce((s: S) => unsafeCoerce<S, T>(s)) // Simplified implementation
 
-export const set = <S, T, A>(o: any, b: A): ((s: S) => T) =>
+export const set = <S, T, A>(o: unknown, b: A): ((s: S) => T) =>
   over(o, (_: A) => b)
 
 // view (lens): use Forget with R=A (simplified)
-export const view = <S, A>(_o: any) =>
-  (s: S): A => s as any // Simplified implementation
+export const view = <S, A>(_o: unknown) =>
+  (s: S): A => unsafeCoerce<S, A>(s) // Simplified implementation
 
 // ----- Traversals with a profunctor (Wander/Traversing) -----
 
@@ -141,27 +159,40 @@ export const leftEither = <L, R>(l: L): Either<L, R> => ({ _tag: 'Left', left: l
 const right = <L, R>(r: R): Either<L, R> => ({ _tag: 'Right', right: r })
 
 // Helper functions for missing implementations
-const of = <A>(a: A): any => a; // Simplified
+const of = <A>(a: A): unknown => a; // Simplified
 
 // Array Applicative helpers (simplified)
-const arrayOf = <A>(a: A): any => [a] as any; // Cast to any to avoid HKT issues
+const arrayOf = <A>(a: A): unknown => [a];
 const arrayAp = <A, B>(ff: ((a: A) => B)[], fa: A[]): B[] => 
   ff.flatMap(f => fa.map(f));
 const arrayApplicative: Applicative<'Array'> = {
-  of: arrayOf as any,
-  ap: arrayAp as any,
-  map: <A, B>(fa: any, f: (a: A) => B) => fa.map(f)
+  of: unsafeCoerce(arrayOf),
+  ap: unsafeCoerce(arrayAp),
+  map: <A, B>(fa: unknown, f: (a: A) => B) => {
+    const arr = unsafeCoerce<unknown, A[]>(fa);
+    return arr.map(f);
+  }
 };
 
 // Star instance is Traversing/Wander-capable (simplified for type compatibility)
 export const starWander: Wander<PSTAR> = {
-  dimap: (pab, l, _r) => ((c: any) => (pab as any)(l(c))) as any,
-  first: (pab) => (([a, _c]: [any, any]) => (pab as any)(a)) as any,
-  left: (pab) => ((e: Either<any, any>) => e._tag === 'Left' ? (pab as any)(e.left) : of(right(e.right))) as any,
+  dimap: (pab, l, _r) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    const lFn = unsafeCoerce<unknown, (x: unknown) => unknown>(l);
+    return unsafeCoerce((c: unknown) => pabFn(lFn(c)));
+  },
+  first: (pab) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    return unsafeCoerce(([a, _c]: [unknown, unknown]) => pabFn(a));
+  },
+  left: (pab) => {
+    const pabFn = unsafeCoerce<unknown, (x: unknown) => unknown>(pab);
+    return unsafeCoerce((e: Either<unknown, unknown>) => e._tag === 'Left' ? pabFn(e.left) : of(right(e.right)));
+  },
   // generic wander: push Star under a user-provided traverse
   wander: <F>(_F: Applicative<F>) =>
-    (_tr: any, pab: any) =>
-      pab as any
+    (_tr: unknown, pab: unknown) =>
+      unsafeCoerce(pab)
 }
 
 // A concrete Traversal over arrays ("each")
@@ -171,7 +202,11 @@ export const each = <A, B>(): PTraversal<ReadonlyArray<A>, ReadonlyArray<B>, A, 
   <P>(P: Wander<P>) =>
     (pab: HKT2Prof<P, A, B>) =>
       P.wander(arrayApplicative)(
-        (as: any, f: any) => as.map(f) as any, // Simplified to avoid complex type issues
+        (as: unknown, f: unknown) => {
+          const arr = unsafeCoerce<unknown, ReadonlyArray<A>>(as);
+          const fn = unsafeCoerce<unknown, (a: A) => B>(f);
+          return unsafeCoerce(arr.map(fn));
+        },
         pab
       )
 
@@ -209,30 +244,30 @@ export const unfoldCofree = <F, A>(F: Functor<F>, coalg: FreeCoalgebra<F>) =>
 export const pure = <F, A>(a: A): Free<F, A> => ({ _tag: 'Pure', a })
 
 export const liftF = <F, A>(fa: HKT<F, A>): Free<F, A> =>
-  ({ _tag: 'Suspend', fa: fa as any }) // Simplified
+  ({ _tag: 'Suspend', fa: unsafeCoerce(fa) }) // Simplified
 
 // Free Applicative (for "static" effects/validation)
 export type FreeAp<F, A> =
   | { _tag: 'Pure'; a: A }
-  | { _tag: 'Ap'; fab: HKT<F, any>; fa: FreeAp<F, (x: any) => A> }
+  | { _tag: 'Ap'; fab: HKT<F, unknown>; fa: FreeAp<F, (x: unknown) => A> }
 
 export const apAp = <F, A, B>(ff: FreeAp<F, (a: A) => B>, fa: FreeAp<F, A>): FreeAp<F, B> =>
   ff._tag === 'Pure'
-    ? fa as any // Simplified
-    : { _tag: 'Ap', fab: ff.fab, fa: apAp(ff.fa, fa) }
+    ? unsafeCoerce(fa) // Simplified
+    : { _tag: 'Ap', fab: ff.fab, fa: unsafeCoerce(apAp(ff.fa, unsafeCoerce(fa))) }
 
 // Interpret with an Applicative handler for F
 export const foldFreeAp = <F>(F: Applicative<F>) =>
   <A>(_nt: <X>(fx: HKT<F, X>) => HKT<F, X>) =>
   (fa: FreeAp<F, A>): HKT<F, A> =>
     fa._tag === 'Pure'
-      ? F.of((fa as any).a)
-      : F.of((fa as any).a) // Simplified to avoid complex type issues
+      ? F.of(fa.a)
+      : F.of(unsafeCoerce<FreeAp<F, A>, { a: A }>(fa).a) // Simplified to avoid complex type issues
 
 // Coyoneda (free functor) — get a Functor for anything
-export type Coyoneda<F, A> = { fea: HKT<F, any>; k: (x: any) => A }
+export type Coyoneda<F, A> = { fea: HKT<F, unknown>; k: (x: unknown) => A }
 
-export const liftCoy = <F, A>(fa: HKT<F, A>): Coyoneda<F, A> => ({ fea: fa, k: (x: any) => x })
+export const liftCoy = <F, A>(fa: HKT<F, A>): Coyoneda<F, A> => ({ fea: fa, k: (x: unknown) => unsafeCoerce(x) })
 
 export const lowerCoy = <F>(F: Functor<F>) =>
   <A>(c: Coyoneda<F, A>): HKT<F, A> => F.map(c.fea, c.k)
@@ -250,32 +285,32 @@ export type ExprF<A> =
 
 export const ExprFFunctor: Functor<'ExprF'> = {
   map: <A, B>(fa: HKT<'ExprF', A>, f: (a: A) => B): HKT<'ExprF', B> => {
-    const x = fa as any
-    return x._tag === 'Const' ? x : { _tag: 'Add', l: f(x.l), r: f(x.r) } as any
+    const x = unsafeCoerce<HKT<'ExprF', A>, ExprF<A>>(fa);
+    return x._tag === 'Const' ? unsafeCoerce(x) : unsafeCoerce({ _tag: 'Add', l: f(x.l), r: f(x.r) });
   }
 }
 
 // Smart constructors for expressions
 export const Const = (n: number): Free<'ExprF', number> =>
-  liftF<'ExprF', number>({ _tag: 'Const', n } as any)
+  liftF<'ExprF', number>(unsafeCoerce({ _tag: 'Const', n }))
 
 export const Add = (l: Free<'ExprF', number>, r: Free<'ExprF', number>): Free<'ExprF', number> =>
-  ({ _tag: 'Suspend', fa: { _tag: 'Add', l, r } as any })
+  ({ _tag: 'Suspend', fa: unsafeCoerce({ _tag: 'Add', l, r }) })
 
 // Expression algebras
 export const evalExprAlg = { 
   alg: <A>(fa: HKT<'ExprF', A>): A => {
-    const x = fa as any
-    return x._tag === 'Const' ? x.n : (x.l + x.r)
+    const x = unsafeCoerce<HKT<'ExprF', A>, ExprF<A>>(fa);
+    return x._tag === 'Const' ? unsafeCoerce(x.n) : unsafeCoerce(unsafeCoerce<A, number>(x.l) + unsafeCoerce<A, number>(x.r));
   }
-} as any
+}
 
 export const printExprAlg = {
   alg: <A>(fa: HKT<'ExprF', A>): string => {
-    const x = fa as any
-    return x._tag === 'Const' ? x.n.toString() : `(${x.l} + ${x.r})`
+    const x = unsafeCoerce<HKT<'ExprF', A>, ExprF<A>>(fa);
+    return x._tag === 'Const' ? x.n.toString() : `(${unsafeCoerce(x.l)} + ${unsafeCoerce(x.r)})`;
   }
-} as any
+}
 
 // Placeholder types for Free monad implementation
 export interface Pure<A> {

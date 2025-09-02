@@ -1,9 +1,7 @@
 /**
- * Kan Extensions Demo
- * 
- * Demonstrates pointwise Kan extensions using ends/coends:
- * - Left Kan: (Lan_F H)(d) ≅ ∫^c D(Fc,d) × H(c)  (coend quotient)
- * - Right Kan: (Ran_F H)(d) ≅ ∫_c H(c)^{D(d,Fc)}  (end with naturality)
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { demoKanExample } from '../types/catkit-kan';

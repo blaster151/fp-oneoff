@@ -1,8 +1,7 @@
 /**
- * Advanced Category Theory Demo
- * 
- * Demonstrates the three advanced layers:
- * 1. DoubleFunctors (maps between double categories)
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  * 2. Double category of relations over Set
  * 3. General inner horns with search-based filler
  */
@@ -18,7 +17,7 @@ import {
   Q_ABC
 } from '../types';
 
-export function demonstrateAdvancedCategories() {
+function demonstrateAdvancedCategories() {
   console.log('=== Advanced Category Theory Demo ===\n');
   
   // 1. DoubleFunctors

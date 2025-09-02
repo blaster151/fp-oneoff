@@ -1,8 +1,7 @@
 /**
- * Examples demonstrating Bifunctor and Trifunctor usage
- * 
- * This shows how to implement and use higher-arity functors
- * with the HKT2 and HKT3 encodings.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { HKT2, HKT3, Bifunctor, Trifunctor } from '../types';
@@ -100,7 +99,7 @@ const readerTTrifunctor: Trifunctor<'ReaderT'> = {
 };
 
 // Usage examples
-export function demonstrateBifunctor() {
+function demonstrateBifunctor() {
   console.log('=== Bifunctor Examples ===');
   
   // Create some Either values
@@ -134,7 +133,7 @@ export function demonstrateBifunctor() {
   console.log('Failure with prefix:', failureWithPrefix);
 }
 
-export function demonstrateTrifunctor() {
+function demonstrateTrifunctor() {
   console.log('\n=== Trifunctor Examples ===');
   
   // Create a ReaderT that reads a number and returns Either<string, number>

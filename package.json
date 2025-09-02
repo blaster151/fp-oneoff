@@ -1,15 +1,32 @@
 {
   "name": "fp-oneoff",
   "version": "1.0.0",
-  "main": "index.js",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**",
+    "README.md"
+  ],
   "scripts": {
     "dev": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc",
+    "build": "tsc -p .",
     "start": "node dist/index.js",
     "clean": "rm -rf dist",
+    "check": "tsc --noEmit -p tsconfig.test.json",
     "typecheck": "tsc --noEmit",
     "examples": "ts-node scripts/run-examples.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run check && npm run test && npm run build"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +36,7 @@
     "@types/node": "^24.3.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^2.0.0"
   }
 }

@@ -1,9 +1,10 @@
 /**
- * Demonstration of REAL specialization in factory functions
- * vs just "getting an instance because types don't have constructors"
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
-export function demonstrateRealSpecialization() {
+function demonstrateRealSpecialization() {
   console.log('=== Real Specialization Examples ===\n');
 
   // Example 1: Minimal specialization (just getting instances)
@@ -77,7 +78,7 @@ export function demonstrateRealSpecialization() {
 }
 
 // Example 4: Why we can't just use "new"
-export function demonstrateTypeVsConstructor() {
+function demonstrateTypeVsConstructor() {
   console.log('\n=== Why We Can\'t Use "new" ===\n');
 
   // This is a TYPE (compile-time only)

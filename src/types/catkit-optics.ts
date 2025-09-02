@@ -1,49 +1,66 @@
 // catkit-optics.ts
-// Minimal profunctor optics core for lenses + a tiny laws test kit.
-// Focus: Strong profunctor lenses with concrete interpreters (Function, Forget).
+// Minimal profunctor optics core (typed). No 'any' in core types.
 
-// ----------------- Profunctor dictionaries -----------------
+// ---------- Opaque profunctor payload ----------
+type Brand<T, B extends string> = T & { readonly __brand?: B };
 
-export type PVal<_P, _A, _B> = any;
+export type PVal<P, A, B> = Brand<unknown, 'PVal'> & {
+  readonly __P?: P;
+  readonly __A?: (a: A) => A; // phantom
+  readonly __B?: (b: B) => B; // phantom
+};
 
+// ---------- Dictionaries ----------
 export interface ProfDict<P> {
-  dimap: <A, B, C, D>(p: PVal<P, A, B>, l: (c: C) => A, r: (b: B) => D) => PVal<P, C, D>;
+  dimap: <A, B, C, D>(
+    p: PVal<P, A, B>,
+    l: (c: C) => A,
+    r: (b: B) => D
+  ) => PVal<P, C, D>;
 }
 
 export interface StrongDict<P> extends ProfDict<P> {
-  first: <A, B, C>(p: PVal<P, A, B>) => PVal<P, [A, C], [B, C]>;
+  first: <A, B, C>(
+    p: PVal<P, A, B>
+  ) => PVal<P, [A, C], [B, C]>;
 }
 
-// Optic representation: Lens s t a b := forall p. Strong p => p a b -> p s t
-export type Lens<S, T, A, B> = <P>(dict: StrongDict<P>) => (pab: PVal<P, A, B>) => PVal<P, S, T>;
-
-// ----------------- Concrete profunctors -----------------
-
-// Function profunctor P<A,B> = (a:A) => B
+// ---------- Concrete interpreters ----------
 export type Fn<A, B> = (a: A) => B;
 
-export const StrongFn: StrongDict<"Fn"> = {
-  dimap: <A, B, C, D>(p: Fn<A, B>, l: (c: C) => A, r: (b: B) => D): Fn<C, D> =>
-    (c: C) => r(p(l(c))),
-  first: <A, B, C>(p: Fn<A, B>): Fn<[A, C], [B, C]> =>
-    ([a, c]: [A, C]) => [p(a), c]
+// Helper: local, contained coercions for interpreters
+const asFn = <A, B>(p: PVal<'Fn', A, B>): Fn<A, B> =>
+  p as unknown as Fn<A, B>;
+const toPValFn = <A, B>(f: Fn<A, B>): PVal<'Fn', A, B> =>
+  f as unknown as PVal<'Fn', A, B>;
+
+export const StrongFn: StrongDict<'Fn'> = {
+  dimap: (p, l, r) => toPValFn((c) => r(asFn(p)(l(c)))),
+  first: <A, B, C>(p: PVal<'Fn', A, B>) =>
+    toPValFn(([a, c]: [A, C]) => [asFn(p)(a), c] as [B, C]) as PVal<'Fn', [A, C], [B, C]>,
 };
 
-// Forget profunctor: P<A,B> = (a:A) => R, ignoring B. Used to "view" through a lens.
 export type Forget<R, A, _B = unknown> = (a: A) => R;
 
-export function StrongForget<R>(): StrongDict<"Forget"> {
+const asForget = <R, A, B>(p: PVal<'Forget', A, B>): Forget<R, A, B> =>
+  p as unknown as Forget<R, A, B>;
+const toPValForget = <R, A, B>(f: Forget<R, A, B>): PVal<'Forget', A, B> =>
+  f as unknown as PVal<'Forget', A, B>;
+
+export function StrongForget<R>(): StrongDict<'Forget'> {
   return {
-    dimap: <A, B, C, D>(p: Forget<R, A, B>, l: (c: C) => A, _r: (b: B) => D): Forget<R, C, D> =>
-      (c: C) => p(l(c)),
-    first: <A, B, C>(p: Forget<R, A, B>): Forget<R, [A, C], [B, C]> =>
-      ([a, _c]: [A, C]) => p(a)
+    dimap: <A, B, C, D>(p: PVal<'Forget', A, B>, l: (c: C) => A, _r: (b: B) => D) => 
+      toPValForget<R, C, D>((c: C) => asForget<R, A, B>(p)(l(c))),
+    first: <A, B, C>(p: PVal<'Forget', A, B>) => 
+      toPValForget<R, [A, C], [B, C]>(([a, _c]: [A, C]) => asForget<R, A, B>(p)(a)),
   };
 }
 
-// ----------------- Lens constructor & interpreters -----------------
+// ---------- Lens ----------
+export type Lens<S, T, A, B> =
+  <P>(dict: StrongDict<P>) =>
+    (pab: PVal<P, A, B>) => PVal<P, S, T>;
 
-// lens get set:  s -> a, (s, b) -> t
 export function lens<S, T, A, B>(
   get: (s: S) => A,
   set: (s: S, b: B) => T
@@ -52,68 +69,66 @@ export function lens<S, T, A, B>(
     (pab: PVal<P, A, B>): PVal<P, S, T> => {
       const pre  = (s: S): [A, S] => [get(s), s];
       const post = ([b, s]: [B, S]): T => set(s, b);
-      // dimap pre post (first pab)
       const fst  = dict.first<A, B, S>(pab);
       return dict.dimap<[A, S], [B, S], S, T>(fst, pre, post);
     };
 }
 
-// Interpretations
+// ---------- Interpreters over lenses ----------
 export function view<S, A>(ln: Lens<S, S, A, A>, s: S): A {
   const F = StrongForget<A>();
-  const forget: Forget<A, A, A> = (a: A) => a;
-  const got = ln(F)(forget) as Forget<A, S, S>;
+  const forgetAB = toPValForget<A, A, A>((a) => a);
+  const got = ln(F)(forgetAB) as unknown as Forget<A, S, S>;
   return got(s);
 }
+
 export function over<S, T, A, B>(ln: Lens<S, T, A, B>, f: (a: A) => B): (s: S) => T {
-  const t = ln(StrongFn)((a: A) => f(a)) as Fn<S, T>;
+  const pab = toPValFn<A, B>(f);
+  const t = ln(StrongFn)(pab) as unknown as Fn<S, T>;
   return t;
 }
+
 export function setL<S, T, A, B>(ln: Lens<S, T, A, B>, b: B): (s: S) => T {
   return over(ln, () => b);
 }
 
-// ----------------- Laws (Get-Set, Set-Get, Set-Set) -----------------
-
-function deepEq(x: any, y: any): boolean {
-  return JSON.stringify(x) === JSON.stringify(y);
-}
+// ---------- Laws (still using deep structural eq for now) ----------
+import { eqJSON } from './eq.js';
+const deepEq = eqJSON<unknown>();
 
 export type LensLawReport = { getSet: boolean; setGet: boolean; setSet: boolean };
 
-export function checkLensLaws<S, T, A, B>(
-  ln: Lens<S, T, A, B>,
+export function checkLensLaws<S, A>(
+  ln: Lens<S, S, A, A>,
   sampleS: S,
-  b1: B,
-  b2: B
+  a1: A,
+  a2: A
 ): LensLawReport {
-  // get-set: set (view s) s = s
-  const get = view(ln as unknown as Lens<S, S, A, A>, sampleS as any) as any;
+  const get = view(ln, sampleS);
   const gs  = deepEq(setL(ln, get)(sampleS), sampleS);
 
-  // set-get: view (set b s) = b
-  const sg  = deepEq(view(ln as unknown as Lens<T, T, B, B>, setL(ln, b1)(sampleS) as any), b1 as any);
+  const sg  = deepEq(
+    view(ln, setL(ln, a1)(sampleS)),
+    a1
+  );
 
-  // set-set: set b2 (set b1 s) = set b2 s
-  const s1 = setL(ln, b1)(sampleS);
-  const ss  = deepEq(setL(ln, b2)(s1 as unknown as S), setL(ln, b2)(sampleS));
+  const ss1 = setL(ln, a2)(setL(ln, a1)(sampleS));
+  const ss2 = setL(ln, a2)(sampleS);
+  const ss  = deepEq(ss1, ss2);
 
   return { getSet: gs, setGet: sg, setSet: ss };
 }
 
-// ----------------- Example lenses -----------------
-
-// 1) fst lens on pairs [A, C] focusing on A
-export const fstLens: Lens<[any, any], [any, any], any, any> =
-  lens<[any, any], [any, any], any, any>(
-    ([a, _c]) => a,
+// ---------- Stock lenses without 'any' ----------
+export const fstLens = <A, C, B = A>(): Lens<[A, C], [B, C], A, B> =>
+  lens(
+    ([a]) => a,
     ([_, c], b) => [b, c]
   );
 
-// 2) property lens: focus on field "x" of a record and allow changing its type
-export function propLens<K extends string, S extends Record<K, any>, B>(key: K): Lens<S, Omit<S, K> & Record<K, B>, S[K], B> {
+export function propLens<S, K extends keyof S, B>(key: K): Lens<S, Omit<S, K> & { [P in K]: B }, S[K], B> {
   return lens(
-    (s: S) => s[key],
-    (s: S, b: B) => ({ ...(s as any), [key]: b })
+    (s) => s[key],
+    (s, b) => ({ ...s, [key]: b } as Omit<S, K> & { [P in K]: B })
   );
 }

@@ -3,6 +3,8 @@
 // natural transformations, adjunctions, and the mates correspondence.
 // This extends the existing category theory foundation with adjunction theory.
 
+import { eqJSON } from './eq.js';
+
 // ---- Base: SmallCategory is assumed (from existing types). Re-declare minimal types here for isolation. ----
 export interface SmallCategory<O, M> {
   id:  (o: O) => M;
@@ -52,7 +54,8 @@ export function checkNaturality<A_O, A_M, B_O, B_M>(
     const a  = A.src(u), a2 = A.dst(u);
     const lhs = B.comp(G.Fmor(u), at(a));
     const rhs = B.comp(at(a2),    F.Fmor(u));
-    return JSON.stringify(lhs) === JSON.stringify(rhs);
+    const eq = eqJSON<any>();
+    return eq(lhs, rhs);
   });
 }
 
@@ -78,7 +81,8 @@ export function checkAdjunctionTriangles<A_O, A_M, B_O, B_M>(Adj: Adjunction<A_O
     ? (A as any).objects.every((a: A_O) => {
         const left  = B.comp(counit.at(F.Fobj(a)), F.Fmor(unit.at(a)));
         const right = B.id(F.Fobj(a));
-        return JSON.stringify(left) === JSON.stringify(right);
+        const eq = eqJSON<any>();
+        return eq(left, right);
       })
     : true;
 
@@ -87,7 +91,8 @@ export function checkAdjunctionTriangles<A_O, A_M, B_O, B_M>(Adj: Adjunction<A_O
     ? (B as any).objects.every((b: B_O) => {
         const left  = A.comp(G.Fmor(counit.at(b)), unit.at(G.Fobj(b)));
         const right = A.id(G.Fobj(b));
-        return JSON.stringify(left) === JSON.stringify(right);
+        const eq = eqJSON<any>();
+        return eq(left, right);
       })
     : true;
 
@@ -119,7 +124,9 @@ export function companionHomProf<A_O, A_M, B_O, B_M>(
   return {
     elems: (a, b) => B.hom(F.Fobj(a), b),
     lmap:  (u, b, m) => B.comp(m, F.Fmor(u)),
-    rmap:  (_a, v, m) => B.comp(v, m)
+    rmap:  (_a, v, m) => B.comp(v, m),
+    keyT: (m) => String(m),
+    eqT: eqJSON<B_M>()
   };
 }
 
@@ -131,7 +138,9 @@ export function conjointHomProf<A_O, A_M, B_O, B_M>(
   return {
     elems: (a, b) => B.hom(b, F.Fobj(a)),
     lmap:  (u, b, m) => B.comp(F.Fmor(u), m), // precompose in codomain of m
-    rmap:  (_a, v, m) => B.comp(m, v)       // postcompose
+    rmap:  (_a, v, m) => B.comp(m, v),       // postcompose
+    keyT: (m) => String(m),
+    eqT: eqJSON<B_M>()
   };
 }
 

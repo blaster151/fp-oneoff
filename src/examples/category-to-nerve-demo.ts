@@ -1,8 +1,7 @@
 /**
- * Category-to-Nerve Demo
- * 
- * Demonstrates the internal category theory toolkit: building categories from quivers,
- * constructing their nerves as simplicial sets, and exploring face/degeneracy maps.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { 
@@ -23,7 +22,7 @@ import {
   PO_Q
 } from '../types';
 
-export function demonstrateCategoryToNerve() {
+function demonstrateCategoryToNerve() {
   console.log('=== Category-to-Nerve Demo ===\n');
   
   // 1. Show the quiver structure

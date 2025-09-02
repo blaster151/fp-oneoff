@@ -1,8 +1,7 @@
 /**
- * Higher Category Theory Demo
- * 
- * Demonstrates quasi-categories (inner horns) and double categories (commuting squares)
- * built on top of the category-to-nerve foundation.
+ * Developer Demo:
+ * - This file is not part of the library build.
+ * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import { 
@@ -16,7 +15,7 @@ import {
   g1
 } from '../types';
 
-export function demonstrateHigherCategories() {
+function demonstrateHigherCategories() {
   console.log('=== Higher Category Theory Demo ===\n');
   
   // 1. Quasi-Category: Inner Horns Λ¹²
@@ -114,6 +113,4 @@ export function demonstrateHigherCategories() {
 }
 
 // Run the demo
-if (require.main === module) {
-  demonstrateHigherCategories();
-}
+demonstrateHigherCategories();
