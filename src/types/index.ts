@@ -153,5 +153,8 @@ export * from './witnesses.js';
 // Enhanced relational law checking with witnesses
 export * from './rel-lawcheck-witnessed.js';
 
+// Witnessful allegory and Hoare logic
+export * from './allegory-witness.js';
+
 // Value-level instances and implementations
 export * from './instances.js';

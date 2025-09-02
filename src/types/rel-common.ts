@@ -195,7 +195,7 @@ export function compareStrategies<A, B>(
 }
 
 /************ Global strategy configuration ************/
-let globalStrategy: RelStrategy = 'naive';
+let globalStrategy: RelStrategy = process?.env?.REL_IMPL === 'naive' ? 'naive' : 'bit';
 
 export function setGlobalRelStrategy(strategy: RelStrategy): void {
   globalStrategy = strategy;
