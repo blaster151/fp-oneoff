@@ -2,7 +2,7 @@
 // Type-safe bridge between optics and profunctors with branded types and law checking
 // Removes all unsafe 'as any' casts and gates conversions with LawCheck verification
 
-import { LawCheck, lawCheck } from './witnesses.js';
+import { LawCheck, lawCheck, lawCheckSuccess } from './witnesses.js';
 import { checkLens, checkPrism, checkTraversal } from './optics-witness.js';
 import { applyShrinking } from './property-shrinking.js';
 
@@ -139,9 +139,11 @@ export function toProfunctorLens<S, A>(
       })
     );
     
-    return lawCheck(false, undefined, 
-      `Lens laws violated - conversion denied. Violations: ${JSON.stringify(shrunkViolations)}`
-    );
+    // For failed conversions, we don't have a valid ProfunctorLens to return
+    return { 
+      ok: false, 
+      note: `Lens laws violated - conversion denied. Violations: ${JSON.stringify(shrunkViolations)}`
+    } as LawCheck<ProfunctorLens<S, A>>;
   }
 }
 
@@ -151,8 +153,12 @@ export function toProfunctorPrism<S, A>(
   testDomain: { elems: S[] },
   testCodomain: { elems: A[] }
 ): LawCheck<ProfunctorPrism<S, A>> {
+  // Convert SafePrism (A | undefined) to Prism (Option<A>) for law checking
   const rawPrism = {
-    match: prism.match,
+    match: (s: S) => {
+      const result = prism.match(s);
+      return result === undefined ? { tag: "none" as const } : { tag: "some" as const, value: result };
+    },
     build: prism.build
   };
   
@@ -187,9 +193,11 @@ export function toProfunctorPrism<S, A>(
       })
     );
     
-    return lawCheck(false, undefined,
-      `Prism laws violated - conversion denied. Violations: ${JSON.stringify(shrunkViolations)}`
-    );
+    // For failed conversions, we don't have a valid ProfunctorPrism to return
+    return { 
+      ok: false, 
+      note: `Prism laws violated - conversion denied. Violations: ${JSON.stringify(shrunkViolations)}`
+    } as LawCheck<ProfunctorPrism<S, A>>;
   }
 }
 
@@ -244,9 +252,11 @@ export function toProfunctorTraversal<S, A>(
       })
     );
     
-    return lawCheck(false, undefined,
-      `Traversal laws violated - conversion denied. Violations: ${JSON.stringify(shrunkViolations)}`
-    );
+    // For failed conversions, we don't have a valid ProfunctorTraversal to return
+    return { 
+      ok: false, 
+      note: `Traversal laws violated - conversion denied. Violations: ${JSON.stringify(shrunkViolations)}`
+    } as LawCheck<ProfunctorTraversal<S, A>>;
   }
 }
 
@@ -308,7 +318,7 @@ export function validateOpticLaws<S, A>(
     const allLawsOk = result.getSet.ok && result.setGet.ok && result.setSet.ok;
     
     if (allLawsOk) {
-      return lawCheck(true, undefined, "All lens laws satisfied");
+      return lawCheck(true, { lawType: "lens", violations: [] }, "All lens laws satisfied");
     } else {
       const violations = [
         ...(!result.getSet.ok ? result.getSet.counterexamples : []),
@@ -321,12 +331,19 @@ export function validateOpticLaws<S, A>(
   }
   
   if ('match' in optic && 'build' in optic) {
-    // Prism
-    const result = checkPrism(testDomain, testCodomain, optic);
+    // Prism - convert A | undefined to Option<A>
+    const adaptedPrism = {
+      match: (s: S) => {
+        const result = optic.match(s);
+        return result === undefined ? { tag: "none" as const } : { tag: "some" as const, value: result };
+      },
+      build: optic.build
+    };
+    const result = checkPrism(testDomain, testCodomain, adaptedPrism);
     const allLawsOk = result.buildMatch.ok && result.partialInverse.ok;
     
     if (allLawsOk) {
-      return lawCheck(true, undefined, "All prism laws satisfied");
+      return lawCheck(true, { lawType: "prism", violations: [] }, "All prism laws satisfied");
     } else {
       const violations = [
         ...(!result.buildMatch.ok ? result.buildMatch.counterexamples : []),
@@ -343,7 +360,7 @@ export function validateOpticLaws<S, A>(
     const allLawsOk = result.identity.ok && result.composition.ok;
     
     if (allLawsOk) {
-      return lawCheck(true, undefined, "All traversal laws satisfied");
+      return lawCheck(true, { lawType: "traversal", violations: [] }, "All traversal laws satisfied");
     } else {
       const violations = [
         ...(!result.identity.ok ? result.identity.counterexamples : []),

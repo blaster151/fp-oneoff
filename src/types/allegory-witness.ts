@@ -256,15 +256,15 @@ export function equipmentWitness<A, B>(
   const graph_f = graph(A_set, B_set, f);
   const conjoint = graph_f.converse(); // f*
   
-  // Unit: id_A ≤ f* ; f_*
+  // Unit: id_A ≤ f* ; f_* (graph_f ∘ conjoint : A → A)
   const id_A = Rel.id(A_set);
-  const unit_composition = conjoint.compose(graph_f);
-  const unitWitness = safeInclusionWitness(unit_composition, id_A);
+  const unit_composition = graph_f.compose(conjoint); // f_* ; f* : A → A
+  const unitWitness = safeInclusionWitness(id_A, unit_composition);
   
-  // Counit: f_* ; f* ≤ id_B  
+  // Counit: f_* ; f* ≤ id_B (conjoint ∘ graph_f : B → B)
   const id_B = Rel.id(B_set);
-  const counit_composition = graph_f.compose(conjoint);
-  const counitWitness = safeInclusionWitness(id_B, counit_composition);
+  const counit_composition = conjoint.compose(graph_f); // f* ; f_* : B → B  
+  const counitWitness = safeInclusionWitness(counit_composition, id_B);
   
   return {
     companionConjoint: {

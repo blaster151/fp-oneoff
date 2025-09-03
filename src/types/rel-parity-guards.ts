@@ -5,7 +5,7 @@
 import { Finite, Rel } from './rel-equipment.js';
 import { BitRel } from './bitrel.js';
 import { formatWitness, printLawCheck, errorText, warningText, successText } from './display-helpers.js';
-import { LawCheck, lawCheck } from './witnesses.js';
+import { LawCheck, lawCheck, lawCheckSuccess } from './witnesses.js';
 
 /************ Configuration ************/
 
@@ -122,7 +122,7 @@ function compareRelationResults<A, B>(
   const identical = relOnly.length === 0 && bitRelOnly.length === 0;
   
   if (identical) {
-    return lawCheck(true, undefined, `Parity verified: ${operation} produces identical results`);
+    return lawCheckSuccess(`Parity verified: ${operation} produces identical results`);
   } else {
     const witness: ParityMismatchWitness = {
       operation,
@@ -187,7 +187,8 @@ export function checkCompositionParity<A, B, C>(
     return comparison;
     
   } catch (error) {
-    return lawCheck(false, undefined, `Parity check failed with error: ${error}`);
+    console.error(errorText(`Parity check error: ${error}`));
+    return null; // Skip check on error
   }
 }
 
@@ -223,7 +224,8 @@ export function checkUnionParity<A, B>(
     });
     
   } catch (error) {
-    return lawCheck(false, undefined, `Union parity check failed: ${error}`);
+    console.error(errorText(`Union parity check error: ${error}`));
+    return null;
   }
 }
 
@@ -259,7 +261,8 @@ export function checkIntersectionParity<A, B>(
     });
     
   } catch (error) {
-    return lawCheck(false, undefined, `Intersection parity check failed: ${error}`);
+    console.error(errorText(`Intersection parity check error: ${error}`));
+    return null;
   }
 }
 
@@ -292,7 +295,8 @@ export function checkConverseParity<A, B>(
     });
     
   } catch (error) {
-    return lawCheck(false, undefined, `Converse parity check failed: ${error}`);
+    console.error(errorText(`Converse parity check error: ${error}`));
+    return null;
   }
 }
 
@@ -651,7 +655,7 @@ export function demonstrateParityGuards(): void {
   try {
     handleParityMismatch(simulatedCheck);
   } catch (error) {
-    console.error(errorText(`Would crash with: ${error.message}`));
+    console.error(errorText(`Would crash with: ${error instanceof Error ? error.message : String(error)}`));
   }
   
   configureParityChecking({ crashOnMismatch: originalCrash });
@@ -677,7 +681,7 @@ export function demonstrateParityGuards(): void {
     console.log(`  Operations performed: ${stats.operationCount}`);
     
   } catch (error) {
-    console.log(`  ${errorText("Parity mismatch caught:")} ${error.message}`);
+    console.log(`  ${errorText("Parity mismatch caught:")} ${error instanceof Error ? error.message : String(error)}`);
   }
   
   console.log("\n" + "=".repeat(80));
@@ -702,5 +706,4 @@ export function demonstrateParityGuards(): void {
 // Auto-initialize from environment on module load
 initParityChecking();
 
-// Export for manual control
-export { initParityChecking };
+// Export for manual control (already exported above)

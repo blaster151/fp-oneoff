@@ -409,12 +409,12 @@ export function formatHomologyResults(results: {
   
   for (let i = 0; i < results.length; i++) {
     const result = results[i]!;
-    const dimText = `H${result.dimension}`;
+    const dimensionText = `H${result.dimension}`;
     const groupText = result.prettyForm;
     const torsionInfo = result.torsion.length > 0 ? 
       ` ${dimText(`(torsion: ${result.torsion.join(", ")})`)}` : "";
     
-    console.log(`  ${infoText(dimText)} ≅ ${successText(groupText)}${torsionInfo}`);
+    console.log(`  ${infoText(dimensionText)} ≅ ${successText(groupText)}${torsionInfo}`);
   }
 }
 
@@ -435,7 +435,8 @@ export function formatErrorSummary(
     
     const errorEntries = errors.filter(e => !e.error.ok).slice(0, 5); // Show first 5
     for (const entry of errorEntries) {
-      console.log(`    ${entry.source}: ${formatWitness(entry.error.witness)}`);
+      const witness = !entry.error.ok ? entry.error.witness : undefined;
+      console.log(`    ${entry.source}: ${formatWitness(witness)}`);
     }
     
     if (errorCount > 5) {

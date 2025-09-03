@@ -3,7 +3,7 @@
 // Provides user-friendly interface for homology computations
 
 import { smithNormalForm } from './catkit-homology.js';
-import { LawCheck, lawCheck } from './witnesses.js';
+import { LawCheck, lawCheck, lawCheckSuccess } from './witnesses.js';
 
 /************ Matrix Types and Utilities ************/
 
@@ -139,7 +139,7 @@ export function verifySNF(
     
     // Check if UAV = D
     if (matricesEqual(UAV, D)) {
-      return lawCheck(true, undefined, "SNF verification successful: U*A*V = D");
+      return lawCheckSuccess("SNF verification successful: U*A*V = D");
     }
     
     // Find first difference for witness
@@ -161,10 +161,30 @@ export function verifySNF(
       );
     }
     
-    return lawCheck(false, undefined, "SNF verification failed: unknown matrix computation error");
+    return lawCheck(false, {
+      loc: [-1, -1],
+      got: NaN,
+      expected: NaN,
+      matrixSizes: {
+        U: matrixShape(U),
+        A: matrixShape(A), 
+        V: matrixShape(V),
+        D: matrixShape(D)
+      }
+    }, "SNF verification failed: unknown matrix computation error");
     
   } catch (error) {
-    return lawCheck(false, undefined, `SNF verification error: ${error}`);
+    return lawCheck(false, {
+      loc: [-1, -1],
+      got: NaN,
+      expected: NaN,
+      matrixSizes: {
+        U: matrixShape(U),
+        A: matrixShape(A), 
+        V: matrixShape(V),
+        D: matrixShape(D)
+      }
+    }, `SNF verification error: ${error}`);
   }
 }
 
