@@ -257,3 +257,128 @@ export function demonstrateDiagramDSL() {
   
   console.log("\\n🎯 Self-documenting categorical computing made easy!");
 }
+
+/* ===========================
+   EXTRA SHAPES
+   =========================== */
+
+/** parallelPair: A ⇉ B with two distinct arrows p,q : A -> B */
+export function parallelPair<A extends string = "A", B extends string = "B">(
+  A_ = "A" as A, 
+  B_ = "B" as B, 
+  pId = "p", 
+  qId = "q"
+) {
+  const Obj = [A_, B_];
+  const p = { id: pId, src: A_, dst: B_ } as const;
+  const q = { id: qId, src: A_, dst: B_ } as const;
+  const homes: HomSpec<any, any> = {
+    [`${A_}->${B_}`]: [pId, qId]
+  };
+  return makeSmallCategory(Obj as any, [p, q] as any, homes);
+}
+
+/** nCube: objects are bitstrings of length n; unique arrow u->v iff u ≤ v bitwise.
+ * This is the Boolean lattice B_n viewed as a (thin) category.
+ */
+export function nCube(n: number) {
+  if (n <= 0) throw new Error("n must be >=1");
+  
+  const bits = (k: number) => Array.from({ length: k }, (_, i) => i);
+  const verts = Array.from({ length: 1 << n }, (_, m) => {
+    const s = bits(n).map(i => ((m >> i) & 1) ? "1" : "0").reverse().join("");
+    return s;
+  }) as string[];
+  
+  type O = typeof verts[number];
+
+  // Every hom-set has at most one non-identity arrow (thin category)
+  const homes: HomSpec<any, any> = {};
+  const arrowId = (u: O, v: O) => `h_${u}_${v}`;
+  
+  const leq = (u: string, v: string) => {
+    if (u.length !== v.length) return false;
+    return [...u].every((b, i) => b === "0" || v[i] === "1");
+  };
+
+  const nontriv: { id: string; src: O; dst: O }[] = [];
+  for (const u of verts) {
+    for (const v of verts) {
+      if (u === v) continue;
+      if (leq(u, v)) {
+        const aid = arrowId(u as any, v as any);
+        nontriv.push({ id: aid, src: u as any, dst: v as any });
+        homes[`${u}->${v}`] = [aid];
+      }
+    }
+  }
+  
+  return makeSmallCategory(verts as any, nontriv as any, homes);
+}
+
+/** wheel: center C with rim R0..R{k-1}; spokes s_i : C -> Ri; rim arrows r_i : Ri -> R_{i+1 mod k} */
+export function wheel(k: number) {
+  if (k < 3) throw new Error("wheel(k): need k>=3");
+  
+  const C = "C";
+  const rims = Array.from({ length: k }, (_, i) => `R${i}`);
+  const Obj = [C, ...rims];
+  
+  const s = rims.map((Ri, i) => ({ id: `s${i}`, src: C, dst: Ri } as const));
+  const r = rims.map((Ri, i) => ({ id: `r${i}`, src: Ri, dst: rims[(i + 1) % k] } as const));
+  
+  const homes: HomSpec<any, any> = {};
+  rims.forEach((Ri, i) => { 
+    homes[`${C}->${Ri}`] = [`s${i}`]; 
+    homes[`${Ri}->${rims[(i + 1) % k]}`] = [`r${i}`]; 
+  });
+  
+  return makeSmallCategory(Obj as any, [...s, ...r] as any, homes);
+}
+
+/* ===========================
+   SUGAR / CHECKS
+   =========================== */
+
+/** Extract a morphism by id (throws if missing). */
+export function getMor<J>(J: any, id: string) {
+  const all = (J.Mor as any[]);
+  const m = all.find(x => String(x.id) === id);
+  if (!m) throw new Error(`Morphism not found: ${id}`);
+  return m;
+}
+
+/** Check commutative square: given ids f:a->b, g:a->c, h:b->d, k:c->d, verify h∘f = k∘g.
+ * Uses J.comp and J.hom lookup to confirm both composites land in the unique hom(a,d) element when thin.
+ */
+export function checkCommutativeSquare<J>(
+  J: any, // SmallCategory
+  ids: { f: string; g: string; h: string; k: string }
+): boolean {
+  try {
+    const f = getMor(J, ids.f);
+    const g = getMor(J, ids.g);
+    const h = getMor(J, ids.h);
+    const k = getMor(J, ids.k);
+    
+    if (f.dst !== h.src || g.dst !== k.src || f.src !== g.src || h.dst !== k.dst) {
+      throw new Error("Square object mismatch");
+    }
+    
+    const top = J.comp(h, f);
+    const left = J.comp(k, g);
+    
+    return String((top as any).id) === String((left as any).id);
+  } catch (e) {
+    return false;
+  }
+}
+
+/** Make a functor by providing only object images and a dictionary of arrow actions by id. */
+export function functorById<J>(
+  J: any, // SmallCategory
+  onObj: (o: any) => SetObj<any>,
+  arrowMap: Record<string, (x: any) => any>
+) {
+  return functorToFinSet(J, onObj, (m: any) => arrowMap[String(m.id)] ?? ((x: any) => x));
+}

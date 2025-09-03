@@ -315,5 +315,8 @@ export { PresheafLimitsGeneral as PshLimitsGeneral };
 import * as DiagramDSL from './diagram-dsl.js';
 export { DiagramDSL };
 
+// Alias for discoverability
+export { DiagramDSL as DiagramDSLExtras };
+
 // Value-level instances and implementations
 export * from './instances.js';
