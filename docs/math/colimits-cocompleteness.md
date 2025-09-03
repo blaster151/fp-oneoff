@@ -243,3 +243,111 @@ The transport satisfies: \(Q(f) \circ q_b = q_a \circ \coprod P_j(f)\)
 - Enriched presheaf colimits
 - Grothendieck construction
 - Topos-theoretic colimits
+
+## [DEF-ADT-INIT]
+id: DEF-ADT-INIT
+tags: [adt, initial-algebra, fixpoint, catamorphism]
+source: canonical:"Algebraic data types as initial algebras μF with cata/ana/hylo"
+---
+**Statement (LaTeX)**  
+For polynomial endofunctor \(F\), the initial algebra \(\mu F\) exists with:
+\[
+\text{cata} : (F(A) \to A) \to \mu F \to A
+\]
+
+**Initial Algebra Theorem**  
+\(\mu F\) is initial in the category of \(F\)-algebras, giving unique catamorphisms.
+
+**Lambek's Lemma**  
+The structure map \(\text{In} : F(\mu F) \to \mu F\) is an isomorphism.
+
+**Recursion Schemes**  
+- **Catamorphism**: \(\text{cata}\) (fold/consume)
+- **Anamorphism**: \(\text{ana}\) (unfold/generate)  
+- **Hylomorphism**: \(\text{hylo}\) (refactor/fusion)
+
+**Implications (TS)**  
+- `Fix<F>` type for fixpoints
+- `In`/`Out` constructors with isomorphism property
+- `cata`/`ana`/`hylo` recursion schemes
+- Pattern matching via `match()` with exhaustiveness
+
+**Test Hook**  
+`src/types/__tests__/adt-list-tree.test.ts`
+
+**Future unlocks**  
+- Rose trees and nested data structures
+- Expression ADTs with operators
+- Trie structures for efficient lookup
+- Generic derivation of ADT operations
+
+## [EX-ADT-LIST]
+id: EX-ADT-LIST
+tags: [list, polynomial-functor, catamorphism]
+source: canonical:"List A ≅ μX.(1 + A×X)"
+---
+**Statement (LaTeX)**  
+\[
+\text{List}(A) \cong \mu X. (1 + A \times X)
+\]
+
+**Polynomial Functor**  
+\(\text{ListF}(X, A) = 1 + A \times X\) with:
+- \(1\): Empty list (Nil)
+- \(A \times X\): Cons cell (head, tail)
+
+**Constructors**  
+- \(\text{Nil} : 1 \to \text{List}(A)\)
+- \(\text{Cons} : A \times \text{List}(A) \to \text{List}(A)\)
+
+**Catamorphisms**  
+\[
+\text{foldRight} : B \times (A \times B \to B) \to \text{List}(A) \to B
+\]
+
+**Operations**  
+All list operations (length, map, filter, append) derived via catamorphisms.
+
+**Test Hook**  
+`src/types/__tests__/adt-list-tree.test.ts`
+
+**Future unlocks**  
+- Lazy lists and streams
+- List fusion optimizations
+- Parallel list operations
+
+## [EX-ADT-TREE]
+id: EX-ADT-TREE
+tags: [tree, polynomial-functor, catamorphism]
+source: canonical:"BinaryTree A ≅ μX.(A + X×X)"
+---
+**Statement (LaTeX)**  
+\[
+\text{BinaryTree}(A) \cong \mu X. (A + X \times X)
+\]
+
+**Polynomial Functor**  
+\(\text{TreeF}(X, A) = A + X \times X\) with:
+- \(A\): Leaf nodes
+- \(X \times X\): Branch nodes (left, right)
+
+**Constructors**  
+- \(\text{Leaf} : A \to \text{BinaryTree}(A)\)
+- \(\text{Branch} : \text{BinaryTree}(A) \times \text{BinaryTree}(A) \to \text{BinaryTree}(A)\)
+
+**Catamorphisms**  
+\[
+\text{foldTree} : (A \to B) \times (B \times B \to B) \to \text{BinaryTree}(A) \to B
+\]
+
+**Operations**  
+Tree operations (size, height, toArray, map) derived via catamorphisms.
+
+**Test Hook**  
+`src/types/__tests__/adt-list-tree.test.ts`
+
+**Future unlocks**  
+- Rose trees (arbitrary branching)
+- Balanced tree structures (AVL, Red-Black)
+- Tree traversal strategies
+- Expression trees with evaluation

@@ -1,4 +1,4 @@
-/** @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM */
+/** @math DEF-ADT-INIT @math EX-ADT-LIST @math EX-ADT-TREE */
 
 import { describe, it, expect } from "vitest";
 import { List, Nil, Cons, toArray, fromArray, foldRight, foldLeft, length, map, filter, append, demonstrateListADT } from "../adt-list.js";

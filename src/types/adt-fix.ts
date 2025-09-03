@@ -1,6 +1,7 @@
 /** @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM */
 
-/** Initial algebras μF with in/out, cata/ana/hylo (polynomial F expected) */
+/** @math DEF-ADT-INIT @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM
+ * Initial algebras μF with in/out, cata/ana/hylo (polynomial F expected) */
 
 export type Fix<F> = { readonly _tag: "Fix"; readonly unfix: F };
 

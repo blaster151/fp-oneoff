@@ -1,4 +1,4 @@
-/** @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM */
+/** @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM @math EX-ADT-TREE */
 
 import { Fix, In, Out, withMap, cata } from "./adt-fix.js";
 import { Sum, Inl, Inr, inl, inr, Pair, pair } from "./adt-sum-prod.js";
