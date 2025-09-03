@@ -195,7 +195,7 @@ import * as Kan from './kan-index.js';
 export { Kan };
 
 // Codensity monad using Right Kan extensions (Ran_G G)
-import * as Codensity from './codensity.js';
+import * as Codensity from './codensity-index.js';
 export { Codensity };
 
 // Value-level instances and implementations
