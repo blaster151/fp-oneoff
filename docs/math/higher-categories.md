@@ -110,3 +110,58 @@ source: canonical:"Cat as a 2-category"
 ---
 **Implementation**  
 Cat as fundamental 2-category with complete law verification.
+
+## [DEF-BICAT]
+id: DEF-BICAT
+tags: [bicategory, associator, unitor]
+source: canonical:"Bicategory with a_{H,G,F}, l_F, r_F"
+---
+**Definition (LaTeX)**  
+A bicategory has associator \(a_{H,G,F}: (H \circ G) \circ F \Rightarrow H \circ (G \circ F)\) and unitors \(l_F: \text{id} \circ F \Rightarrow F\), \(r_F: F \circ \text{id} \Rightarrow F\).
+
+**Coherence Structure**  
+- Associator: 2-isomorphism for 1-cell composition
+- Left/Right unitors: 2-isomorphisms for identity 1-cells
+- Pentagon and triangle laws: Mac Lane coherence conditions
+
+**Strict vs Weak**  
+- Strict: Associator and unitors are identity 2-cells
+- Weak: Associator and unitors are invertible 2-cells with coherence
+
+**Implications (TS)**  
+- `Bicategory<Obj, One, Two>` interface
+- Coherence law verification in tests
+- Cat as strict bicategory example
+
+**Future unlocks**  
+- Weak bicategories with non-trivial coherence
+- Tricategories and higher weak structures
+- Applications to homotopy theory
+
+## [LAW-PENTAGON]
+id: LAW-PENTAGON
+tags: [bicategory, coherence]
+source: canonical:"Mac Lane pentagon identity"
+---
+**Law (LaTeX)**  
+Pentagon identity for associators in bicategories.
+
+**Coherence Condition**  
+Ensures that different ways of associating 4-fold composition give the same result.
+
+**Test Hook**  
+`src/types/__tests__/bicategory-coherence.test.ts`
+
+## [LAW-TRIANGLE]
+id: LAW-TRIANGLE
+tags: [bicategory, coherence]
+source: canonical:"Triangle identity"
+---
+**Law (LaTeX)**  
+Triangle identity relating associator and unitors.
+
+**Coherence Condition**  
+Ensures compatibility between associativity and unit laws.
+
+**Test Hook**  
+`src/types/__tests__/bicategory-coherence.test.ts`

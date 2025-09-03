@@ -282,5 +282,13 @@ export { FinSetColimitsGeneral };
 import * as PresheafColimitsGeneral from './presheaf-colimits-general.js';
 export { PresheafColimitsGeneral };
 
+// Bicategory interface and coherence laws
+import * as Bicategory from './bicategory.js';
+export { Bicategory };
+
+// Cat as strict bicategory
+import * as CatBicat from './cat-bicat.js';
+export { CatBicat };
+
 // Value-level instances and implementations
 export * from './instances.js';

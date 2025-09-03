@@ -39,6 +39,7 @@
     "test:colim:finset": "vitest run src/types/__tests__/finset-colimits.test.ts",
     "test:colim:presheaf": "vitest run src/types/__tests__/presheaf-colimits.test.ts",
     "test:diagram": "vitest run src/types/__tests__/finset-diagram.test.ts",
+    "test:bicat": "vitest run src/types/__tests__/bicategory-coherence.test.ts",
     "test:topology:convergence": "vitest run src/types/__tests__/topology-convergence.test.ts",
     "test:ultrafilter": "vitest run src/types/__tests__/ultrafilter-principal.test.ts",
     "test:ultrafilter:em": "vitest run src/types/__tests__/em-algebra-discrete.test.ts",

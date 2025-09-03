@@ -20,6 +20,11 @@ export interface Nat<CatA, CatB> {
   __components?: any[];
   __functor?: any;
   __nat?: any;
+  // Bicategory-specific metadata
+  __isAssociator?: boolean;
+  __isLeftUnitor?: boolean;
+  __isRightUnitor?: boolean;
+  __horizontal?: boolean;
 }
 
 /** 2-category Cat whose:
