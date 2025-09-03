@@ -3,7 +3,7 @@
 ## [DEF-PRESHEAF]
 id: DEF-PRESHEAF
 tags: [presheaf, contravariant, functor]
-source: knowledge:"Contravariant functor P: C^op → Set"
+source: canonical:"P: C^op → Set"
 ---
 **Definition (LaTeX)**  
 A presheaf on category \(C\) is a contravariant functor \(P: C^{\text{op}} \to \mathbf{Set}\).
@@ -28,8 +28,8 @@ For morphism \(f: a \to b\) in \(C\), we get \(P(f): P(b) \to P(a)\).
 
 ## [DEF-YONEDA]
 id: DEF-YONEDA
-tags: [yoneda, embedding, representable]
-source: knowledge:"Yoneda embedding Y: C → [C^op, Set]"
+tags: [yoneda, presheaf]
+source: canonical:"y: C → Set^{C^op}"
 ---
 **Definition (LaTeX)**  
 The Yoneda embedding is \(Y: C \to [C^{\text{op}}, \mathbf{Set}]\) given by \(Y(c) = \text{Hom}(-, c)\).
@@ -54,8 +54,8 @@ The Yoneda embedding is \(Y: C \to [C^{\text{op}}, \mathbf{Set}]\) given by \(Y(
 
 ## [LEM-YONEDA]
 id: LEM-YONEDA
-tags: [yoneda, lemma, isomorphism]
-source: knowledge:"Nat(Y(c), F) ≅ F(c) natural isomorphism"
+tags: [yoneda, lemma]
+source: canonical:"Nat(y(c),F) ≅ F(c)"
 ---
 **Statement (LaTeX)**  
 For any presheaf \(F: C^{\text{op}} \to \mathbf{Set}\) and object \(c \in C\):
