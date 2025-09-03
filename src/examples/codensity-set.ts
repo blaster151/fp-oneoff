@@ -2,7 +2,7 @@
  * Example: compute T^G(A) for a discrete B with two objects and verify the product formula.
  * Also demo eta and mu.
  *
- * @math THM-CODENSITY-END
+ * @math THM-CODENSITY-END-FORMULA @math THM-DISCRETE-CARDINALITY
  */
 
 import { SetObj } from "../types/catkit-kan.js";
