@@ -194,5 +194,9 @@ export const CPS = {
 import * as Kan from './kan-index.js';
 export { Kan };
 
+// Codensity monad using Right Kan extensions (Ran_G G)
+import * as Codensity from './codensity.js';
+export { Codensity };
+
 // Value-level instances and implementations
 export * from './instances.js';
