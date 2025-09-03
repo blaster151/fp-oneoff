@@ -138,3 +138,62 @@ The presheaf category \([C^{\text{op}}, \mathbf{Set}]\) has:
 - Sheafification and Grothendieck topologies
 - Categorical logic and semantics
 - Applications to algebraic geometry
+
+## [DEF-COYONEDA]
+id: DEF-COYONEDA
+tags: [coyoneda, covariant, representable]
+source: canonical:"ŷ: C → Set^C"
+---
+**Definition (LaTeX)**  
+The co-Yoneda embedding is \(\hat{Y}: C \to [\mathcal{C}, \mathbf{Set}]\) given by \(\hat{Y}(c) = \text{Hom}(c, -)\).
+
+**Co-representable Functor**  
+\(\hat{Y}(c)(a) = \text{Hom}_C(c, a)\) with covariant action on morphisms.
+
+**Dual Properties**  
+- Fully faithful functor (dual to Yoneda)
+- Preserves and reflects colimits
+- Dense when \(C\) is small
+
+**Implications (TS)**  
+- `coYoneda(C).yhat(c)` constructs co-representable copresheaf
+- Covariant action via postcomposition
+- Foundation for Isbell duality
+
+**Future unlocks**  
+- Co-Yoneda's codensity and dual Isbell theory
+- Co-representable copresheaves and universal properties
+- Dense subcategory theorems for copresheaves
+
+## [THM-ISBELL-DUALITY]
+id: THM-ISBELL-DUALITY
+tags: [isbell, duality, conjugates]
+source: canonical:"O and Spec adjoint conjugates"
+---
+**Statement (LaTeX)**  
+Isbell conjugates \(O: [\mathcal{C}^{\text{op}}, \mathbf{Set}] \to [\mathcal{C}, \mathbf{Set}]\) and \(\text{Spec}: [\mathcal{C}, \mathbf{Set}] \to [\mathcal{C}^{\text{op}}, \mathbf{Set}]\) form an adjoint pair.
+
+**Definitions**  
+- \(O(F)(c) = \text{Nat}(F, y(c))\)
+- \(\text{Spec}(G)(c) = \text{Nat}(\hat{y}(c), G)\)
+
+**Duality**  
+\(O \dashv \text{Spec}\) with natural isomorphism \(\text{Nat}(O(F), G) \cong \text{Nat}(F, \text{Spec}(G))\).
+
+**Implications (TS)**  
+- `Isbell(C).O(F)` transforms presheaves to copresheaves
+- `Isbell(C).Spec(G)` transforms copresheaves to presheaves
+- Natural transformation enumeration for finite categories
+
+**Test Hook**  
+`src/types/__tests__/isbell-basic.test.ts`
+
+**Applications**  
+- Stone duality for Boolean algebras
+- Spectral topology and prime ideal spaces
+- Algebraic geometry and scheme theory
+
+**Future unlocks**  
+- Stone representation theorem via Isbell duality
+- Spectral sequences and cohomology
+- Applications to algebraic topology and geometry

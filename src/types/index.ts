@@ -242,5 +242,13 @@ export { Presheaf };
 import * as Yoneda from './yoneda.js';
 export { Yoneda };
 
+// Copresheaf categories and covariant functors
+import * as Copresheaf from './copresheaf.js';
+export { Copresheaf };
+
+// Isbell duality: O and Spec conjugates
+import * as Isbell from './isbell.js';
+export { Isbell };
+
 // Value-level instances and implementations
 export * from './instances.js';
