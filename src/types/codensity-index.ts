@@ -18,6 +18,7 @@ export * from './codensity-by-comma.js';
 
 // Codensity probing and analysis tools
 export * from './codensity-probe.js';
+export * from './codense-probe.js';
 
 // Re-export main implementations
 export { 
