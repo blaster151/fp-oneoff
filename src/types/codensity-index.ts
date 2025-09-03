@@ -10,6 +10,9 @@ export * from './codensity-nat-view.js';
 // Ergonomic monadic convenience layer (of/map/chain/ap)
 export * from './codensity-monad.js';
 
+// Discoverable entry point for codensity construction
+export * from './codensity-of.js';
+
 // Re-export main implementations
 export { 
   CodensitySet as default,
