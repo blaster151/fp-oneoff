@@ -41,6 +41,7 @@
     "test:topology:product": "vitest run src/types/__tests__/topology-product.test.ts",
     "test:topology:and-agrees": "vitest run src/types/__tests__/topology-and-agrees.test.ts",
     "test:ultrafilter:demorgan": "vitest run src/types/__tests__/ultrafilter-demorgan.test.ts",
+    "test:ultrafilter:distributivity": "vitest run src/types/__tests__/ultrafilter-distributivity.test.ts",
     "demo:cps": "node -e \"const { CPS } = require('./dist/types/index.js'); const id = x => x; const prog = CPS.reset(CPS.Cont.chain(x => CPS.Cont.of()(x + 1))(CPS.shift(k => k(5)))); console.log('shift/reset example =>', CPS.Cont.run(prog, id));\"",
     "demo:kan": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Kan demo:'); Kan.demoKanExample();\"",
     "demo:product": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Product demo: Discrete category gives product'); console.log('Available:', Object.keys(Kan).filter(k => k.includes('Ran')).join(', '));\"",

@@ -86,6 +86,30 @@ source: canonical:"De Morgan via not, and"
 - Boolean algebra homomorphisms and Stone spaces.
 - Ultrafilter limits and convergence in topological spaces.
 
+## [LAW-ULTRA-DISTRIBUTIVITY]
+id: LAW-ULTRA-DISTRIBUTIVITY
+tags: [ultrafilter, boolean, distributivity]
+source: knowledge:"Boolean algebra distributivity via naturality"
+---
+**Law**  
+\(U(S \land (T \lor W)) = U((S \land T) \lor (S \land W))\).
+
+**Proof Method**  
+Pure categorical naturality with Boolean morphisms \(\land, \lor\) in MiniFinSet.
+
+**Test hook**  
+`src/types/__tests__/ultrafilter-distributivity.test.ts`
+
+**Implications (TS)**  
+- Complete Boolean algebra structure via naturality
+- Distributivity without principal witness reasoning
+- Absorption laws: \(S \land (S \lor T) = S\)
+
+**Future unlocks**  
+- Complete lattice theory via categorical methods
+- Stone representation for Boolean algebras
+- Applications to logic and algebraic structures
+
 ## [THM-RIGHT-KAN-END]
 id: THM-RIGHT-KAN-END
 tags: [kan, ends, pointwise]
