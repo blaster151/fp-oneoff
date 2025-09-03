@@ -180,5 +180,15 @@ export {
 import * as Cont from './cont.js';
 export { Cont };
 
+// Delimited continuations with shift/reset operators
+import * as ShiftReset from './shift-reset.js';
+export { ShiftReset };
+
+// CPS namespace combining continuation and delimited control
+export const CPS = {
+  ...Cont,
+  ...ShiftReset
+};
+
 // Value-level instances and implementations
 export * from './instances.js';
