@@ -31,6 +31,7 @@
     "test:codensity": "vitest run src/types/__tests__/codensity-*.test.ts",
     "test:codensity:endX": "vitest run src/types/__tests__/codensity-endX.test.ts",
     "test:codensity:adjunction": "vitest run src/types/__tests__/codensity-adjunction.test.ts",
+    "test:codensity:comma": "vitest run src/types/__tests__/codensity-comma-vs-end.test.ts",
     "test:ultrafilter": "vitest run src/types/__tests__/ultrafilter-principal.test.ts",
     "test:ultrafilter:em": "vitest run src/types/__tests__/em-algebra-discrete.test.ts",
     "test:ultrafilter:naturality": "vitest run src/types/__tests__/ultrafilter-naturality.test.ts",

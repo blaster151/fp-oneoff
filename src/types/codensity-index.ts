@@ -14,7 +14,7 @@ export * from './codensity-monad.js';
 export * from './codensity-of.js';
 
 // Alternative comma category computation (educational)
-export * from './codensity-comma.js';
+export * from './codensity-by-comma.js';
 
 // Codensity probing and analysis tools
 export * from './codensity-probe.js';
