@@ -1,9 +1,13 @@
 // codensity-index.ts
 // Codensity monad exports and utilities
 
+// Core codensity monad implementation
 export * from './codensity-set.js';
 
-// Re-export the main codensity implementation
+// Natural transformations viewpoint: T^G(A) ≅ Nat(G^A, G)
+export * from './codensity-nat-view.js';
+
+// Re-export main implementations
 export { 
   CodensitySet as default,
   CodensitySet,
@@ -11,3 +15,16 @@ export {
   isDiscrete,
   demonstrateCodensitySet
 } from './codensity-set.js';
+
+export {
+  powerFunctor,
+  endToNat,
+  natToEnd,
+  createNaturalTransformation,
+  verifyNaturality,
+  unitNaturalTransformation,
+  evaluationNaturalTransformation,
+  multiPointEvaluation,
+  composeCodensityNats,
+  demonstrateNatView
+} from './codensity-nat-view.js';
