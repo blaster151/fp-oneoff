@@ -337,5 +337,12 @@ export { ADTTree };
 import * as ADTMatch from './adt-match.js';
 export { ADTMatch };
 
+import * as ADTRecSchemes from './adt-rec-schemes.js';
+export { ADTRecSchemes };
+
+// GADT-like intrinsically-typed expressions
+import * as GADTExpr from './gadt-expr.js';
+export { GADTExpr };
+
 // Value-level instances and implementations
 export * from './instances.js';

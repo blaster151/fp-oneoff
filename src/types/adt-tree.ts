@@ -1,7 +1,7 @@
 /** @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM @math EX-ADT-TREE */
 
-import { Fix, In, Out, withMap, cata } from "./adt-fix.js";
-import { Sum, Inl, Inr, inl, inr, Pair, pair } from "./adt-sum-prod.js";
+import { Fix, In, withMap, cata, ana } from "./adt-fix.js";
+import { Sum, Pair, inl, inr, pair } from "./adt-sum-prod.js";
 
 /** BinaryTreeF X A = A + (X × X) */
 export type BinaryTreeF<X, A> = Sum<A, Pair<X, X>>;
@@ -66,6 +66,12 @@ export const fromArray = <A>(arr: A[]): BinaryTree<A> | null => {
   if (!right) return Branch(left, Leaf(arr[mid]!));
   return Branch(Branch(left, Leaf(arr[mid]!)), right);
 };
+
+/** ana: build a complete tree to depth d with labeler f(level) */
+export const buildComplete = <A>(d: number, label: (level: number) => A): BinaryTree<A> =>
+  ana<BinaryTreeF<any, A>, { level: number }>(st =>
+    st.level === d ? LeafF<any, A>(label(st.level)) : BranchF<any, A>({ level: st.level + 1 }, { level: st.level + 1 })
+  )({ level: 0 });
 
 /**
  * Demonstrate BinaryTree ADT and catamorphisms

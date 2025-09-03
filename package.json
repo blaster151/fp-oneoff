@@ -47,6 +47,8 @@
     "test:dsl:psh": "vitest run src/types/__tests__/dsl-presheaf.test.ts",
     "test:dsl:extras": "vitest run src/types/__tests__/dsl-extras.test.ts",
     "test:adt": "vitest run src/types/__tests__/adt-list-tree.test.ts",
+    "test:adt:schemes": "vitest run src/types/__tests__/adt-schemes.test.ts",
+    "test:gadt": "vitest run src/types/__tests__/gadt-expr.test.ts",
     "test:bicat": "vitest run src/types/__tests__/bicategory-coherence.test.ts",
     "test:topology:convergence": "vitest run src/types/__tests__/topology-convergence.test.ts",
     "test:ultrafilter": "vitest run src/types/__tests__/ultrafilter-principal.test.ts",

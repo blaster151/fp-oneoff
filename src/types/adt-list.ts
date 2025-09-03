@@ -1,7 +1,7 @@
 /** @math THM-INITIAL-ALGEBRA @math DEF-CATAMORPHISM @math EX-ADT-LIST */
 
-import { Fix, In, Out, withMap, cata } from "./adt-fix.js";
-import { inl, inr, Sum, Pair, pair, unit } from "./adt-sum-prod.js";
+import { Fix, In, Out, withMap, cata, ana, hylo, para, apo } from "./adt-fix.js";
+import { inl, inr, Sum, Pair, pair } from "./adt-sum-prod.js";
 
 /** ListF X A = 1 + (A × X) */
 export type ListF<X, A> = Sum<{ _t: "nil" }, Pair<A, X>>;
@@ -57,6 +57,37 @@ export const filter = <A>(pred: (a: A) => boolean): (xs: List<A>) => List<A> =>
 
 export const append = <A>(xs: List<A>, ys: List<A>): List<A> =>
   foldRight<A, List<A>>(ys, (a, acc) => Cons(a, acc))(xs);
+
+/** ana: unfold from a seed using (step) that returns None or Some([head, seed']) */
+export const unfold = <A>(step: (s: any) => ({ done: true } | { done: false; head: A; next: any })) =>
+  ana<ListF<any, A>, any>((s: any) => {
+    const r = step(s);
+    return r.done ? NilF<any, A>() : ConsF<any, A>(r.head, r.next);
+  });
+
+/** hylo: e.g., sum an array without constructing List */
+export const hyloSum = (xs: number[]): number =>
+  hylo<ListF<any, number>, [number[], number], number>(
+    (fa: any) => fa._t === "inl" ? 0 : fa.value.fst + fa.value.snd,
+    ([arr, _]: [number[], number]) => arr.length === 0
+      ? NilF<any, number>()
+      : ConsF<any, number>(arr[0]!, [arr.slice(1), 0] as any)
+  )([xs, 0]);
+
+/** para: length seeing original tails (demo) */
+export const lengthPara = <A>(as: List<A>): number =>
+  para<ListF<any, A>, number>((fp: any) => fp._t === "inl" ? 0 : 1 + fp.value.snd[1])(as);
+
+/** apo: build a list with a "shortcut" to splice a prebuilt suffix */
+export const unfoldWithSuffix = <A>(
+  step: (s: any) => ({ done: true } | { done: false; head: A; next: any } | { splice: List<A> })
+) =>
+  apo<ListF<any, A>, any>((s: any) => {
+    const r = step(s);
+    if ('splice' in r) return ConsF<any, A>(undefined as any, { _t: "inl", value: r.splice } as any); // inl prebuilt
+    if (r.done) return NilF();
+    return ConsF(r.head, { _t: "inr", value: r.next } as any);
+  });
 
 /**
  * Demonstrate List ADT and catamorphisms
