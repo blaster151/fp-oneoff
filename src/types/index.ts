@@ -311,5 +311,9 @@ import * as PresheafLimitsGeneral from './presheaf-limits-general.js';
 export { PresheafLimitsGeneral };
 export { PresheafLimitsGeneral as PshLimitsGeneral };
 
+// Diagram DSL for terse, self-documenting examples
+import * as DiagramDSL from './diagram-dsl.js';
+export { DiagramDSL };
+
 // Value-level instances and implementations
 export * from './instances.js';
