@@ -226,6 +226,10 @@ export { UltrafilterNatBridge };
 import * as Topology from './topology.js';
 export { Topology };
 
+// Ultrafilter convergence and EM algebra via limits
+import * as TopologyConvergence from './topology-convergence.js';
+export { TopologyConvergence };
+
 // Finite vector spaces over F₂ (double dualization example)
 import * as FinVect from './finvect.js';
 export { FinVect };
