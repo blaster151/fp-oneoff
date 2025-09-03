@@ -2,8 +2,8 @@
 
 ## [COLIM-FINSET]
 id: COLIM-FINSET
-tags: [colimits, finset, coproduct, coequalizer]
-source: canonical:"Finite colimits in FinSet"
+tags: [colimit, coproduct, coequalizer, pushout, FinSet]
+source: canonical:"Finite colimits in Set"
 ---
 **Statement (LaTeX)**  
 FinSet has all finite colimits: initial object, coproducts, and coequalizers.
@@ -33,8 +33,8 @@ FinSet has all finite colimits: initial object, coproducts, and coequalizers.
 
 ## [COLIM-PRESHEAF]
 id: COLIM-PRESHEAF
-tags: [colimits, presheaf, pointwise, cocomplete]
-source: canonical:"Presheaf categories are cocomplete"
+tags: [colimit, presheaf, pointwise]
+source: canonical:"[C^op, Set] is cocomplete; colimits computed pointwise"
 ---
 **Statement (LaTeX)**  
 Presheaf categories \([\mathcal{C}^{\text{op}}, \mathbf{Set}]\) are cocomplete with pointwise colimits.

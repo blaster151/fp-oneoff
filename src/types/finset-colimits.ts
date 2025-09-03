@@ -14,7 +14,12 @@ export function coproduct<A, B>(Aset: SetObj<A>, Bset: SetObj<B>) {
   const carrier: SetObj<Inl | Inr> = {
     id: `${Aset.id}+${Bset.id}`,
     elems: allElements,
-    eq: (x, y) => x.tag === y.tag && (x.tag === "inl" ? Aset.eq(x.value, (y as Inl).value) : Bset.eq(x.value, (y as Inr).value))
+    eq: (x, y) => {
+      if (!x || !y || x.tag !== y.tag) return false;
+      if (x.tag === "inl") return Aset.eq(x.value, (y as Inl).value);
+      if (x.tag === "inr") return Bset.eq(x.value, (y as Inr).value);
+      return false;
+    }
   };
   
   const inl = (a: A): Inl => ({ tag: "inl", value: a });
