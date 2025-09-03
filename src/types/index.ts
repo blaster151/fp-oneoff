@@ -176,5 +176,181 @@ export {
   // Note: squareWitness exported from witnesses.js, avoiding conflict
 } from './allegory-witness.js';
 
+// Continuation monad with CPS utilities and delimited control
+import * as Cont from './cont.js';
+export { Cont };
+
+// Delimited continuations with shift/reset operators
+import * as ShiftReset from './shift-reset.js';
+export { ShiftReset };
+
+// CPS namespace combining continuation and delimited control
+export const CPS = {
+  ...Cont,
+  ...ShiftReset
+};
+
+// Kan extensions with pointwise Right Kan extension implementation
+import * as Kan from './kan-index.js';
+export { Kan };
+
+// Codensity monad using Right Kan extensions (Ran_G G)
+import * as Codensity from './codensity-index.js';
+export { Codensity };
+
+// Mini FinSet category for ultrafilter applications
+import * as MiniFinSet from './mini-finset.js';
+export { MiniFinSet };
+
+// Ultrafilter construction from codensity monads
+import * as Ultrafilter from './ultrafilter.js';
+export { Ultrafilter };
+
+// Ultrafilter monad wrapper (codensity of FinSet inclusion)
+import * as UltrafilterMonad from './ultrafilter-monad.js';
+export { UltrafilterMonad };
+
+// Discrete EM algebra for ultrafilter monad on compact Hausdorff spaces
+import * as EMAlgebraDiscrete from './em-algebra-discrete.js';
+export { EMAlgebraDiscrete };
+
+// Nat/End bridge for codensity monads
+import * as CodensityNatBridge from './codensity-nat-bridge.js';
+export { CodensityNatBridge };
+
+// Ultrafilter Nat bridge for Boolean component interpretation
+import * as UltrafilterNatBridge from './ultrafilter-nat-bridge.js';
+export { UltrafilterNatBridge };
+
+// Minimal finite topology (discrete/indiscrete, continuity)
+import * as Topology from './topology.js';
+export { Topology };
+
+// Ultrafilter convergence and EM algebra via limits
+import * as TopologyConvergence from './topology-convergence.js';
+export { TopologyConvergence };
+
+// Finite vector spaces over F₂ (double dualization example)
+import * as FinVect from './finvect.js';
+export { FinVect };
+
+// Presheaf categories and contravariant functors
+import * as Presheaf from './presheaf.js';
+export { Presheaf };
+
+// Yoneda embedding and Yoneda lemma
+import * as Yoneda from './yoneda.js';
+export { Yoneda };
+
+// Copresheaf categories and covariant functors
+import * as Copresheaf from './copresheaf.js';
+export { Copresheaf };
+
+// Isbell duality: O and Spec conjugates
+import * as Isbell from './isbell.js';
+export { Isbell };
+
+// 2-category interface and structures
+import * as TwoCategory from './two-category.js';
+export { TwoCategory };
+
+// 2-category Cat (categories, functors, natural transformations)
+import * as Cat2 from './cat2.js';
+export { Cat2 };
+
+// Finite colimits in FinSet (coproduct, coequalizer, pushout)
+import * as FinSetColimits from './finset-colimits.js';
+export { FinSetColimits };
+
+// Finite colimits in Presheaf categories (pointwise)
+import * as PresheafColimits from './presheaf-colimits.js';
+export { PresheafColimits };
+
+// General diagrams and (co)limit theory
+import * as Diagram from './diagram.js';
+export { Diagram };
+
+// General limits in FinSet
+import * as FinSetLimits from './finset-limits.js';
+export { FinSetLimits };
+
+// General colimits in FinSet
+import * as FinSetColimitsGeneral from './finset-colimits-general.js';
+export { FinSetColimitsGeneral };
+
+// General (co)limits in Presheaf categories
+import * as PresheafColimitsGeneral from './presheaf-colimits-general.js';
+export { PresheafColimitsGeneral };
+
+// Alias for discoverability
+export { PresheafColimitsGeneral as PshColimGeneral };
+
+// Bicategory interface and coherence laws
+import * as Bicategory from './bicategory.js';
+export { Bicategory };
+
+// Cat as strict bicategory
+import * as CatBicat from './cat-bicat.js';
+export { CatBicat };
+
+// Pointwise colimit and limit utilities
+import * as PointwiseColimUtil from './pointwise-colim-util.js';
+export { PointwiseColimUtil };
+export { PointwiseColimUtil as PColimUtil };
+
+import * as PointwiseLimitUtil from './pointwise-limit-util.js';
+export { PointwiseLimitUtil };
+export { PointwiseLimitUtil as PLimitUtil };
+
+// General presheaf pushouts and limits
+import * as PresheafPushoutGeneral from './presheaf-pushout-general.js';
+export { PresheafPushoutGeneral };
+export { PresheafPushoutGeneral as PshPushoutGeneral };
+
+import * as PresheafLimitsGeneral from './presheaf-limits-general.js';
+export { PresheafLimitsGeneral };
+export { PresheafLimitsGeneral as PshLimitsGeneral };
+
+// Diagram DSL for terse, self-documenting examples
+import * as DiagramDSL from './diagram-dsl.js';
+export { DiagramDSL };
+
+// Alias for discoverability
+export { DiagramDSL as DiagramDSLExtras };
+
+// Algebraic Data Types (ADTs)
+import * as ADTFunctor from './adt-functor.js';
+export { ADTFunctor };
+
+import * as ADTFix from './adt-fix.js';
+export { ADTFix };
+
+import * as ADTSumProd from './adt-sum-prod.js';
+export { ADTSumProd };
+
+import * as ADTList from './adt-list.js';
+export { ADTList };
+
+import * as ADTTree from './adt-tree.js';
+export { ADTTree };
+
+import * as ADTMatch from './adt-match.js';
+export { ADTMatch };
+
+import * as ADTRecSchemes from './adt-rec-schemes.js';
+export { ADTRecSchemes };
+
+// Rose trees (arbitrary branching)
+import * as ADTRose from './adt-rose.js';
+export { ADTRose };
+
+// Expression ADT with operators
+import * as ADTExprOp from './adt-expr-op.js';
+export { ADTExprOp };
+
+// GADT-like intrinsically-typed expressions
+import * as GADTExpr from './gadt-expr.js';
+export { GADTExpr };
+
 // Value-level instances and implementations
 export * from './instances.js';
