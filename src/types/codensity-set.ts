@@ -38,7 +38,7 @@ export interface CodensityMonad<B_O, B_M> {
  * 
  * For discrete B, this reduces to: |T^G(A)| = ∏_{b∈B} |G b|^{|G b|^|A|}
  * 
- * @math THM-CODENSITY-RAN @math THM-CODENSITY-END @law LAW-ULTRA-AND @law LAW-ULTRA-DEMORGAN
+ * @math THM-CODENSITY-RAN @math THM-CODENSITY-END @math SCOPE-FINITE-SET @math COMPLEXITY-EXPONENTIAL
  */
 export function CodensitySet<B_O, B_M>(
   B: SmallCategory<B_O, B_M> & { objects: ReadonlyArray<B_O>; morphisms: ReadonlyArray<B_M> } & HasHom<B_O, B_M>,

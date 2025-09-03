@@ -2,6 +2,7 @@
   "collections": [
     "docs/math/slide-deck-codensity.md",
     "docs/math/codensity-ultrafilters.md", 
-    "docs/math/topology-products.md"
+    "docs/math/topology-products.md",
+    "docs/math/implementation-scope.md"
   ]
 }
