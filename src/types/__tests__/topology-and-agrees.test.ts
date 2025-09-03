@@ -1,3 +1,5 @@
+/** @math TOP-PRODUCT-CONT */
+
 import { describe, it, expect } from "vitest";
 import { SetObj } from "../catkit-kan.js";
 import { discrete, productTopology, isContinuous, pr1, pr2 } from "../topology.js";

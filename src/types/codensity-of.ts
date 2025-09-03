@@ -18,6 +18,8 @@ import { mkCodensityMonad } from "./codensity-monad.js";
  * T^G = Ran_G G = ∫_{b∈B} [[A, G b], G b]
  * 
  * Returns familiar monadic interface: {T, eta, mu, of, map, chain, ap, run}
+ * 
+ * @math THM-CODENSITY-RAN
  */
 export function codensityOf<B_O, B_M>(
   B: SmallCategory<B_O, B_M> & { objects: ReadonlyArray<B_O>; morphisms: ReadonlyArray<B_M> } & HasHom<B_O, B_M>,

@@ -25,6 +25,8 @@ export interface DiscreteEMAlgebra<A> extends EMAlgebra<'Ultrafilter', A> {
 /** 
  * For a finite discrete space, α returns the principal witness
  * Since finite discrete spaces are compact Hausdorff, every ultrafilter is principal
+ * 
+ * @math THM-EM-ALGEBRA @math THM-ULTRAFILTER-MONAD
  */
 export function discreteEMAlgebra<A>(Aset: SetObj<A>): DiscreteEMAlgebra<A> {
   const alpha = (t: any): A => {

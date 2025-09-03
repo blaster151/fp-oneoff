@@ -226,6 +226,8 @@ export function computeRanEnd<C_O, C_M, D_O, D_M>(
 /**
  * Construct the Right Kan extension Ran_g h : D -> Set
  * This is the main interface following the pointwise formula
+ * 
+ * @math THM-RIGHT-KAN-END
  */
 export function RanSet<C_O, C_M, D_O, D_M>(
   C: SmallCategory<C_O, C_M> & { objects: ReadonlyArray<C_O>; morphisms: ReadonlyArray<C_M> },

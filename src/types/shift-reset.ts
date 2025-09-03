@@ -23,6 +23,8 @@ export type CapturedCont<R, A> = (a: A) => Cont<R, R>;
  * 
  * The reset operator establishes a delimiter/boundary for control effects.
  * Any shift operations inside will only capture continuations up to this point.
+ * 
+ * @math THM-SHIFT-RESET
  */
 export const reset = <R, A>(m: Cont<A, A>): Cont<R, A> =>
   k => k(Cont.eval(m));
@@ -39,6 +41,8 @@ export const reset = <R, A>(m: Cont<A, A>): Cont<R, A> =>
  * 
  * @param f - Function that receives the captured continuation and produces a result
  * @returns A delimited continuation that can be used within a reset boundary
+ * 
+ * @math THM-SHIFT-RESET
  */
 export const shift = <R, A>(
   f: (k: CapturedCont<R, A>) => Cont<R, R>

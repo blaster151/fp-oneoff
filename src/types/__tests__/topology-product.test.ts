@@ -1,3 +1,5 @@
+/** @math TOP-PRODUCT-CONT */
+
 import { describe, it, expect } from "vitest";
 import { SetObj } from "../catkit-kan.js";
 import {

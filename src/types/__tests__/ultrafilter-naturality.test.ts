@@ -1,3 +1,5 @@
+/** @law LAW-ULTRA-AND @law LAW-ULTRA-DEMORGAN */
+
 import { describe, it, expect } from "vitest";
 import { UF } from "../ultrafilter-monad.js";
 import { 

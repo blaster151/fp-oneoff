@@ -1,3 +1,5 @@
+/** @math THM-EM-ALGEBRA @law LAW-MONAD-LAWS */
+
 import { describe, it, expect } from "vitest";
 import { SetObj } from "../catkit-kan.js";
 import { UF } from "../ultrafilter-monad.js";

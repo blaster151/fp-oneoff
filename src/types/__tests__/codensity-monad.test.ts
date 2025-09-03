@@ -1,3 +1,5 @@
+/** @math THM-CODENSITY-RAN @math THM-CODENSITY-END @law LAW-MONAD-LAWS */
+
 import { describe, it, expect } from "vitest";
 import { CodensitySet } from "../codensity-set.js";
 import { SmallCategory } from "../category-to-nerve-sset.js";

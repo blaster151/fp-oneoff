@@ -1,3 +1,5 @@
+/** @law LAW-MONAD-LAWS @math THM-SHIFT-RESET */
+
 import { describe, it, expect } from "vitest";
 import { 
   Cont, 

@@ -1,3 +1,5 @@
+/** @math THM-RIGHT-KAN-END @law LAW-NATURALITY */
+
 import { describe, it, expect } from "vitest";
 import { 
   RanSet, 

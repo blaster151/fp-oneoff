@@ -233,6 +233,8 @@ export const BoolMorphisms = { pi1, pi2, and2, or2, xor2, nand2, not2 };
 
 /**
  * Characteristic function χ_S : A → 2 for a subset S of A
+ * 
+ * @law LAW-ULTRA-AND @law LAW-ULTRA-DEMORGAN
  */
 export function chi<A>(Aobj: Obj, S: Set<A>): Mor {
   const dom = elts[Aobj] as A[];
@@ -242,6 +244,8 @@ export function chi<A>(Aobj: Obj, S: Set<A>): Mor {
 
 /**
  * Pairing ⟨f,g⟩ : A → 2×2 (assumes both f,g : A → 2)
+ * 
+ * @law LAW-ULTRA-AND @law LAW-ULTRA-DEMORGAN
  */
 export function pairTo2x2(Aobj: Obj, f: Mor, g: Mor): Mor {
   if (f.src !== Aobj || g.src !== Aobj || f.dst !== "2" || g.dst !== "2") {

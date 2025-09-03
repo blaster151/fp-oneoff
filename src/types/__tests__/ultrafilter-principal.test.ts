@@ -1,3 +1,5 @@
+/** @math THM-ULTRAFILTER-MONAD @law LAW-ULTRA-AND */
+
 import { describe, it, expect } from "vitest";
 import { mkCodensityMonad } from "../codensity-monad.js";
 import { MiniFinSet, G_inclusion } from "../mini-finset.js";
