@@ -258,5 +258,13 @@ export { TwoCategory };
 import * as Cat2 from './cat2.js';
 export { Cat2 };
 
+// Finite colimits in FinSet (coproduct, coequalizer, pushout)
+import * as FinSetColimits from './finset-colimits.js';
+export { FinSetColimits };
+
+// Finite colimits in Presheaf categories (pointwise)
+import * as PresheafColimits from './presheaf-colimits.js';
+export { PresheafColimits };
+
 // Value-level instances and implementations
 export * from './instances.js';

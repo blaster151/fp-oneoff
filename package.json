@@ -36,6 +36,8 @@
     "test:yoneda": "vitest run src/types/__tests__/yoneda.test.ts",
     "test:isbell": "vitest run src/types/__tests__/isbell-basic.test.ts",
     "test:cat2": "vitest run src/types/__tests__/cat2-basic.test.ts",
+    "test:colim:finset": "vitest run src/types/__tests__/finset-colimits.test.ts",
+    "test:colim:presheaf": "vitest run src/types/__tests__/presheaf-colimits.test.ts",
     "test:topology:convergence": "vitest run src/types/__tests__/topology-convergence.test.ts",
     "test:ultrafilter": "vitest run src/types/__tests__/ultrafilter-principal.test.ts",
     "test:ultrafilter:em": "vitest run src/types/__tests__/em-algebra-discrete.test.ts",
