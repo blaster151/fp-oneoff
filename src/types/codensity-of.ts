@@ -19,14 +19,50 @@ import { mkCodensityMonad } from "./codensity-monad.js";
  * 
  * Returns familiar monadic interface: {T, eta, mu, of, map, chain, ap, run}
  * 
- * @math THM-CODENSITY-RAN
+ * @math THM-CODENSITY-RAN @math THM-CODENSITY-EXISTENCE @math GUARDRAIL-SMALL-LIMITS
  */
+export type CodensityAssumptions = {
+  smallDomain?: boolean;     // B is small category
+  hasSmallLimits?: boolean;  // Codomain has small limits (Set does)
+  rightAdjointCase?: boolean; // If true, expect T^G ≅ G∘F elsewhere
+  note?: string;             // Additional context
+};
+
 export function codensityOf<B_O, B_M>(
   B: SmallCategory<B_O, B_M> & { objects: ReadonlyArray<B_O>; morphisms: ReadonlyArray<B_M> } & HasHom<B_O, B_M>,
   G: SetFunctor<B_O, B_M>,
+  assumptions: CodensityAssumptions = { 
+    smallDomain: true, 
+    hasSmallLimits: true 
+  },
   keyB: (b: B_O) => string = (b) => String(b),
   keyBMor: (m: B_M) => string = (m) => String(m)
 ) {
+  // Existence condition guardrails (soft warnings for development)
+  if (!assumptions.smallDomain) {
+    console.warn("[codensityOf] Warning: Domain B not declared small; right Kan extension existence uncertain.");
+  }
+  
+  if (!assumptions.hasSmallLimits) {
+    console.warn("[codensityOf] Warning: Codomain lacks small limits; codensity construction may fail.");
+  }
+  
+  if (assumptions.rightAdjointCase) {
+    console.info("[codensityOf] Info: Right adjoint case - expect T^G ≅ G∘F collapse.");
+  }
+  
+  // For finite Set case, we know existence is guaranteed
+  const objectCount = B.objects.length;
+  const morphismCount = B.morphisms.length;
+  
+  if (objectCount > 100) {
+    console.warn(`[codensityOf] Warning: Large domain (${objectCount} objects) may cause exponential complexity.`);
+  }
+  
+  if (assumptions.note) {
+    console.info(`[codensityOf] Note: ${assumptions.note}`);
+  }
+  
   return mkCodensityMonad(B, G, keyB, keyBMor);
 }
 

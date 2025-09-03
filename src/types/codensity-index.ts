@@ -13,6 +13,12 @@ export * from './codensity-monad.js';
 // Discoverable entry point for codensity construction
 export * from './codensity-of.js';
 
+// Alternative comma category computation (educational)
+export * from './codensity-comma.js';
+
+// Codensity probing and analysis tools
+export * from './codensity-probe.js';
+
 // Re-export main implementations
 export { 
   CodensitySet as default,
