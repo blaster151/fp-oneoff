@@ -293,5 +293,23 @@ export { Bicategory };
 import * as CatBicat from './cat-bicat.js';
 export { CatBicat };
 
+// Pointwise colimit and limit utilities
+import * as PointwiseColimUtil from './pointwise-colim-util.js';
+export { PointwiseColimUtil };
+export { PointwiseColimUtil as PColimUtil };
+
+import * as PointwiseLimitUtil from './pointwise-limit-util.js';
+export { PointwiseLimitUtil };
+export { PointwiseLimitUtil as PLimitUtil };
+
+// General presheaf pushouts and limits
+import * as PresheafPushoutGeneral from './presheaf-pushout-general.js';
+export { PresheafPushoutGeneral };
+export { PresheafPushoutGeneral as PshPushoutGeneral };
+
+import * as PresheafLimitsGeneral from './presheaf-limits-general.js';
+export { PresheafLimitsGeneral };
+export { PresheafLimitsGeneral as PshLimitsGeneral };
+
 // Value-level instances and implementations
 export * from './instances.js';

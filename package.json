@@ -41,6 +41,8 @@
     "test:diagram": "vitest run src/types/__tests__/finset-diagram.test.ts",
     "test:psh:transport": "vitest run src/types/__tests__/presheaf-colimits-transport.test.ts",
     "test:psh:colim:transport": "vitest run src/types/__tests__/presheaf-colim-transport.test.ts",
+    "test:psh:pushout:general": "vitest run src/types/__tests__/presheaf-pushout-general.test.ts",
+    "test:psh:limit:general": "vitest run src/types/__tests__/presheaf-limit-general.test.ts",
     "test:bicat": "vitest run src/types/__tests__/bicategory-coherence.test.ts",
     "test:topology:convergence": "vitest run src/types/__tests__/topology-convergence.test.ts",
     "test:ultrafilter": "vitest run src/types/__tests__/ultrafilter-principal.test.ts",
