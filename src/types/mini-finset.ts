@@ -220,6 +220,15 @@ export const nand2: Mor = findMorByTable(
   elts["2x2"].map(([b1, b2]) => !(b1 && b2))
 );
 
+// Boolean NOT operation: ¬ : 2 → 2
+export const not2: Mor = findMorByTable(
+  "2", "2",
+  elts["2"].map((b: boolean) => !b)
+);
+
+// Export all named boolean morphisms together
+export const BoolMorphisms = { pi1, pi2, and2, or2, xor2, nand2, not2 };
+
 /************ Helper Functions ************/
 
 /**

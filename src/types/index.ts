@@ -222,5 +222,9 @@ export { CodensityNatBridge };
 import * as UltrafilterNatBridge from './ultrafilter-nat-bridge.js';
 export { UltrafilterNatBridge };
 
+// Minimal finite topology (discrete/indiscrete, continuity)
+import * as Topology from './topology.js';
+export { Topology };
+
 // Value-level instances and implementations
 export * from './instances.js';
