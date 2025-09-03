@@ -42,6 +42,9 @@
     "demo:kan": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Kan demo:'); Kan.demoKanExample();\"",
     "demo:product": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Product demo: Discrete category gives product'); console.log('Available:', Object.keys(Kan).filter(k => k.includes('Ran')).join(', '));\"",
     "tracecheck": "ts-node --transpile-only scripts/tracecheck.ts",
+    "math:opps": "ts-node --transpile-only scripts/mathopps.ts",
+    "math:build": "ts-node --transpile-only scripts/mathbuild.ts",
+    "math:ci": "npm run math:build && npm run tracecheck && npm test",
     "bench:rel": "node scripts/run-rel-benchmark.js",
     "demo:em": "node scripts/run-em-demo.js",
     "prepublishOnly": "npm run check && npm run test && npm run build"
