@@ -1,6 +1,7 @@
 {
   "collections": [
-    "docs/math/codensity-ultrafilters.md",
+    "docs/math/slide-deck-codensity.md",
+    "docs/math/codensity-ultrafilters.md", 
     "docs/math/topology-products.md"
   ]
 }

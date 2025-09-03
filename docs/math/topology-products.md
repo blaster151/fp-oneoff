@@ -47,7 +47,7 @@ For ultrafilter monad on finite discrete space, α picks principal witness.
 ## [LAW-NATURALITY]
 id: LAW-NATURALITY
 tags: [naturality, functors]
-source: canonical:"Natural transformation commutative squares"
+source: knowledge:"Natural transformation commutative squares"
 ---
 **Law**  
 For natural transformation \(\alpha: F \Rightarrow G\): \(\alpha_B \circ F(f) = G(f) \circ \alpha_A\).

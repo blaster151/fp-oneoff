@@ -106,7 +106,7 @@ source: canonical:"Mac Lane pointwise formula"
 ## [LAW-MONAD-LAWS]
 id: LAW-MONAD-LAWS
 tags: [monad, laws]
-source: canonical:"Standard monad coherence"
+source: knowledge:"Standard monad coherence conditions"
 ---
 **Laws**  
 Unit: \(\mu \circ \eta_T = \text{id}\), \(\mu \circ T(\eta) = \text{id}\).  
