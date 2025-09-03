@@ -7,6 +7,9 @@ export * from './codensity-set.js';
 // Natural transformations viewpoint: T^G(A) ≅ Nat(G^A, G)
 export * from './codensity-nat-view.js';
 
+// Ergonomic monadic convenience layer (of/map/chain/ap)
+export * from './codensity-monad.js';
+
 // Re-export main implementations
 export { 
   CodensitySet as default,
@@ -28,3 +31,14 @@ export {
   composeCodensityNats,
   demonstrateNatView
 } from './codensity-nat-view.js';
+
+export {
+  mkCodensityMonad,
+  terminalCodensity,
+  discreteCodensity,
+  codensityToHKTMonad,
+  exampleTerminalCodensity,
+  exampleDiscreteCodensity,
+  exampleMonadicComposition,
+  demonstrateCodensityMonad
+} from './codensity-monad.js';
