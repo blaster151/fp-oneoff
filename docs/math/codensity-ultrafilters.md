@@ -209,20 +209,32 @@ source: canonical:"Inclusion FinVect_fd ↪ Vect yields V ↦ V**."
 
 ## [REL-ISBELL-CODENSITY]
 id: REL-ISBELL-CODENSITY
-tags: [isbell, yoneda, presheaf]
-source: canonical:"Spec∘O is codensity of Yoneda; Isbell duality."
+tags: [isbell, yoneda, presheaf, copresheaf]
+source: canonical:"O: Set^{C^op} ⇄ (Set^C)^{op} : Spec; codensity of Yoneda"
 ---
-**Future unlocks**  
-- Build tiny Presheaf(C) for small C; experiment with Yoneda's codensity.
+**Statement (LaTeX)**  
+Isbell conjugates \(O: [\mathcal{C}^{\text{op}}, \mathbf{Set}] \rightleftarrows [\mathcal{C}, \mathbf{Set}]^{\text{op}} : \text{Spec}\) with \(O \dashv \text{Spec}\).
+
+**Codensity Connection**  
+The codensity monad of the Yoneda embedding is related to \(\text{Spec} \circ O\).
 
 **Implications (TS)**  
-- Presheaf category constructions
-- Yoneda embedding and its codensity
-- Isbell duality between presheaves and copresheaves
-- Spectral theory connections
+- `Isbell(C).O(F)` transforms presheaves to copresheaves
+- `Isbell(C).Spec(G)` transforms copresheaves to presheaves
+- Complete duality between contravariant and covariant functors
+- Foundation for spectral theory and Stone duality
+
+**Test Hook**  
+`src/types/__tests__/isbell-basic.test.ts`
 
 **Research Direction**  
-- Small category C with Presheaf(C) = [C^op, Set]
-- Yoneda Y: C → Presheaf(C)
-- Codensity of Yoneda: Spec∘O construction
+- Yoneda's codensity via Spec∘O construction
+- Stone duality for Boolean algebras
+- Spectral topology and prime ideal spaces
 - Connection to algebraic geometry and topos theory
+
+**Future unlocks**  
+- Stone representation theorem implementation
+- Spectral sequences and cohomological methods
+- Applications to algebraic topology and geometry
+- Categorical foundations for algebraic geometry

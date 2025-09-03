@@ -1,18 +1,23 @@
-# Mathematical Registry (generated)
+# Enhanced Mathematical Registry (generated)
 
-Mathematical concepts with full traceability:
+Complete mathematical documentation with Isbell duality:
 
-- **THM-CODENSITY-RAN** — THM-CODENSITY-RAN
-- **THM-CODENSITY-END** — THM-CODENSITY-END
-- **THM-ULTRAFILTER-MONAD** — THM-ULTRAFILTER-MONAD
-- **LAW-ULTRA-AND** — LAW-ULTRA-AND
-- **LAW-ULTRA-DEMORGAN** — LAW-ULTRA-DEMORGAN
-- **THM-RIGHT-KAN-END** — THM-RIGHT-KAN-END
-- **LAW-MONAD-LAWS** — LAW-MONAD-LAWS
-- **THM-SHIFT-RESET** — THM-SHIFT-RESET
-- **TOP-PRODUCT-CONT** — TOP-PRODUCT-CONT
-- **THM-EM-ALGEBRA** — THM-EM-ALGEBRA
-- **LAW-NATURALITY** — LAW-NATURALITY
-- **THM-STONE-DUALITY** — THM-STONE-DUALITY
+## Core Categories
+- **Codensity Theory**: T^G = Ran_G G with existence conditions
+- **Yoneda Embedding**: Y: C → [C^op, Set] with lemma verification
+- **Co-Yoneda Embedding**: Ŷ: C → [C, Set] for covariant functors
+- **Isbell Duality**: O and Spec conjugates between presheaves/copresheaves
+- **Ultrafilter Theory**: Convergence and EM algebra via limits
 
-> Generated from 12 mathematical records
+## Mathematical Concepts: 50
+
+### Recently Added
+- : Isbell duality and co-Yoneda theory
+- : Isbell duality and co-Yoneda theory
+- : Isbell duality and co-Yoneda theory
+- : Isbell duality and co-Yoneda theory
+
+### Usage
+
+
+> Generated from 50 mathematical concepts

@@ -197,3 +197,29 @@ Isbell conjugates \(O: [\mathcal{C}^{\text{op}}, \mathbf{Set}] \to [\mathcal{C},
 - Stone representation theorem via Isbell duality
 - Spectral sequences and cohomology
 - Applications to algebraic topology and geometry
+
+## [DEF-COPRESHEAF]
+id: DEF-COPRESHEAF
+tags: [copresheaf, covariant, functor]
+source: canonical:"Q: C → Set"
+---
+**Definition (LaTeX)**  
+A copresheaf on category \(C\) is a covariant functor \(Q: C \to \mathbf{Set}\).
+
+**Covariance**  
+For morphism \(f: a \to b\) in \(C\), we get \(Q(f): Q(a) \to Q(b)\).
+
+**Implications (TS)**  
+- `Copresheaf<C>` interface with `onObj` and covariant `onMor`
+- Natural transformations as morphisms in copresheaf category
+- `checkNaturalityCo` for covariant natural transformation verification
+
+**Applications**  
+- Co-representable functors via co-Yoneda embedding
+- Colimit computations and covariant constructions
+- Isbell duality with presheaves
+
+**Future unlocks**  
+- Colimit constructions in copresheaf categories
+- Co-Yoneda lemma and co-representability
+- Applications to algebraic topology
