@@ -5,6 +5,7 @@
     "docs/math/topology-products.md",
     "docs/math/implementation-scope.md",
     "docs/math/wikipedia-insights.md",
-    "docs/math/probing-tools.md"
+    "docs/math/probing-tools.md",
+    "docs/math/yoneda-presheaf.md"
   ]
 }

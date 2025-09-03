@@ -234,5 +234,13 @@ export { TopologyConvergence };
 import * as FinVect from './finvect.js';
 export { FinVect };
 
+// Presheaf categories and contravariant functors
+import * as Presheaf from './presheaf.js';
+export { Presheaf };
+
+// Yoneda embedding and Yoneda lemma
+import * as Yoneda from './yoneda.js';
+export { Yoneda };
+
 // Value-level instances and implementations
 export * from './instances.js';
