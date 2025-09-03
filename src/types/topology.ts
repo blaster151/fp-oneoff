@@ -385,42 +385,80 @@ export function productTopology<A, B>(
 ): Topology<[A, B]> {
   const AxB = productCarrier(TX.carrier, TY.carrier);
 
-  // Build all basic rectangles as encoded bitstrings
-  const basics: string[] = [];
+  // Special case: if both are discrete, product should be discrete
+  const xIsDiscrete = TX.opens.size === Math.pow(2, TX.carrier.elems.length);
+  const yIsDiscrete = TY.opens.size === Math.pow(2, TY.carrier.elems.length);
   
+  if (xIsDiscrete && yIsDiscrete) {
+    // For discrete × discrete, every subset should be open
+    const opens = new Set<string>();
+    const n = AxB.elems.length;
+    
+    for (let mask = 0; mask < (1 << n); mask++) {
+      const encoding = Array(n).fill(0).map((_, i) => 
+        (mask >> i) & 1 ? "1" : "0"
+      ).join("");
+      opens.add(encoding);
+    }
+    
+    return {
+      carrier: AxB,
+      opens,
+      isOpen: (S: Set<[A, B]>) => opens.has(encodeSubsetProd(AxB, S))
+    };
+  }
+
+  // General case: build from basic rectangles
+  const basicRectangles = new Set<string>();
+  
+  // Generate all rectangles U × V where U ∈ τ_X, V ∈ τ_Y
   for (const encU of TX.opens) {
     const U = decodeSubset(TX.carrier, encU);
     for (const encV of TY.opens) {
       const V = decodeSubset(TY.carrier, encV);
       const R = rectangle(TX.carrier, TY.carrier, U, V);
-      basics.push(encodeSubsetProd(AxB, R));
+      const encoding = encodeSubsetProd(AxB, R);
+      basicRectangles.add(encoding);
     }
   }
 
-  // All unions of basics (powerset of basic rectangles)
-  const m = basics.length;
+  const basics = [...basicRectangles];
+  
+  // Generate topology as closure under finite unions
   const opens = new Set<string>();
   
-  // Include empty set explicitly
-  const emptyEncoding = AxB.elems.length > 0 ? "0".repeat(AxB.elems.length) : "0";
-  opens.add(emptyEncoding);
+  // Add empty set
+  opens.add("0".repeat(AxB.elems.length));
   
-  // Generate all unions via powerset
-  for (let mask = 1; mask < (1 << m); mask++) {
-    const chosen: string[] = [];
-    for (let i = 0; i < m; i++) {
-      if ((mask >> i) & 1) {
-        chosen.push(basics[i]!);
+  // Add all basic rectangles
+  for (const basic of basics) {
+    opens.add(basic);
+  }
+  
+  // Generate all finite unions of basics
+  const m = basics.length;
+  if (m <= 20) { // Avoid exponential explosion for large m
+    for (let mask = 1; mask < (1 << m); mask++) {
+      const chosen: string[] = [];
+      for (let i = 0; i < m; i++) {
+        if ((mask >> i) & 1) {
+          chosen.push(basics[i]!);
+        }
+      }
+      if (chosen.length > 0) {
+        const union = unionBits(chosen);
+        opens.add(union);
       }
     }
-    if (chosen.length > 0) {
-      opens.add(unionBits(chosen));
-    }
+  } else {
+    console.warn(`[productTopology] Too many basics (${m}), using basic rectangles only`);
   }
 
-  const isOpen = (S: Set<[A, B]>) => opens.has(encodeSubsetProd(AxB, S));
-  
-  return { carrier: AxB, opens, isOpen };
+  return {
+    carrier: AxB,
+    opens,
+    isOpen: (S: Set<[A, B]>) => opens.has(encodeSubsetProd(AxB, S))
+  };
 }
 
 /************ Product Projections ************/

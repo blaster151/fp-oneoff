@@ -127,9 +127,15 @@ describe("Finite product topology", () => {
     console.log(`       Contains: {${[...rect].map(([a,b]) => `[${a},${b}]`).join(', ')}}`);
     
     expect(rect.size).toBe(U.size * V.size);
-    expect(rect.has(["a", 1])).toBe(true);
-    expect(rect.has(["a", 3])).toBe(true);
-    expect(rect.has(["b", 1])).toBe(false);
+    
+    // Check if rectangle contains the expected pairs (need to check by iteration since arrays are objects)
+    const containsA1 = [...rect].some(([a, b]) => a === "a" && b === 1);
+    const containsA3 = [...rect].some(([a, b]) => a === "a" && b === 3);
+    const containsB1 = [...rect].some(([a, b]) => a === "b" && b === 1);
+    
+    expect(containsA1).toBe(true);
+    expect(containsA3).toBe(true);
+    expect(containsB1).toBe(false);
   });
 
   it("product topology has correct structure", () => {

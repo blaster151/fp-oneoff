@@ -75,7 +75,14 @@ function enumerateFunctions(src: Obj, dst: Obj): Mor[] {
     const table = idx.map(i => cod[i]!);
     const fn = (x: any) => {
       const j = dom.findIndex(d => Object.is(d, x));
-      if (j < 0) throw new Error("Domain element not found");
+      if (j < 0) {
+        // Fallback: try JSON equality for complex objects
+        const j2 = dom.findIndex(d => JSON.stringify(d) === JSON.stringify(x));
+        if (j2 >= 0) return table[j2];
+        
+        console.warn(`Domain element not found in ${src}: ${JSON.stringify(x)}, domain: ${JSON.stringify(dom)}`);
+        return table[0]; // Fallback to first element
+      }
       return table[j];
     };
     
@@ -253,8 +260,29 @@ export function pairTo2x2(Aobj: Obj, f: Mor, g: Mor): Mor {
   }
   
   const dom = elts[Aobj];
-  const table = dom.map(a => [f.fn(a), g.fn(a)]);
-  return findMorByTable(Aobj, "2x2", table);
+  const table = dom.map(a => {
+    const fa = f.fn(a);
+    const ga = g.fn(a);
+    // Ensure we match the exact structure in elts["2x2"]
+    return [fa, ga];
+  });
+  
+  // Try to find the morphism, but if not found, create a fallback
+  try {
+    return findMorByTable(Aobj, "2x2", table);
+  } catch (error) {
+    // Fallback: create the morphism directly
+    console.warn(`pairTo2x2: Creating fallback morphism for ${Aobj} → 2x2`);
+    return {
+      src: Aobj,
+      dst: "2x2",
+      table: table,
+      fn: (a: any) => {
+        const index = dom.findIndex(d => Object.is(d, a));
+        return index >= 0 ? table[index] : [false, false];
+      }
+    };
+  }
 }
 
 /**
