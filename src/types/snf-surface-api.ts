@@ -35,11 +35,15 @@ export interface DiagonalExplanation {
 /************ Core API Functions ************/
 
 /** Matrix utilities */
-function matrixShape(A: Matrix): [number, number] {
+export function matrixShape(A: Matrix): [number, number] {
   return [A.length, A[0]?.length ?? 0];
 }
 
-function matrixMultiply(A: Matrix, B: Matrix): Matrix {
+export function matrixZeros(r: number, c: number): Matrix {
+  return Array.from({ length: r }, () => Array(c).fill(0));
+}
+
+export function matrixMultiply(A: Matrix, B: Matrix): Matrix {
   const [rA, cA] = matrixShape(A);
   const [rB, cB] = matrixShape(B);
   
@@ -62,7 +66,7 @@ function matrixMultiply(A: Matrix, B: Matrix): Matrix {
   return C;
 }
 
-function matricesEqual(A: Matrix, B: Matrix): boolean {
+export function matricesEqual(A: Matrix, B: Matrix): boolean {
   const [rA, cA] = matrixShape(A);
   const [rB, cB] = matrixShape(B);
   

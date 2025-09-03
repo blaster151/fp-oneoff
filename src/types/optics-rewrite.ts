@@ -11,7 +11,7 @@
 import { Writer } from './strong-monad.js';
 
 /********************** Tiny "profunctor-ish" optics **************************/
-export interface Prism<S, A> {
+export interface RewritePrism<S, A> {
   readonly preview: (s: S) => A | undefined; // match
   readonly review: (a: A) => S;              // build (often identity for self-prisms)
   modify: (s: S, f: (a: A) => A) => S;       // default via preview/review
@@ -22,7 +22,7 @@ export interface Traversal<S, A> {
 }
 
 // Compose prisms
-export function composePrism<S, A, B>(p1: Prism<S, A>, p2: Prism<A, B>): Prism<S, B> {
+export function composePrism<S, A, B>(p1: RewritePrism<S, A>, p2: RewritePrism<A, B>): RewritePrism<S, B> {
   return {
     preview: (s) => {
       const a = p1.preview(s);
@@ -39,7 +39,7 @@ export function composePrism<S, A, B>(p1: Prism<S, A>, p2: Prism<A, B>): Prism<S
 }
 
 // Turn a prism into a single-target traversal
-export function traversalFromPrism<S>(p: Prism<S, S>): Traversal<S, S> {
+export function traversalFromPrism<S>(p: RewritePrism<S, S>): Traversal<S, S> {
   return { modify: (s, f) => p.modify(s, f) };
 }
 
@@ -121,7 +121,7 @@ export function show(t:Term): string {
 
 /********************** Optics for Term (self-prisms) *************************/
 // Self-prisms: focus whole node if it matches a shape
-export function selfPrism(pred: (t:Term)=>boolean): Prism<Term, Term> {
+export function selfPrism(pred: (t:Term)=>boolean): RewritePrism<Term, Term> {
   return {
     preview: (s) => pred(s) ? s : undefined,
     review: (a) => a,
@@ -586,7 +586,7 @@ export function adaptProfunctorOptic<S, A>(
   // For now, we provide a simple adapter interface
   getter: (s: S) => A | undefined,
   setter: (s: S, a: A) => S
-): Prism<S, A> {
+): RewritePrism<S, A> {
   return {
     preview: getter,
     review: setter as any, // Simplified for demo

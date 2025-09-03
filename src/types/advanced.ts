@@ -329,12 +329,12 @@ export interface Iso<S, A> {
   reverseGet: (a: A) => S 
 }
 
-export interface Lens<S, A> { 
+export interface CurriedLens<S, A> { 
   get: (s: S) => A; 
   set: (a: A) => (s: S) => S 
 }
 
-export interface Prism<S, A> { 
+export interface AdvancedPrism<S, A> { 
   getOption: (s: S) => A | undefined; 
   reverseGet: (a: A) => S 
 }

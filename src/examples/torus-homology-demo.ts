@@ -16,47 +16,29 @@
 import { 
   smithNormalForm, verifySNF, explainDiagonal, 
   printSNFVerification, printDiagonalExplanation,
-  computeAndVerifySNF, homologyRankFromSNF
+  computeAndVerifySNF, homologyRankFromSNF, Matrix,
+  matrixZeros, matrixShape, matricesEqual
 } from "../types/snf-surface-api.js";
 
-// ---------- tiny integer-matrix helpers (pure TS) ----------
-type Mat = number[][];
-const zeros = (r: number, c: number): Mat => Array.from({ length: r }, () => Array(c).fill(0));
-const shape = (A: Mat) => [A.length, A[0]?.length ?? 0] as const;
-const mul = (A: Mat, B: Mat): Mat => {
-  const [rA, cA] = shape(A), [rB, cB] = shape(B);
-  if (cA !== rB) throw new Error(`mul shape mismatch: ${rA}x${cA} * ${rB}x${cB}`);
-  const C = zeros(rA, cB);
-  for (let i = 0; i < rA; i++) {
-    for (let k = 0; k < cA; k++) {
-      const aik = A[i]![k]!;
-      if (aik === 0) continue;
-      for (let j = 0; j < cB; j++) C[i]![j]! += aik * B[k]![j]!;
-    }
-  }
-  return C;
-};
-const equalMat = (A: Mat, B: Mat) => {
-  const [rA, cA] = shape(A), [rB, cB] = shape(B);
-  if (rA !== rB || cA !== cB) return false;
-  for (let i = 0; i < rA; i++) for (let j = 0; j < cA; j++) if (A[i]![j] !== B[i]![j]) return false;
-  return true;
-};
-const firstDiff = (A: Mat, B: Mat) => {
+// ---------- matrix helpers using consolidated utilities ----------
+const zeros = matrixZeros;
+const shape = matrixShape;
+const equalMatrix = matricesEqual;
+const firstDiff = (A: Matrix, B: Matrix) => {
   const [rA, cA] = shape(A), [rB, cB] = shape(B);
   if (rA !== rB || cA !== cB) return { loc: [-1, -1], got: NaN, expected: NaN };
   for (let i = 0; i < rA; i++) for (let j = 0; j < cA; j++) if (A[i]![j] !== B[i]![j]) return { loc: [i, j], got: A[i]![j], expected: B[i]![j] };
   return { loc: [-1, -1], got: NaN, expected: NaN };
 };
-const rankOverZFromSNF = (D: Mat) => {
+const rankOverZFromSNF = (D: Matrix) => {
   // rank = count of nonzero diagonal entries in SNF
-  const n = Math.min(D.length, D[0]?.length ?? 0);
+  const n = Matrixh.min(D.length, D[0]?.length ?? 0);
   let r = 0;
   for (let i = 0; i < n; i++) if (D[i]![i] !== 0) r++;
   return r;
 };
-const diagonalInvariants = (D: Mat) => {
-  const n = Math.min(D.length, D[0]?.length ?? 0);
+const diagonalInvariants = (D: Matrix) => {
+  const n = Matrixh.min(D.length, D[0]?.length ?? 0);
   const diag: number[] = [];
   for (let i = 0; i < n; i++) diag.push(D[i]![i]!);
   return diag.filter((d) => d !== 0);
@@ -68,9 +50,9 @@ const prettyGroup = (freeRank: number, torsion: number[] = []) => {
   for (const d of torsion) parts.push(`Z/${d}`);
   return parts.length ? parts.join(" ⊕ ") : "0";
 };
-const verifySNF = (U: Mat, A: Mat, V: Mat, D: Mat) => {
+const verifySNF = (U: Matrix, A: Matrix, V: Matrix, D: Matrix) => {
   const UAV = mul(mul(U, A), V);
-  if (equalMat(UAV, D)) return { ok: true as const };
+  if (equalMatrix(UAV, D)) return { ok: true as const };
   const { loc, got, expected } = firstDiff(UAV, D);
   return { ok: false as const, loc, got, expected };
 };
@@ -78,17 +60,17 @@ const verifySNF = (U: Mat, A: Mat, V: Mat, D: Mat) => {
 // ---------- Homology ranks from chain complex via SNF ----------
 // Chain complex ... → C_{n+1} --d_{n+1}→ C_n --d_n→ C_{n-1} → ...
 // Over Z with free, finite ranks: rank H_n = (dim C_n - rank d_n) - rank d_{n+1}
-const homologyRanksFromSNF = (dimCn: number, Dn: Mat, Dnp1: Mat) => {
+const homologyRanksFromSNF = (dimCn: number, Dn: Matrix, Dnp1: Matrix) => {
   const rank_dn = rankOverZFromSNF(Dn);
   const rank_dnp1 = rankOverZFromSNF(Dnp1);
   const beta_n = (dimCn - rank_dn) - rank_dnp1;
-  return Math.max(beta_n, 0);
+  return Matrixh.max(beta_n, 0);
 };
 
 // (Optional) For pedagogical cases where d_{n-1} = 0, torsion(H_{n-1}) is exactly
 // the set of non-unit diagonal entries of SNF(d_n). (E.g., RP^2 example below.)
-const torsionInHnm1_whenPrevBoundaryIsZero = (Dn: Mat) =>
-  diagonalInvariants(Dn).filter((d) => Math.abs(d) > 1).map((d) => Math.abs(d));
+const torsionInHnm1_whenPrevBoundaryIsZero = (Dn: Matrix) =>
+  diagonalInvariants(Dn).filter((d) => Matrixh.abs(d) > 1).map((d) => Matrixh.abs(d));
 
 // ---------- Example 1: Torus T^2 ----------
 function torusExample() {
@@ -98,9 +80,9 @@ function torusExample() {
   
   // CW model: 1 vertex v, 2 edges a,b, 1 face c with boundary aba^{-1}b^{-1}.
   // In homology, ∂₂(c)=0 in C₁, ∂₁(a)=∂₁(b)=0 in C₀.
-  // Matrices over Z:
-  const d2: Mat = [[0, 0]];   // shape 1x2  (C2 -> C1)
-  const d1: Mat = [[0], [0]]; // shape 2x1  (C1 -> C0)
+  // Matrixrices over Z:
+  const d2: Matrix = [[0, 0]];   // shape 1x2  (C2 -> C1)
+  const d1: Matrix = [[0], [0]]; // shape 2x1  (C1 -> C0)
 
   console.log("\nChain complex matrices:");
   console.log("∂₂ (C₂ → C₁):", d2);
@@ -142,8 +124,8 @@ function rp2Example() {
   
   // Minimal CW: C2=Z[c], C1=Z[a], C0=Z[v]
   // The 2-cell attaches by degree-2 map on the 1-skeleton → ∂₂ = [2], ∂₁ = [0].
-  const d2: Mat = [[2]]; // C2 -> C1
-  const d1: Mat = [[0]]; // C1 -> C0
+  const d2: Matrix = [[2]]; // C2 -> C1
+  const d1: Matrix = [[0]]; // C1 -> C0
 
   console.log("\nChain complex matrices:");
   console.log("∂₂ (C₂ → C₁):", d2);
@@ -202,7 +184,7 @@ export function demonstrateTorusHomology(): void {
   console.log("✓ Exact integer arithmetic for homology ranks");
   console.log("✓ Torsion detection for non-orientable surfaces");
   console.log("✓ Classical examples: Torus T² and Projective Plane RP²");
-  console.log("✓ Mathematical rigor with algorithmic verification");
+  console.log("✓ Matrixhematical rigor with algorithmic verification");
   console.log("=".repeat(80));
   
   console.log("\n📚 MATHEMATICAL BACKGROUND:");
