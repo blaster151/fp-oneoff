@@ -250,5 +250,13 @@ export { Copresheaf };
 import * as Isbell from './isbell.js';
 export { Isbell };
 
+// 2-category interface and structures
+import * as TwoCategory from './two-category.js';
+export { TwoCategory };
+
+// 2-category Cat (categories, functors, natural transformations)
+import * as Cat2 from './cat2.js';
+export { Cat2 };
+
 // Value-level instances and implementations
 export * from './instances.js';

@@ -6,6 +6,7 @@
     "docs/math/implementation-scope.md",
     "docs/math/wikipedia-insights.md",
     "docs/math/probing-tools.md",
-    "docs/math/yoneda-presheaf.md"
+    "docs/math/yoneda-presheaf.md",
+    "docs/math/higher-categories.md"
   ]
 }
