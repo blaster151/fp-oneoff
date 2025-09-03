@@ -26,6 +26,8 @@
     "examples": "ts-node scripts/run-examples.ts",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
+    "bench:rel": "node scripts/run-rel-benchmark.js",
+    "demo:em": "node scripts/run-em-demo.js",
     "prepublishOnly": "npm run check && npm run test && npm run build"
   },
   "keywords": [],

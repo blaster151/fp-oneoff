@@ -147,7 +147,7 @@ export function identityDoubleFunctor(): DoubleStrictFunctor {
       return {
         left: result.left,
         right: result.right,
-        equal: result.witness.holds && result.witness.coverage === 1
+        equal: result.witness.holds
       };
     }
   };

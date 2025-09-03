@@ -4,7 +4,8 @@
 
 import { Finite, Rel, Subset, wp, preimageSub, Fun, graph } from "./rel-equipment.js";
 import { SurjectiveLaxDoubleFunctor } from "./double-functor.js";
-import { DoubleLaxFunctor, Square, InclusionWitness, inclusionWitness } from "./double-lax-functor-interface.js";
+import { DoubleLaxFunctor, Square, inclusionWitness } from "./double-lax-functor-interface.js";
+import { InclusionWitness } from "./witnesses.js";
 import { Surjection, mkSurjection, getSurjection, getSection } from "./surjection-types.js";
 
 /************ Object pair with surjection ************/
@@ -24,9 +25,9 @@ export class SpecImplFunctor implements DoubleLaxFunctor {
     this.objMap.set(pair.spec, { impl: pair.impl, surj: pair.surj });
     
     // Add to underlying lax functor
-    const p = getSurjection(pair.surj);
-    const s = getSection(pair.surj);
-    this.F.addObject(pair.spec, pair.impl as any, p as any, s as any);
+    const surjection = getSurjection(pair.surj);
+    // Type-safe: addObject expects Finite<any> and Surjection<any,any>
+    this.F.addObject(pair.spec as Finite<any>, pair.impl as Finite<any>, surjection as any);
   }
 
   /************ DoubleLaxFunctor interface implementation ************/
@@ -38,11 +39,13 @@ export class SpecImplFunctor implements DoubleLaxFunctor {
   }
   
   onV<A, B>(A: Finite<A>, B: Finite<B>, f: Fun<A, B>): Fun<any, any> { 
-    return this.F.onV(A, B, f) as any; 
+    // Type-safe: underlying functor already returns Fun<any,any>
+    return this.F.onV(A as Finite<any>, B as Finite<any>, f as Fun<any,any>); 
   }
   
   onH<A, B>(R: Rel<A, B>): Rel<any, any> { 
-    return this.F.onH(R) as any; 
+    // Type-safe: underlying functor already returns Rel<any,any>
+    return this.F.onH(R as Rel<any,any>); 
   }
 
   squareLax<A, B, A1, B1>(sq: Square<A, B, A1, B1>): {
@@ -265,7 +268,7 @@ export function verifySpecImplFunctor(
   });
   
   const allSquaresLax = squareResults.every(r => r.holds);
-  const avgCoverage = squareResults.reduce((sum, r) => sum + (r.witness.coverage || 0), 0) / squareResults.length;
+  const avgCoverage = squareResults.reduce((sum, r) => sum + (r.witness.holds ? 1 : 0), 0) / squareResults.length;
   
   return { allSquaresLax, squareResults, avgCoverage };
 }

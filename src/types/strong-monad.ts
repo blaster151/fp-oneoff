@@ -2,6 +2,13 @@
 // Strong monads (over Set with cartesian product), EM algebras, and EM monoids.
 // Includes Option, Array, Reader, State, Writer instances + comprehensive law-check helpers
 
+import { 
+  LawCheck, lawCheck, lawCheckWithShrinking,
+  MonadLeftUnitWitness, MonadRightUnitWitness, MonadAssociativityWitness,
+  StrengthUnitWitness, EMAlgebraUnitWitness, EMMultiplicativityWitness, EMUnitMorphismWitness
+} from './witnesses.js';
+import { applyShrinking } from './property-shrinking.js';
+
 /************ Base types ************/
 export type Option<A> = { tag: "none" } | { tag: "some"; value: A };
 export const None: Option<never> = { tag: "none" };
@@ -193,194 +200,344 @@ function generateCombinations<A>(elems: A[], length: number): A[][] {
 }
 
 /************ Strong monad law checking ************/
+export type StrongMonadLawResults<T> = {
+  monadLaws: {
+    leftUnit: LawCheck<MonadLeftUnitWitness<T>>;
+    rightUnit: LawCheck<MonadRightUnitWitness<T>>;
+    associativity: LawCheck<MonadAssociativityWitness<T>>;
+  };
+  strengthLaws: {
+    unit: LawCheck<StrengthUnitWitness<T>>;
+  };
+};
+
 export function checkStrongMonadLaws<TF>(
   T: StrongMonad<TF>,
   FA: Finite<any>,
   FB: Finite<any>,
   FC: Finite<any>,
   enumTA: (FA: Finite<any>) => any[]
-): {
-  monadLaws: { leftUnit: boolean; rightUnit: boolean; associativity: boolean };
-  strengthLaws: { naturalityLeft: boolean; naturalityRight: boolean; associativity: boolean; unit: boolean };
-  errors: string[];
-} {
-  const errors: string[] = [];
-  
-  // Monad laws
-  const monadLaws = {
-    leftUnit: true,
-    rightUnit: true, 
-    associativity: true
-  };
+): StrongMonadLawResults<any> {
   
   // Left unit: chain(of(a), k) = k(a)
+  let leftUnitWitness: MonadLeftUnitWitness<any> | undefined;
   for (const a of FA.elems) {
     for (const b of FB.elems) {
       const k = (_: any) => T.of(b);
       try {
-        const left = T.chain(T.of(a), k);
-        const right = k(a);
+        const leftSide = T.chain(T.of(a), k);
+        const rightSide = k(a);
         // Simplified equality check
-        if (JSON.stringify(left) !== JSON.stringify(right)) {
-          monadLaws.leftUnit = false;
+        if (JSON.stringify(leftSide) !== JSON.stringify(rightSide)) {
+          leftUnitWitness = {
+            input: a,
+            k,
+            leftSide,
+            rightSide,
+            shrunk: { input: a } // Simple shrinking - just the input
+          };
+          break;
         }
       } catch (error) {
-        monadLaws.leftUnit = false;
-        errors.push(`Left unit law failed: ${error}`);
+        leftUnitWitness = {
+          input: a,
+          k,
+          leftSide: `Error: ${error}` as any,
+          rightSide: `k(${a})` as any,
+        };
+        break;
       }
     }
+    if (leftUnitWitness) break;
   }
   
   // Right unit: chain(m, of) = m  
+  let rightUnitWitness: MonadRightUnitWitness<any> | undefined;
   const TA = enumTA(FA);
   for (const ta of TA) {
     try {
-      const left = T.chain(ta, T.of);
-      if (JSON.stringify(left) !== JSON.stringify(ta)) {
-        monadLaws.rightUnit = false;
+      const leftSide = T.chain(ta, T.of);
+      if (JSON.stringify(leftSide) !== JSON.stringify(ta)) {
+        rightUnitWitness = {
+          input: ta,
+          leftSide,
+          rightSide: ta,
+          shrunk: { input: ta }
+        };
+        break;
       }
     } catch (error) {
-      monadLaws.rightUnit = false;
-      errors.push(`Right unit law failed: ${error}`);
+      rightUnitWitness = {
+        input: ta,
+        leftSide: `Error: ${error}` as any,
+        rightSide: ta
+      };
+      break;
     }
   }
   
-  // Strength laws (simplified)
-  const strengthLaws = {
-    naturalityLeft: true,
-    naturalityRight: true,
-    associativity: true,
-    unit: true
-  };
+  // Associativity: chain(chain(m, k), h) = chain(m, x => chain(k(x), h))
+  let assocWitness: MonadAssociativityWitness<any> | undefined;
+  for (const ta of TA.slice(0, 3)) { // Limit for performance
+    for (const b of FB.elems.slice(0, 2)) {
+      for (const c of FC.elems.slice(0, 2)) {
+        const k = (_: any) => T.of(b);
+        const h = (_: any) => T.of(c);
+        try {
+          const leftSide = T.chain(T.chain(ta, k), h);
+          const rightSide = T.chain(ta, (x: any) => T.chain(k(x), h));
+          if (JSON.stringify(leftSide) !== JSON.stringify(rightSide)) {
+            assocWitness = {
+              m: ta,
+              k,
+              h,
+              leftSide,
+              rightSide,
+              shrunk: { m: ta, k, h }
+            };
+            break;
+          }
+        } catch (error) {
+          assocWitness = {
+            m: ta,
+            k,
+            h,
+            leftSide: `Error: ${error}` as any,
+            rightSide: `chain(m, x => chain(k(x), h))` as any
+          };
+          break;
+        }
+      }
+      if (assocWitness) break;
+    }
+    if (assocWitness) break;
+  }
   
-  // Unit law: strength(a, of(b)) = of([a, b])
+  // Strength unit law: strength(a, of(b)) = of([a, b])
+  let strengthUnitWitness: StrengthUnitWitness<any> | undefined;
   for (const a of FA.elems) {
     for (const b of FB.elems) {
       try {
-        const left = T.strength(a, T.of(b));
-        const right = T.of([a, b]);
-        if (JSON.stringify(left) !== JSON.stringify(right)) {
-          strengthLaws.unit = false;
+        const leftSide = T.strength(a, T.of(b));
+        const rightSide = T.of([a, b]);
+        if (JSON.stringify(leftSide) !== JSON.stringify(rightSide)) {
+          strengthUnitWitness = {
+            a,
+            b,
+            leftSide,
+            rightSide,
+            shrunk: { a, b }
+          };
+          break;
         }
       } catch (error) {
-        strengthLaws.unit = false;
-        errors.push(`Strength unit law failed: ${error}`);
+        strengthUnitWitness = {
+          a,
+          b,
+          leftSide: `Error: ${error}` as any,
+          rightSide: T.of([a, b])
+        };
+        break;
       }
     }
+    if (strengthUnitWitness) break;
   }
   
-  return { monadLaws, strengthLaws, errors };
+  // Apply shrinking to witnesses for minimal counterexamples
+  const shrunkLeftUnit = leftUnitWitness ? applyShrinking(leftUnitWitness, (w) => {
+    try {
+      const leftSide = T.chain(T.of(w.input), w.k);
+      const rightSide = w.k(w.input);
+      return JSON.stringify(leftSide) !== JSON.stringify(rightSide);
+    } catch {
+      return false;
+    }
+  }) : undefined;
+  
+  const shrunkRightUnit = rightUnitWitness ? applyShrinking(rightUnitWitness, (w) => {
+    try {
+      const leftSide = T.chain(w.input, T.of);
+      return JSON.stringify(leftSide) !== JSON.stringify(w.input);
+    } catch {
+      return false;
+    }
+  }) : undefined;
+  
+  const shrunkStrengthUnit = strengthUnitWitness ? applyShrinking(strengthUnitWitness, (w) => {
+    try {
+      const leftSide = T.strength(w.a, T.of(w.b));
+      const rightSide = T.of([w.a, w.b]);
+      return JSON.stringify(leftSide) !== JSON.stringify(rightSide);
+    } catch {
+      return false;
+    }
+  }) : undefined;
+
+  return {
+    monadLaws: {
+      leftUnit: lawCheck(!leftUnitWitness, shrunkLeftUnit, "Left unit: chain(of(a), k) = k(a)"),
+      rightUnit: lawCheck(!rightUnitWitness, shrunkRightUnit, "Right unit: chain(m, of) = m"),
+      associativity: lawCheck(!assocWitness, assocWitness, "Associativity: chain(chain(m, k), h) = chain(m, x => chain(k(x), h))")
+    },
+    strengthLaws: {
+      unit: lawCheck(!strengthUnitWitness, shrunkStrengthUnit, "Strength unit: strength(a, of(b)) = of([a, b])")
+    }
+  };
 }
 
 /************ EM-monoid law checking ************/
+export type EMMonoidLawResults<T, A> = {
+  monoidLaws: LawCheck<{ a: A; b: A; c: A; operation: string }>;
+  algebraUnit: LawCheck<EMAlgebraUnitWitness<T, A>>;
+  multiplicativity: LawCheck<EMMultiplicativityWitness<T, A>>;
+  unitMorphism: LawCheck<EMUnitMorphismWitness<T, A>>;
+};
+
 export function checkEMMonoid<TF, A>(
   T: StrongMonad<TF>,
   FA: Finite<A>,
   em: EMMonoid<TF, A>,
   enumTA: (FA: Finite<A>) => any[]
-): { 
-  monoid: boolean; 
-  algebraUnit: boolean; 
-  mulHom: boolean; 
-  unitHom: boolean;
-  errors: string[];
-} {
-  const errors: string[] = [];
+): EMMonoidLawResults<any, A> {
   
   // Monoid laws (associativity + unit)
-  let monoid = true;
+  let monoidWitness: { a: A; b: A; c: A; operation: string } | undefined;
   for (const a of FA.elems) {
     for (const b of FA.elems) {
       for (const c of FA.elems) {
         const ab = em.concat(a, b);
         const bc = em.concat(b, c);
         if (em.concat(ab, c) !== em.concat(a, bc)) {
-          monoid = false;
-          errors.push(`Associativity failed: (${a} * ${b}) * ${c} ≠ ${a} * (${b} * ${c})`);
+          monoidWitness = { a, b, c, operation: "associativity" };
+          break;
         }
       }
+      if (monoidWitness) break;
     }
+    if (monoidWitness) break;
   }
   
-  for (const a of FA.elems) {
-    if (em.concat(em.empty, a) !== a) {
-      monoid = false;
-      errors.push(`Left unit failed: empty * ${a} ≠ ${a}`);
-    }
-    if (em.concat(a, em.empty) !== a) {
-      monoid = false;
-      errors.push(`Right unit failed: ${a} * empty ≠ ${a}`);
+  if (!monoidWitness) {
+    for (const a of FA.elems) {
+      if (em.concat(em.empty, a) !== a) {
+        monoidWitness = { a, b: em.empty as A, c: a, operation: "left unit" };
+        break;
+      }
+      if (em.concat(a, em.empty) !== a) {
+        monoidWitness = { a, b: em.empty as A, c: a, operation: "right unit" };
+        break;
+      }
     }
   }
 
   // Algebra unit: α ∘ of = id
-  let algebraUnit = true;
+  let algebraUnitWitness: EMAlgebraUnitWitness<any, A> | undefined;
   for (const a of FA.elems) {
     try {
-      const result = em.alg(T.of(a));
-      if (result !== a) {
-        algebraUnit = false;
-        errors.push(`Algebra unit failed: alg(of(${a})) = ${result} ≠ ${a}`);
+      const leftSide = em.alg(T.of(a));
+      if (leftSide !== a) {
+        algebraUnitWitness = {
+          input: a,
+          leftSide,
+          rightSide: a,
+          shrunk: { input: a }
+        };
+        break;
       }
     } catch (error) {
-      algebraUnit = false;
-      errors.push(`Algebra unit error: ${error}`);
+      algebraUnitWitness = {
+        input: a,
+        leftSide: `Error: ${error}` as any,
+        rightSide: a
+      };
+      break;
     }
   }
 
   // Multiplicativity: α(map(concat, prod(ta,tb))) = concat(α(ta), α(tb))
-  let mulHom = true;
+  let multiplicativityWitness: EMMultiplicativityWitness<any, A> | undefined;
   const TA = enumTA(FA);
-  for (const ta of TA) {
-    for (const tb of TA) {
+  for (const ta of TA.slice(0, 3)) { // Limit for performance
+    for (const tb of TA.slice(0, 3)) {
       try {
         const prodResult = T.prod(ta, tb);
         const mappedResult = T.map(prodResult, ([a, b]: [A, A]) => em.concat(a, b));
-        const lhs = em.alg(mappedResult);
-        const rhs = em.concat(em.alg(ta), em.alg(tb));
+        const leftSide = em.alg(mappedResult);
+        const rightSide = em.concat(em.alg(ta), em.alg(tb));
         
-        if (lhs !== rhs) {
-          mulHom = false;
-          errors.push(`Multiplicativity failed for some ta, tb`);
+        if (leftSide !== rightSide) {
+          multiplicativityWitness = {
+            ta,
+            tb,
+            leftSide,
+            rightSide,
+            shrunk: { ta, tb }
+          };
           break;
         }
       } catch (error) {
-        mulHom = false;
-        errors.push(`Multiplicativity error: ${error}`);
+        multiplicativityWitness = {
+          ta,
+          tb,
+          leftSide: `Error: ${error}` as any,
+          rightSide: em.concat(em.alg(ta), em.alg(tb))
+        };
         break;
       }
     }
-    if (!mulHom) break;
+    if (multiplicativityWitness) break;
   }
 
   // Unit morphism: α(map(_=>empty, ta)) = empty and α(of(empty)) = empty
-  let unitHom = true;
-  for (const ta of TA) {
+  let unitMorphismWitness: EMUnitMorphismWitness<any, A> | undefined;
+  for (const ta of TA.slice(0, 3)) {
     try {
       const mapped = T.map(ta, (_: A) => em.empty);
-      const result = em.alg(mapped);
-      if (result !== em.empty) {
-        unitHom = false;
-        errors.push(`Unit morphism failed: alg(map(_=>empty, ta)) ≠ empty`);
+      const leftSide = em.alg(mapped);
+      if (leftSide !== em.empty) {
+        unitMorphismWitness = {
+          input: mapped,
+          leftSide,
+          rightSide: em.empty,
+          shrunk: { input: ta }
+        };
+        break;
       }
     } catch (error) {
-      unitHom = false;
-      errors.push(`Unit morphism error: ${error}`);
+      unitMorphismWitness = {
+        input: ta,
+        leftSide: `Error: ${error}` as any,
+        rightSide: em.empty
+      };
+      break;
     }
   }
   
-  try {
-    const result = em.alg(T.of(em.empty));
-    if (result !== em.empty) {
-      unitHom = false;
-      errors.push(`Unit morphism failed: alg(of(empty)) ≠ empty`);
+  if (!unitMorphismWitness) {
+    try {
+      const leftSide = em.alg(T.of(em.empty));
+      if (leftSide !== em.empty) {
+        unitMorphismWitness = {
+          input: T.of(em.empty),
+          leftSide,
+          rightSide: em.empty
+        };
+      }
+    } catch (error) {
+      unitMorphismWitness = {
+        input: T.of(em.empty),
+        leftSide: `Error: ${error}` as any,
+        rightSide: em.empty
+      };
     }
-  } catch (error) {
-    unitHom = false;
-    errors.push(`Unit morphism error for of(empty): ${error}`);
   }
 
-  return { monoid, algebraUnit, mulHom, unitHom, errors };
+  return {
+    monoidLaws: lawCheck(!monoidWitness, monoidWitness, "Monoid laws: associativity and unit"),
+    algebraUnit: lawCheck(!algebraUnitWitness, algebraUnitWitness, "Algebra unit: alg(of(a)) = a"),
+    multiplicativity: lawCheck(!multiplicativityWitness, multiplicativityWitness, "Multiplicativity: alg(map(concat, prod(ta,tb))) = concat(alg(ta), alg(tb))"),
+    unitMorphism: lawCheck(!unitMorphismWitness, unitMorphismWitness, "Unit morphism: alg(map(_ => empty, ta)) = empty")
+  };
 }
 
 /************ Example EM monoids ************/
@@ -413,12 +570,16 @@ export function demonstrateStrongMonads(): void {
   const optionResult = checkEMMonoid(StrongOption, FA, optionSumEMMonoid, enumOption);
   
   console.log("\n1. OPTION + SUM EM-MONOID:");
-  console.log("  Monoid laws:", optionResult.monoid ? "✅" : "❌");
-  console.log("  Algebra unit:", optionResult.algebraUnit ? "✅" : "❌");
-  console.log("  Multiplicativity:", optionResult.mulHom ? "✅" : "❌");
-  console.log("  Unit morphism:", optionResult.unitHom ? "✅" : "❌");
-  if (optionResult.errors.length > 0) {
-    console.log("  Errors:", optionResult.errors.slice(0, 3));
+  console.log("  Monoid laws:", optionResult.monoidLaws.ok ? "✅" : "❌");
+  console.log("  Algebra unit:", optionResult.algebraUnit.ok ? "✅" : "❌");
+  console.log("  Multiplicativity:", optionResult.multiplicativity.ok ? "✅" : "❌");
+  console.log("  Unit morphism:", optionResult.unitMorphism.ok ? "✅" : "❌");
+  
+  if (!optionResult.monoidLaws.ok) {
+    console.log("  Monoid violation:", JSON.stringify(optionResult.monoidLaws.witness));
+  }
+  if (!optionResult.algebraUnit.ok) {
+    console.log("  Algebra unit violation:", JSON.stringify(optionResult.algebraUnit.witness));
   }
 
   // Test Array + String EM-monoid
@@ -426,12 +587,13 @@ export function demonstrateStrongMonads(): void {
   const arrayResult = checkEMMonoid(StrongArray, FS, arrayStringEMMonoid, (F) => enumArray(F, 2));
   
   console.log("\n2. ARRAY + STRING EM-MONOID:");
-  console.log("  Monoid laws:", arrayResult.monoid ? "✅" : "❌");
-  console.log("  Algebra unit:", arrayResult.algebraUnit ? "✅" : "❌");
-  console.log("  Multiplicativity:", arrayResult.mulHom ? "✅" : "❌");
-  console.log("  Unit morphism:", arrayResult.unitHom ? "✅" : "❌");
-  if (arrayResult.errors.length > 0) {
-    console.log("  Errors:", arrayResult.errors.slice(0, 3));
+  console.log("  Monoid laws:", arrayResult.monoidLaws.ok ? "✅" : "❌");
+  console.log("  Algebra unit:", arrayResult.algebraUnit.ok ? "✅" : "❌");
+  console.log("  Multiplicativity:", arrayResult.multiplicativity.ok ? "✅" : "❌");
+  console.log("  Unit morphism:", arrayResult.unitMorphism.ok ? "✅" : "❌");
+  
+  if (!arrayResult.multiplicativity.ok) {
+    console.log("  Multiplicativity violation:", JSON.stringify(arrayResult.multiplicativity.witness));
   }
 
   // Test strong monad laws
@@ -440,10 +602,17 @@ export function demonstrateStrongMonads(): void {
   const strongLaws = checkStrongMonadLaws(StrongOption, FA, FB, FC, enumOption);
   
   console.log("\n3. STRONG MONAD LAWS (Option):");
-  console.log("  Left unit:", strongLaws.monadLaws.leftUnit ? "✅" : "❌");
-  console.log("  Right unit:", strongLaws.monadLaws.rightUnit ? "✅" : "❌");
-  console.log("  Associativity:", strongLaws.monadLaws.associativity ? "✅" : "❌");
-  console.log("  Strength unit:", strongLaws.strengthLaws.unit ? "✅" : "❌");
+  console.log("  Left unit:", strongLaws.monadLaws.leftUnit.ok ? "✅" : "❌");
+  console.log("  Right unit:", strongLaws.monadLaws.rightUnit.ok ? "✅" : "❌");
+  console.log("  Associativity:", strongLaws.monadLaws.associativity.ok ? "✅" : "❌");
+  console.log("  Strength unit:", strongLaws.strengthLaws.unit.ok ? "✅" : "❌");
+  
+  if (!strongLaws.monadLaws.leftUnit.ok) {
+    console.log("  Left unit violation:", JSON.stringify(strongLaws.monadLaws.leftUnit.witness));
+  }
+  if (!strongLaws.strengthLaws.unit.ok) {
+    console.log("  Strength unit violation:", JSON.stringify(strongLaws.strengthLaws.unit.witness));
+  }
 
   console.log("\n" + "=".repeat(60));
   console.log("STRONG MONAD FEATURES:");

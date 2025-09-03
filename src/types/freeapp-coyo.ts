@@ -173,13 +173,13 @@ export function natFormToDoc<A>(fx: FormF<A>): Doc<A> {
 }
 
 /************************ Optics bridge: Lens to retarget Reader environments ************************/
-export type Lens<S, T> = { get(s: S): T; set(s: S, t: T): S; over(s: S, f: (t: T) => T): S };
-export const lens = <S, T>(get: (s: S) => T, set: (s: S, t: T) => S): Lens<S, T> => ({
+export type ReaderLens<S, T> = { get(s: S): T; set(s: S, t: T): S; over(s: S, f: (t: T) => T): S };
+export const lens = <S, T>(get: (s: S) => T, set: (s: S, t: T) => S): ReaderLens<S, T> => ({
   get, set, over: (s, f) => set(s, f(get(s)))
 });
 
 // Precompose a reader-based interpreter with a lens into a sub-environment
-export function viaLens<S, T, A>(L: Lens<S, T>, nat: (fx: any) => Reader<T, A>): (fx: any) => Reader<S, A> {
+export function viaLens<S, T, A>(L: ReaderLens<S, T>, nat: (fx: any) => Reader<T, A>): (fx: any) => Reader<S, A> {
   return fx => (s: S) => nat(fx)(L.get(s));
 }
 
@@ -258,7 +258,7 @@ export function composeNat<F, G, H>(
 
 /** Transform natural transformation via lens */
 export function transformNatViaLens<S, T, F, Target>(
-  L: Lens<S, T>,
+  L: ReaderLens<S, T>,
   nat: (fx: F) => Reader<T, Target>
 ): (fx: F) => Reader<S, Target> {
   return viaLens(L, nat);

@@ -2,8 +2,10 @@
 // Smith Normal Form certificate checker (witnesses).
 // Given integer matrices U, A, V and D, check U*A*V = D and that D is diagonal with divisibility chain.
 
+import { Matrix, matrixMultiply, matricesEqual, matrixShape } from './snf-surface-api.js';
+
 export type Int = number;
-export type Mat = Int[][]; // rows of columns; m x n
+export type Mat = Matrix; // rows of columns; m x n (alias for consolidated Matrix type)
 
 export type SNFWitness =
   | { ok: true }
@@ -16,37 +18,9 @@ export type SNFCertificate = {
   D: Mat;  // diagonal Smith normal form
 };
 
-function matMul(A: Mat, B: Mat): Mat {
-  if (A.length === 0 || B.length === 0 || A[0]!.length !== B.length) {
-    throw new Error("Matrix dimension mismatch");
-  }
-  
-  const m = A.length;
-  const n = B[0]!.length;
-  const k = B.length;
-  const out: Mat = Array.from({length: m}, () => Array(n).fill(0));
-  
-  for (let i = 0; i < m; i++) {
-    for (let j = 0; j < n; j++) {
-      let s = 0;
-      for (let t = 0; t < k; t++) {
-        s += A[i]![t]! * B[t]![j]!;
-      }
-      out[i]![j] = s;
-    }
-  }
-  return out;
-}
-
-function matEqual(A: Mat, B: Mat): boolean {
-  if (A.length !== B.length || A[0]?.length !== B[0]?.length) return false;
-  for (let i = 0; i < A.length; i++) {
-    for (let j = 0; j < A[0]!.length; j++) {
-      if (A[i]![j] !== B[i]![j]) return false;
-    }
-  }
-  return true;
-}
+// Using consolidated matrix utilities from snf-surface-api.ts
+const matMul = matrixMultiply;
+const matEqual = matricesEqual;
 
 function isDiagonal(D: Mat): { diagonal: boolean; violations?: Array<{i: number, j: number, value: number}> } {
   const violations: Array<{i: number, j: number, value: number}> = [];
@@ -63,7 +37,7 @@ function isDiagonal(D: Mat): { diagonal: boolean; violations?: Array<{i: number,
   
   return {
     diagonal: violations.length === 0,
-    violations: violations.length > 0 ? violations : undefined
+    ...(violations.length > 0 ? { violations } : {})
   };
 }
 
@@ -93,7 +67,7 @@ function checkDivisibilityChain(D: Mat): {
   
   return {
     valid: violations.length === 0,
-    violations: violations.length > 0 ? violations : undefined
+    ...(violations.length > 0 ? { violations } : {})
   };
 }
 

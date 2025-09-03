@@ -1,0 +1,751 @@
+{
+  "timestamp": "2025-09-02T20:50:00.026Z",
+  "config": {
+    "sizes": [
+      64,
+      128
+    ],
+    "densities": [
+      0.05,
+      0.1
+    ],
+    "iterations": 3,
+    "seed": 42,
+    "output": "bench/rel"
+  },
+  "results": [
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.2306401458978653,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.10185597881165068,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.26391359469890596,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.0989306425461972,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.24326760418415072,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.11712497574327722,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.2506016036748886,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.10639540221841848,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.29427852346897126,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.059045798793531834,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.2921679589033127,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.0834996966303304,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.2705408969163895,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.05901377544983712,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.2658785051107407,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.11701109041542934,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.21915748331546783,
+      "pairCount": 204,
+      "memoryBytes": 4096,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.05,
+      "timeMs": 0.045184642698013,
+      "pairCount": 204,
+      "memoryBytes": 512,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.5989489552974702,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.1282983621881637,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.5223441141605377,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.20552189992290434,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.5222575049877167,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.1880721061963,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.6027513164997101,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.13500972549032053,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.44140419249534607,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.09834805781110761,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.5052256849765778,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.2315303134777304,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.4141988322734833,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.11467723218279438,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.5795758621692658,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.12777255903138834,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.5490520200252533,
+      "pairCount": 409,
+      "memoryBytes": 4096,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 64,
+      "density": 0.1,
+      "timeMs": 0.1747307765173151,
+      "pairCount": 409,
+      "memoryBytes": 512,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 1.0590850438117982,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.2589961982631694,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 1.1105752654075622,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.26723152542635725,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 1.2248217385292053,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.3656993692076887,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.8593106570243836,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.3337410824038196,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 1.0024462811470032,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.42101842566623027,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 1.1340860938072206,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.29993062159457706,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 1.1487822068214417,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.36259384707239467,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.907579017162323,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.32227326847977517,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.8270171132087708,
+      "pairCount": 819,
+      "memoryBytes": 16384,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.05,
+      "timeMs": 0.2918284247948382,
+      "pairCount": 819,
+      "memoryBytes": 2048,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 1.9119868619918825,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.41130395019852395,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 2.421455320930481,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 0
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.9392417939631627,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 2.3521698034286502,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 0
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.6277526999405991,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 0
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 1.9142091424942018,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.6504317461665782,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 1.744371116447449,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 1
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.3531179563653671,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 1.7227552614212036,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 1
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.3615784268592708,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 1
+    },
+    {
+      "operation": "compose",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 2.2984581838607787,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 2
+    },
+    {
+      "operation": "compose",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.696741335668671,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 2.220081373023987,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 2
+    },
+    {
+      "operation": "union",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.7603034594831499,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "Rel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 1.7355515134811401,
+      "pairCount": 1638,
+      "memoryBytes": 16384,
+      "iteration": 2
+    },
+    {
+      "operation": "intersect",
+      "implementation": "BitRel",
+      "size": 128,
+      "density": 0.1,
+      "timeMs": 0.4919781377691114,
+      "pairCount": 1638,
+      "memoryBytes": 2048,
+      "iteration": 2
+    }
+  ],
+  "summary": {
+    "totalTests": 72,
+    "averageSpeedup": {
+      "compose": 3.4453564226222024,
+      "union": 3.16810129499328,
+      "intersect": 3.243112909455163
+    },
+    "medianSpeedup": {
+      "compose": 3.482931011764977,
+      "union": 3.1110353514777462,
+      "intersect": 3.3274812708793675
+    }
+  }
+}

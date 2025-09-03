@@ -6,6 +6,9 @@
 // to these interfaces, or extend this module to the profunctor encoding.
 //
 // Laws return concrete counterexamples when they fail.
+// Now includes property-based shrinking for minimal counterexamples.
+
+import { applyShrinking, estimateSize } from './property-shrinking.js';
 
 /************ Basic Option ************/
 export type Option<A> = { tag:"none" } | { tag:"some"; value:A };
@@ -49,10 +52,48 @@ export function checkLens<S,A>(FSS: Finite<S>, FAA: Finite<A>, L: Lens<S,A>): Le
       }
     }
   }
+  
+  // Apply shrinking to minimize counterexamples
+  const shrinkGetSet = (examples: typeof gs) => {
+    if (examples.length === 0) return examples;
+    
+    // Shrink each counterexample
+    return examples.map(example => {
+      const validator = (ex: typeof example) => {
+        try {
+          const a = L.get(ex.s);
+          const after = L.set(ex.s, a);
+          return after !== ex.s; // Still violates get-set law
+        } catch {
+          return false;
+        }
+      };
+      
+      return applyShrinking(example, validator);
+    }).slice(0, 3); // Keep only first 3 minimal examples
+  };
+  
+  const shrinkSetGet = (examples: typeof sg) => {
+    if (examples.length === 0) return examples;
+    
+    return examples.map(example => {
+      const validator = (ex: typeof example) => {
+        try {
+          const got = L.get(L.set(ex.s, ex.a));
+          return got !== ex.a; // Still violates set-get law
+        } catch {
+          return false;
+        }
+      };
+      
+      return applyShrinking(example, validator);
+    }).slice(0, 3); // Keep only first 3 minimal examples
+  };
+  
   return {
-    getSet: gs.length===0 ? { ok:true } : { ok:false, counterexamples: gs },
-    setGet: sg.length===0 ? { ok:true } : { ok:false, counterexamples: sg },
-    setSet: ss.length===0 ? { ok:true } : { ok:false, counterexamples: ss },
+    getSet: gs.length===0 ? { ok:true } : { ok:false, counterexamples: shrinkGetSet(gs) },
+    setGet: sg.length===0 ? { ok:true } : { ok:false, counterexamples: shrinkSetGet(sg) },
+    setSet: ss.length===0 ? { ok:true } : { ok:false, counterexamples: ss.slice(0, 3) }, // Limit without shrinking for now
   };
 }
 

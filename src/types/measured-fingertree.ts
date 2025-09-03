@@ -85,16 +85,17 @@ export function pushL<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, x:T): 
   }
 }
 
-export function pushR<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, x:T): MeasuredFingerTree<T,M> {
+// pushR never returns Empty when given any tree and an element
+export function pushR<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, x:T): Exclude<MeasuredFingerTree<T,M>, {t:"Empty"}> {
   switch(t.t){
-    case "Empty": return single(meas, x);
-    case "Single": return mkDeep(meas, digit(meas,[t.x]), empty({measure:(n:Node<T,M>)=>n.m, M:meas.M}), digit(meas,[x]));
+    case "Empty": return single(meas, x) as Exclude<MeasuredFingerTree<T,M>, {t:"Empty"}>;
+    case "Single": return mkDeep(meas, digit(meas,[t.x]), empty({measure:(n:Node<T,M>)=>n.m, M:meas.M}), digit(meas,[x])) as Exclude<MeasuredFingerTree<T,M>, {t:"Empty"}>;
     case "Deep": {
       const s = t.suffix.items;
-      if (s.length<4) return mkDeep(meas, t.prefix, t.deeper, digit(meas,[...s,x]));
+      if (s.length<4) return mkDeep(meas, t.prefix, t.deeper, digit(meas,[...s,x])) as Exclude<MeasuredFingerTree<T,M>, {t:"Empty"}>;
       const [a,b,c,d] = s as [T,T,T,T];
       const deeper2 = pushR({measure:(n:Node<T,M>)=>n.m, M:meas.M}, t.deeper, node2(meas,a,b));
-      return mkDeep(meas, t.prefix, deeper2, digit(meas,[c,d,x]));
+      return mkDeep(meas, t.prefix, deeper2, digit(meas,[c,d,x])) as Exclude<MeasuredFingerTree<T,M>, {t:"Empty"}>;
     }
   }
 }
@@ -232,8 +233,11 @@ export function splitWith<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, pr
         }
         const mMid = M.concat(mPref, t.deeper.m);
         if (pred(mMid)){
-          const res = go(mPref, t.deeper);
-          const left = fromArray(meas, [...t.prefix.items, ...toArray(res.left).flatMap(nodeToArray)]);
+          // Recursive call on deeper structure with Node<T,M> elements
+          const deeperMeas: Measured<Node<T,M>, M> = {measure:(n:Node<T,M>)=>n.m, M:meas.M};
+          const res = splitWith(deeperMeas, t.deeper, (m: M) => pred(M.concat(mPref, m)));
+          const leftItems = [...t.prefix.items, ...toArray(res.left).flatMap(nodeToArray)];
+          const left = fromArray(meas, leftItems);
           const right = mkDeep(meas, digit(meas,[]), res.right, t.suffix);
           return { left, pivot: res.pivot, right };
         }
@@ -295,15 +299,15 @@ export const costMeasure: Measured<{cost: number}, number> = {
 };
 
 /************ Indexed operations ************/
-export function splitAt<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, index:number): { left: MeasuredFingerTree<T,M>, right: MeasuredFingerTree<T,M> } {
+export function splitAt<T>(meas:Measured<T,number>, t:MeasuredFingerTree<T,number>, index:number): { left: MeasuredFingerTree<T,number>, right: MeasuredFingerTree<T,number> } {
   const result = splitWith(meas, t, m => meas.M.concat(meas.M.empty, m) > index);
   return { left: result.left, right: result.right };
 }
 
-export function take<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, n:number): MeasuredFingerTree<T,M> {
+export function take<T>(meas:Measured<T,number>, t:MeasuredFingerTree<T,number>, n:number): MeasuredFingerTree<T,number> {
   return splitAt(meas, t, n).left;
 }
 
-export function drop<T,M>(meas:Measured<T,M>, t:MeasuredFingerTree<T,M>, n:number): MeasuredFingerTree<T,M> {
+export function drop<T>(meas:Measured<T,number>, t:MeasuredFingerTree<T,number>, n:number): MeasuredFingerTree<T,number> {
   return splitAt(meas, t, n).right;
 }
