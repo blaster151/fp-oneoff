@@ -31,6 +31,7 @@
     "test:codensity": "vitest run src/types/__tests__/codensity-*.test.ts",
     "test:codensity:endX": "vitest run src/types/__tests__/codensity-endX.test.ts",
     "test:codensity:adjunction": "vitest run src/types/__tests__/codensity-adjunction.test.ts",
+    "test:ultrafilter": "vitest run src/types/__tests__/ultrafilter-principal.test.ts",
     "demo:cps": "node -e \"const { CPS } = require('./dist/types/index.js'); const id = x => x; const prog = CPS.reset(CPS.Cont.chain(x => CPS.Cont.of()(x + 1))(CPS.shift(k => k(5)))); console.log('shift/reset example =>', CPS.Cont.run(prog, id));\"",
     "demo:kan": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Kan demo:'); Kan.demoKanExample();\"",
     "demo:product": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Product demo: Discrete category gives product'); console.log('Available:', Object.keys(Kan).filter(k => k.includes('Ran')).join(', '));\"",

@@ -198,5 +198,13 @@ export { Kan };
 import * as Codensity from './codensity-index.js';
 export { Codensity };
 
+// Mini FinSet category for ultrafilter applications
+import * as MiniFinSet from './mini-finset.js';
+export { MiniFinSet };
+
+// Ultrafilter construction from codensity monads
+import * as Ultrafilter from './ultrafilter.js';
+export { Ultrafilter };
+
 // Value-level instances and implementations
 export * from './instances.js';
