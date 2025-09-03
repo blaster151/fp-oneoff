@@ -90,13 +90,13 @@ describe("Presheaf(C) colimits (pointwise)", () => {
     const PplusQ = pshCoproduct(C, P, Q);
     
     // At object A: P(A) ⊕ Q(A) = {0,1} ⊕ {"u"}
-    const A0 = Array.from(PplusQ.onObj("A" as any).elems);
-    expect(A0.some(x => x.tag === "inl" && x.value === 0)).toBe(true);
-    expect(A0.some(x => x.tag === "inr" && x.value === "u")).toBe(true);
+    const A0 = Array.from(PplusQ.onObj("A" as any).elems) as any[];
+    expect(A0.some((x: any) => x.tag === "inl" && x.value === 0)).toBe(true);
+    expect(A0.some((x: any) => x.tag === "inr" && x.value === "u")).toBe(true);
     expect(A0.length).toBe(3); // 2 + 1
     
     // At object B: P(B) ⊕ Q(B) = {"x"} ⊕ {"v","w"}  
-    const B0 = Array.from(PplusQ.onObj("B" as any).elems);
+    const B0 = Array.from(PplusQ.onObj("B" as any).elems) as any[];
     expect(B0.length).toBe(3); // 1 + 2
     
     console.log("Presheaf coproduct computed pointwise ✅");
@@ -112,8 +112,8 @@ describe("Presheaf(C) colimits (pointwise)", () => {
     expect(typeof coeq.onObj).toBe("function");
     expect(typeof coeq.onMor).toBe("function");
     
-    const coA = coeq.onObj("A" as any);
-    const coB = coeq.onObj("B" as any);
+    const coA = coeq.onObj("A" as any) as any;
+    const coB = coeq.onObj("B" as any) as any;
     
     expect(Array.isArray(coA.elems)).toBe(true);
     expect(Array.isArray(coB.elems)).toBe(true);
@@ -133,7 +133,7 @@ describe("Presheaf(C) colimits (pointwise)", () => {
     
     // At A: pushout of sets {0,1} ← {9} → {"u"}
     // Glues 0 ~ "u" via the span
-    const Aelts = Array.from(PO.onObj("A" as any).elems);
+    const Aelts = Array.from(PO.onObj("A" as any).elems) as any[];
     expect(Aelts.length).toBeGreaterThan(0);
     
     console.log("Presheaf pushout computed pointwise ✅");

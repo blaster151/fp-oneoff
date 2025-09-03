@@ -41,11 +41,23 @@ export function coequalizer<X, Y>(
   const parent = new Map<Y, Y>(Yelts.map(y => [y, y]));
   
   const find = (y: Y): Y => {
-    const p = parent.get(y)!;
-    if (Yset.eq(p, y)) return y;
-    const root = find(p);
-    parent.set(y, root);
-    return root;
+    let current = y;
+    const path: Y[] = [];
+    
+    // Follow parent pointers to root
+    while (true) {
+      const p = parent.get(current);
+      if (!p || Yset.eq(p, current)) break;
+      path.push(current);
+      current = p;
+    }
+    
+    // Path compression
+    for (const node of path) {
+      parent.set(node, current);
+    }
+    
+    return current;
   };
   
   const unite = (a: Y, b: Y) => {

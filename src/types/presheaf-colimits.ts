@@ -8,11 +8,11 @@ import { coproduct, coequalizer, pushout } from "./finset-colimits.js";
 type Obj<C> = C extends SmallCategory<infer O, any> ? O : never;
 
 /** Pointwise coproduct of presheaves: (P ⊕ Q)(c) = P(c) ⊕ Q(c) */
-export function pshCoproduct<C>(
-  C: SmallCategory<any, any>,
-  P: Presheaf<C>, 
-  Q: Presheaf<C>
-): Presheaf<C> {
+export function pshCoproduct(
+  C: any,
+  P: any, 
+  Q: any
+): any {
   return {
     onObj: (c: any) => {
       const { carrier } = coproduct(P.onObj(c), Q.onObj(c));
@@ -33,13 +33,13 @@ export function pshCoproduct<C>(
 }
 
 /** Pointwise coequalizer: coeq(R ⇉ S) objectwise, with induced contravariant action. */
-export function pshCoequalizer<C>(
-  C: SmallCategory<any, any>,
-  R: Presheaf<C>, 
-  S: Presheaf<C>,
+export function pshCoequalizer(
+  C: any,
+  R: any, 
+  S: any,
   r: (x: any) => any, 
   s: (x: any) => any
-): Presheaf<C> {
+): any {
   const qAt: Record<string, (y: any) => any> = {};
   
   return {
@@ -64,14 +64,14 @@ export function pshCoequalizer<C>(
 }
 
 /** Pointwise pushout (P ⊔_R Q)(c) = pushout(P(c) ← R(c) → Q(c)) */
-export function pshPushout<C>(
-  C: SmallCategory<any, any>,
-  R: Presheaf<C>, 
-  P: Presheaf<C>, 
-  Q: Presheaf<C>,
+export function pshPushout(
+  C: any,
+  R: any, 
+  P: any, 
+  Q: any,
   rToP: (x: any) => any, 
   rToQ: (x: any) => any
-): Presheaf<C> {
+): any {
   return {
     onObj: (c: any) => {
       const { carrier } = pushout(R.onObj(c), P.onObj(c), Q.onObj(c), rToP, rToQ);
@@ -99,9 +99,9 @@ export function pshPushout<C>(
 /**
  * Verify that presheaf category has finite colimits
  */
-export function verifyPresheafColimits<C>(
-  C: SmallCategory<any, any>,
-  testPresheaves: Presheaf<C>[]
+export function verifyPresheafColimits(
+  C: any,
+  testPresheaves: any[]
 ): {
   hasCoproducts: boolean;
   hasCoequalizers: boolean;
