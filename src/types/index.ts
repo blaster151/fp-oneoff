@@ -190,5 +190,9 @@ export const CPS = {
   ...ShiftReset
 };
 
+// Kan extensions with pointwise Right Kan extension implementation
+import * as Kan from './kan-index.js';
+export { Kan };
+
 // Value-level instances and implementations
 export * from './instances.js';
