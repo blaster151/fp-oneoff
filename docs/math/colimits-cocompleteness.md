@@ -123,3 +123,86 @@ Every compatible cocone factors uniquely through the colimit.
 - General colimit computation algorithms
 - Kan extensions as generalized colimits
 - Adjoint functor theorem applications
+
+## [DEF-DIAGRAM]
+id: DEF-DIAGRAM
+tags: [diagram, functor, shape]
+source: canonical:"Diagram D: J → C from shape category J"
+---
+**Definition (LaTeX)**  
+A diagram of shape \(J\) in category \(\mathcal{C}\) is a functor \(D: J \to \mathcal{C}\).
+
+**Components**  
+- Shape category \(J\) (finite for computational purposes)
+- Target category \(\mathcal{C}\) (Set or FinSet)
+- Functor \(D\) preserving composition and identities
+
+**Common Shapes**  
+- Discrete: Products and coproducts
+- Parallel pair: Equalizers and coequalizers  
+- Span: Pushouts and pullbacks
+- General: Arbitrary finite shapes
+
+**Implications (TS)**  
+- `DiagramToFinSet<J>` interface with shape and functor
+- `createDiagram(shape, functor)` constructor
+- Foundation for general (co)limit computation
+
+**Future unlocks**  
+- Large diagrams and filtered (co)limits
+- Sketches and accessible categories
+- Model theory and categorical logic
+
+## [LIMIT-GENERAL]
+id: LIMIT-GENERAL
+tags: [limit, diagram, cone, universal]
+source: canonical:"General limits via cone universal property"
+---
+**Statement (LaTeX)**  
+Limit of diagram \(D: J \to \mathcal{C}\) is object \(\lim D\) with cone \(\{\pi_j: \lim D \to D(j)\}\) universal among cones.
+
+**Construction (FinSet)**  
+Subset of product \(\prod_j D(j)\) satisfying cone equations \(D(f)(\pi_a(x)) = \pi_b(x)\).
+
+**Universal Property**  
+Every cone \(\{f_j: X \to D(j)\}\) factors uniquely through limit cone.
+
+**Implications (TS)**  
+- `limitFinSet(D)` general limit computation
+- Cone equation verification
+- Universal property checking
+
+**Test Hook**  
+`src/types/__tests__/finset-diagram.test.ts`
+
+**Future unlocks**  
+- Limit preservation by functors
+- Adjoint functor theorem
+- Completeness characterizations
+
+## [COLIM-GENERAL]
+id: COLIM-GENERAL
+tags: [colimit, diagram, cocone, universal]
+source: canonical:"General colimits via cocone universal property"
+---
+**Statement (LaTeX)**  
+Colimit of diagram \(D: J \to \mathcal{C}\) is object \(\text{colim } D\) with cocone \(\{\iota_j: D(j) \to \text{colim } D\}\) universal among cocones.
+
+**Construction (FinSet)**  
+Quotient of coproduct \(\coprod_j D(j)\) by relations \(D(f)(x) \sim x\) for morphisms \(f: a \to b\).
+
+**Universal Property**  
+Every cocone \(\{f_j: D(j) \to X\}\) factors uniquely through colimit cocone.
+
+**Implications (TS)**  
+- `colimitFinSet(D)` general colimit computation
+- Cocone relation generation
+- Universal property verification
+
+**Test Hook**  
+`src/types/__tests__/finset-diagram.test.ts`
+
+**Future unlocks**  
+- Colimit preservation by functors
+- Kan extensions as generalized colimits
+- Locally presentable categories

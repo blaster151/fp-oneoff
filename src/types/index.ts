@@ -266,5 +266,21 @@ export { FinSetColimits };
 import * as PresheafColimits from './presheaf-colimits.js';
 export { PresheafColimits };
 
+// General diagrams and (co)limit theory
+import * as Diagram from './diagram.js';
+export { Diagram };
+
+// General limits in FinSet
+import * as FinSetLimits from './finset-limits.js';
+export { FinSetLimits };
+
+// General colimits in FinSet
+import * as FinSetColimitsGeneral from './finset-colimits-general.js';
+export { FinSetColimitsGeneral };
+
+// General (co)limits in Presheaf categories
+import * as PresheafColimitsGeneral from './presheaf-colimits-general.js';
+export { PresheafColimitsGeneral };
+
 // Value-level instances and implementations
 export * from './instances.js';
