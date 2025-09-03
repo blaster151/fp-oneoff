@@ -282,6 +282,9 @@ export { FinSetColimitsGeneral };
 import * as PresheafColimitsGeneral from './presheaf-colimits-general.js';
 export { PresheafColimitsGeneral };
 
+// Alias for discoverability
+export { PresheafColimitsGeneral as PshColimGeneral };
+
 // Bicategory interface and coherence laws
 import * as Bicategory from './bicategory.js';
 export { Bicategory };
