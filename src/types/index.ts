@@ -206,5 +206,13 @@ export { MiniFinSet };
 import * as Ultrafilter from './ultrafilter.js';
 export { Ultrafilter };
 
+// Ultrafilter monad wrapper (codensity of FinSet inclusion)
+import * as UltrafilterMonad from './ultrafilter-monad.js';
+export { UltrafilterMonad };
+
+// Discrete EM algebra for ultrafilter monad on compact Hausdorff spaces
+import * as EMAlgebraDiscrete from './em-algebra-discrete.js';
+export { EMAlgebraDiscrete };
+
 // Value-level instances and implementations
 export * from './instances.js';
