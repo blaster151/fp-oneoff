@@ -176,5 +176,9 @@ export {
   // Note: squareWitness exported from witnesses.js, avoiding conflict
 } from './allegory-witness.js';
 
+// Continuation monad with CPS utilities and delimited control
+import * as Cont from './cont.js';
+export { Cont };
+
 // Value-level instances and implementations
 export * from './instances.js';
