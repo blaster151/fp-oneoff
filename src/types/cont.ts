@@ -57,7 +57,11 @@ export const Cont = {
 
 /************ Control Flow Operations ************/
 
-// Call with current continuation (escape continuations)
+/**
+ * Call with current continuation (escape continuations)
+ * 
+ * @math THM-SHIFT-RESET @law LAW-MONAD-LAWS
+ */
 export const callCC = <R, A, B>(
   f: (escape: (a: A) => Cont<R, B>) => Cont<R, A>
 ): Cont<R, A> => 

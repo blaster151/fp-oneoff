@@ -376,6 +376,8 @@ function unionBits(xs: string[]): string {
  * with U open in X, V open in Y
  * 
  * Opens = arbitrary unions of basic rectangles
+ * 
+ * @math TOP-PRODUCT-CONT
  */
 export function productTopology<A, B>(
   TX: Topology<A>, 

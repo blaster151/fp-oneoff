@@ -11,6 +11,8 @@ import { SetObj } from "./catkit-kan.js";
 /** 
  * The Ultrafilter monad on (finite) Set, specialized from Codensity(FinSet↪Set)
  * Provides direct access to ultrafilter operations via codensity construction
+ * 
+ * @math THM-ULTRAFILTER-MONAD
  */
 export function mkUltrafilterMonad() {
   return mkCodensityMonad(MiniFinSet, G_inclusion);

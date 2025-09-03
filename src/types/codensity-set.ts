@@ -37,6 +37,8 @@ export interface CodensityMonad<B_O, B_M> {
  * Formula: T^G(A) = Ran_G G(A) = ∫_b [[A, G b], G b]
  * 
  * For discrete B, this reduces to: |T^G(A)| = ∏_{b∈B} |G b|^{|G b|^|A|}
+ * 
+ * @math THM-CODENSITY-RAN @math THM-CODENSITY-END
  */
 export function CodensitySet<B_O, B_M>(
   B: SmallCategory<B_O, B_M> & { objects: ReadonlyArray<B_O>; morphisms: ReadonlyArray<B_M> } & HasHom<B_O, B_M>,

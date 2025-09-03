@@ -41,6 +41,7 @@
     "demo:cps": "node -e \"const { CPS } = require('./dist/types/index.js'); const id = x => x; const prog = CPS.reset(CPS.Cont.chain(x => CPS.Cont.of()(x + 1))(CPS.shift(k => k(5)))); console.log('shift/reset example =>', CPS.Cont.run(prog, id));\"",
     "demo:kan": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Kan demo:'); Kan.demoKanExample();\"",
     "demo:product": "node -e \"const { Kan } = require('./dist/types/index.js'); console.log('Product demo: Discrete category gives product'); console.log('Available:', Object.keys(Kan).filter(k => k.includes('Ran')).join(', '));\"",
+    "tracecheck": "ts-node --transpile-only scripts/tracecheck.ts",
     "bench:rel": "node scripts/run-rel-benchmark.js",
     "demo:em": "node scripts/run-em-demo.js",
     "prepublishOnly": "npm run check && npm run test && npm run build"
@@ -51,6 +52,7 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^24.3.0",
+    "glob": "^10.3.10",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",

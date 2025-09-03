@@ -63,6 +63,8 @@ export function ultrafilterToNatComponent<A>(
 /**
  * Derive intersection law U(S ∩ T) = U(S) ∧ U(T) from naturality
  * Uses pairing and AND morphism in the rich MiniFinSet category
+ * 
+ * @law LAW-ULTRA-AND
  */
 export function deriveIntersectionLaw<A>(
   Aset: SetObj<A>,

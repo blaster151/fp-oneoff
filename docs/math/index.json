@@ -1,0 +1,14 @@
+{
+  "THM-CODENSITY-RAN": "docs/math/THM-CODENSITY-RAN.md",
+  "THM-CODENSITY-END": "docs/math/THM-CODENSITY-END.md",
+  "THM-ULTRAFILTER-MONAD": "docs/math/THM-ULTRAFILTER-MONAD.md",
+  "LAW-ULTRA-AND": "docs/math/LAW-ULTRA-AND.md",
+  "LAW-ULTRA-DEMORGAN": "docs/math/LAW-ULTRA-DEMORGAN.md",
+  "TOP-PRODUCT-CONT": "docs/math/TOP-PRODUCT-CONT.md",
+  "THM-RIGHT-KAN-END": "docs/math/THM-RIGHT-KAN-END.md",
+  "LAW-MONAD-LAWS": "docs/math/LAW-MONAD-LAWS.md",
+  "THM-SHIFT-RESET": "docs/math/THM-SHIFT-RESET.md",
+  "THM-EM-ALGEBRA": "docs/math/THM-EM-ALGEBRA.md",
+  "LAW-NATURALITY": "docs/math/LAW-NATURALITY.md",
+  "THM-STONE-DUALITY": "docs/math/THM-STONE-DUALITY.md"
+}
