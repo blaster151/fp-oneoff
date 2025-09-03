@@ -34,8 +34,8 @@ export function codensityByComma<B_O, B_M, A>(
   // Enumerate all functions A → G d for each d in B
   for (const d of B.objects) {
     const Gd = G.obj(d); // Use obj() method from SetFunctor
-    const domainElts = Aset.elems as readonly A[];
-    const codomainElts = Gd.elems;
+    const domainElts = Array.from(Aset.elems);
+    const codomainElts = Array.from(Gd.elems);
     
     // Generate all functions A → G d
     const functionCount = Math.pow(codomainElts.length, domainElts.length);
@@ -64,10 +64,9 @@ export function codensityByComma<B_O, B_M, A>(
   const limitElements = commaObjects.slice(0, 10); // Simplified limit
   
   return {
-    elts: limitElements,
-    card: () => limitElements.length,
-    enumerate: () => limitElements,
-    has: (x: any) => limitElements.includes(x)
+    id: "comma-limit-" + Math.random().toString(36).substr(2, 9),
+    elems: limitElements,
+    eq: (x: any, y: any) => JSON.stringify(x) === JSON.stringify(y)
   };
 }
 
@@ -95,17 +94,16 @@ export function compareCodensityMethods<B_O, B_M, A>(
   const commaResult = codensityByComma(B, G, Aset);
   
   // Placeholder for end method (would use existing CodensitySet)
-  const endResult = {
-    elts: [],
-    card: () => 0,
-    enumerate: () => [],
-    has: (x: any) => false
+  const endResult: SetObj<any> = {
+    id: "end-placeholder",
+    elems: [],
+    eq: (x: any, y: any) => x === y
   };
   
   return {
     endMethod: endResult,
     commaMethod: commaResult,
-    cardinalitiesMatch: endResult.card() === commaResult.card(),
+    cardinalitiesMatch: endResult.elems.length === commaResult.elems.length,
     note: "Educational cross-check for discrete categories"
   };
 }
@@ -128,9 +126,9 @@ export function demonstrateCommaCategory<B_O, B_M, A>(
   const examples: Array<{ a: A; d: B_O; fDesc: string }> = [];
   
   for (const d of B.objects.slice(0, 2)) { // Limit for demonstration
-    const Gd = G.map(d);
-    const domainElts = Aset.enumerate() as A[];
-    const codomainElts = Gd.enumerate();
+    const Gd = G.obj(d);
+    const domainElts = Array.from(Aset.elems);
+    const codomainElts = Array.from(Gd.elems);
     
     console.log(`\\nFor d = ${d}, G d = {${codomainElts.join(', ')}}`);
     console.log(`Functions A → G d: ${Math.pow(codomainElts.length, domainElts.length)} total`);

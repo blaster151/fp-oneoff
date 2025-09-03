@@ -28,10 +28,10 @@ export function probeCodensity<B_O, B_M, A>(
   
   try {
     const { T } = CodensitySet(B as any, G, keyB, keyBMor);
-    const TA = T.map(Aset);
+    const TA = T.obj(Aset);
     
-    const cardA = Aset.card();
-    const cardTA = TA.card();
+    const cardA = Aset.elems.length;
+    const cardTA = TA.elems.length;
     const ratio = cardTA / cardA;
     
     // Heuristic: if |T^G(A)| is close to |A|, might be "codense"
