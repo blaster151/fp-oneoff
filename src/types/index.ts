@@ -226,5 +226,9 @@ export { UltrafilterNatBridge };
 import * as Topology from './topology.js';
 export { Topology };
 
+// Finite vector spaces over F₂ (double dualization example)
+import * as FinVect from './finvect.js';
+export { FinVect };
+
 // Value-level instances and implementations
 export * from './instances.js';

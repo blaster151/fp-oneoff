@@ -130,3 +130,75 @@ source: canonical:"Danvy-Filinski delimited control"
 - Multi-prompt delimited control (shift₀/reset₀, shift₁/reset₁).
 - Algebraic effects and handlers via delimited continuations.
 - Coroutines and generators from control operators.
+
+## [THM-CODENSITY-EXISTENCE]
+id: THM-CODENSITY-EXISTENCE
+tags: [codensity, existence, limits]
+source: canonical:"Exists if D is small and C has small limits; or if G has a left adjoint."
+---
+**Note** Guardrails for `codensityOf`.
+
+**Implications (TS)**  
+- `CodensityAssumptions` type documents existence conditions
+- Soft warnings for potentially invalid constructions
+- Our finite Set case satisfies existence conditions
+
+**Future unlocks**  
+- Existence checking for general categories
+- Alternative constructions when Kan extension doesn't exist
+- Enriched category existence conditions
+
+## [THM-CODENSITY-ADJOINT]
+id: THM-CODENSITY-ADJOINT
+tags: [adjunction, monad]
+source: canonical:"If G ⊣ F then T^G ≅ G∘F."
+---
+**Test hook** `src/types/__tests__/codensity-adjunction.test.ts`
+
+**Implications (TS)**  
+- Optimization opportunity when adjoint exists
+- Explains why some codensity constructions are "trivial"
+- Performance improvement via adjoint collapse
+
+**Future unlocks**  
+- Automatic detection of adjoint cases
+- Performance optimization via adjoint collapse
+- General adjoint functor applications
+
+## [EX-DOUBLE-DUALIZATION]
+id: EX-DOUBLE-DUALIZATION
+tags: [finvect, dual, codensity]
+source: canonical:"Inclusion FinVect_fd ↪ Vect yields V ↦ V**."
+---
+**Future unlocks** Add `FinVect(F2)` fixture; verify V ≅ V** (finite dimension).
+
+**Implications (TS)**  
+- Potential `FinVect` module over F₂
+- Linear maps as bit-matrices
+- Dual space construction V*
+- Evaluation/coevaluation maps
+
+**Current Target**  
+- Finite vector spaces over F₂
+- Matrix representation with bit operations
+- Double dual isomorphism V ≅ V** verification
+
+## [REL-ISBELL-CODENSITY]
+id: REL-ISBELL-CODENSITY
+tags: [isbell, yoneda, presheaf]
+source: canonical:"Spec∘O is codensity of Yoneda; Isbell duality."
+---
+**Future unlocks**  
+- Build tiny Presheaf(C) for small C; experiment with Yoneda's codensity.
+
+**Implications (TS)**  
+- Presheaf category constructions
+- Yoneda embedding and its codensity
+- Isbell duality between presheaves and copresheaves
+- Spectral theory connections
+
+**Research Direction**  
+- Small category C with Presheaf(C) = [C^op, Set]
+- Yoneda Y: C → Presheaf(C)
+- Codensity of Yoneda: Spec∘O construction
+- Connection to algebraic geometry and topos theory
