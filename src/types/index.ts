@@ -318,5 +318,24 @@ export { DiagramDSL };
 // Alias for discoverability
 export { DiagramDSL as DiagramDSLExtras };
 
+// Algebraic Data Types (ADTs)
+import * as ADTFunctor from './adt-functor.js';
+export { ADTFunctor };
+
+import * as ADTFix from './adt-fix.js';
+export { ADTFix };
+
+import * as ADTSumProd from './adt-sum-prod.js';
+export { ADTSumProd };
+
+import * as ADTList from './adt-list.js';
+export { ADTList };
+
+import * as ADTTree from './adt-tree.js';
+export { ADTTree };
+
+import * as ADTMatch from './adt-match.js';
+export { ADTMatch };
+
 // Value-level instances and implementations
 export * from './instances.js';
