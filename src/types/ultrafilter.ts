@@ -3,7 +3,7 @@
 // Uses the Boolean component of T^G(A) to define ultrafilters via characteristic functions
 
 import { mkCodensityMonad } from "./codensity-monad.js";
-import { MiniFinSet, G_inclusion, Bool } from "./mini-finset.js";
+import { MiniFinSet, G_inclusion, asSetObj } from "./mini-finset.js";
 import { SetObj } from "./catkit-kan.js";
 
 /************ Ultrafilter Types ************/

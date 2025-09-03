@@ -214,5 +214,13 @@ export { UltrafilterMonad };
 import * as EMAlgebraDiscrete from './em-algebra-discrete.js';
 export { EMAlgebraDiscrete };
 
+// Nat/End bridge for codensity monads
+import * as CodensityNatBridge from './codensity-nat-bridge.js';
+export { CodensityNatBridge };
+
+// Ultrafilter Nat bridge for Boolean component interpretation
+import * as UltrafilterNatBridge from './ultrafilter-nat-bridge.js';
+export { UltrafilterNatBridge };
+
 // Value-level instances and implementations
 export * from './instances.js';

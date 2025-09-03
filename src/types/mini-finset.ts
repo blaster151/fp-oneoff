@@ -328,20 +328,28 @@ export function complementViaOr<A>(Aobj: Obj, S: Set<A>): Mor {
 /************ Utility Functions ************/
 
 /**
- * Get all morphisms of a specific type
+ * Get cardinality statistics for the category
  */
-export function getMorphisms(src: Obj, dst: Obj): Mor[] {
-  return Array.from(MiniFinSet.hom(src, dst));
-}
-
-/**
- * Create characteristic function for a subset
- */
-export function characteristicFunction<A>(
-  Aset: SetObj<A>,
-  subset: Set<A>
-): (a: A) => boolean {
-  return (a: A) => subset.has(a);
+export function getCategoryStats(): {
+  objects: number;
+  totalMorphisms: number;
+  homSetSizes: Record<string, number>;
+} {
+  const homSetSizes: Record<string, number> = {};
+  
+  for (const a of MiniFinSet.objects) {
+    for (const b of MiniFinSet.objects) {
+      const key = `${a}→${b}`;
+      const homSet = MiniFinSet.hom(a, b);
+      homSetSizes[key] = homSet.length;
+    }
+  }
+  
+  return {
+    objects: MiniFinSet.objects.length,
+    totalMorphisms: MiniFinSet.morphisms.length,
+    homSetSizes
+  };
 }
 
 /**
@@ -351,7 +359,7 @@ export function allSubsets<A>(Aset: SetObj<A>): Set<A>[] {
   const elements = Aset.elems;
   const subsets: Set<A>[] = [];
   
-  // Generate all 2^n subsets
+  // Generate all 2^n subsets using bit manipulation
   for (let i = 0; i < Math.pow(2, elements.length); i++) {
     const subset = new Set<A>();
     for (let j = 0; j < elements.length; j++) {
@@ -372,29 +380,19 @@ export function demonstrateMiniFinSet(): void {
   console.log('🔢 MINI FINSET CATEGORY DEMONSTRATION');
   console.log('='.repeat(70));
 
-  console.log('\n📊 OBJECTS AND MORPHISMS:');
-  console.log(`   Objects: ${MiniFinSet.objects.join(', ')}`);
-  console.log(`   Object 1: ${One.id} = {${One.elems.join(', ')}} (|1| = ${One.elems.length})`);
-  console.log(`   Object 2: ${Bool.id} = {${Bool.elems.join(', ')}} (|2| = ${Bool.elems.length})`);
+  console.log('\n📊 OBJECTS AND CARDINALITIES:');
+  MiniFinSet.objects.forEach(obj => {
+    const carrier = elts[obj];
+    console.log(`   ${obj}: {${carrier.join(', ')}} (|${obj}| = ${carrier.length})`);
+  });
   
-  console.log(`\n   Total morphisms: ${MiniFinSet.morphisms.length}`);
+  const stats = getCategoryStats();
+  console.log(`\n   Total objects: ${stats.objects}`);
+  console.log(`   Total morphisms: ${stats.totalMorphisms}`);
   
-  // Show morphisms by hom-set
-  const homSets = [
-    { src: "1", dst: "1" },
-    { src: "1", dst: "2" }, 
-    { src: "2", dst: "1" },
-    { src: "2", dst: "2" }
-  ];
-  
-  homSets.forEach(({ src, dst }) => {
-    const hom = MiniFinSet.hom(src as Obj, dst as Obj);
-    console.log(`   Hom(${src}, ${dst}): ${hom.length} morphism(s)`);
-    hom.forEach(m => {
-      if (m.id.startsWith("id") || ["toFalse", "toTrue", "bang", "not"].includes(m.id)) {
-        console.log(`     ${m.id}: ${src} → ${dst}`);
-      }
-    });
+  console.log('\n📈 HOM-SET SIZES:');
+  Object.entries(stats.homSetSizes).slice(0, 10).forEach(([key, size]) => {
+    console.log(`   ${key}: ${size} morphisms`);
   });
 
   console.log('\n🔧 INCLUSION FUNCTOR:');
