@@ -7,7 +7,8 @@ export type SourceRef =
   | { type: "paper"; where: string; pages?: number[]; note?: string }
   | { type: "book"; where: string; pages?: number[]; note?: string }
   | { type: "standard"; where: string; pages?: number[]; note?: string }
-  | { type: "url"; where: string; note?: string };
+  | { type: "url"; where: string; note?: string }
+  | { type: "canonical"; where: string; note?: string };
 
 export interface MathRecord {
   id: string;

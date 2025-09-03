@@ -12,31 +12,40 @@ import { MathRecord } from "./math-trace-types.js";
 export function loadRegistry(): Record<string, MathRecord> {
   try {
     const idxPath = path.resolve(process.cwd(), "docs/math/index.json");
-    const index = JSON.parse(fs.readFileSync(idxPath, "utf8")) as Record<string, string>;
+    const index = JSON.parse(fs.readFileSync(idxPath, "utf8")) as { collections: string[] };
     const out: Record<string, MathRecord> = {};
     
-    for (const [id, relativePath] of Object.entries(index)) {
+    for (const relativePath of index.collections) {
       const filePath = path.resolve(process.cwd(), relativePath);
       
       if (fs.existsSync(filePath)) {
         const raw = fs.readFileSync(filePath, "utf8");
         
-        // Extract title from frontmatter or use ID as fallback
-        const titleMatch = raw.match(/title:\s*(.+)/);
-        const title = titleMatch ? titleMatch[1]!.trim() : id;
+        // Parse sections starting with "## [ID]" and running until next "## [" or EOF
+        const re = /^## \[([A-Z0-9\-]+)\][\s\S]*?(?=^## \[|$)/gm;
+        let match: RegExpExecArray | null;
         
-        // Extract LaTeX statement if present
-        const latexMatch = raw.match(/\$\$([\s\S]*?)\$\$/);
-        const statementLatex = latexMatch ? latexMatch[1]!.trim() : undefined;
-        
-        out[id] = { 
-          id, 
-          title, 
-          statementLatex: statementLatex || undefined,
-          filePath 
-        } as MathRecord;
+        while ((match = re.exec(raw))) {
+          const id = match[1]!;
+          const block = match[0];
+          
+          // Extract title from id: line or use ID as fallback
+          const titleMatch = block.match(/id:\s*([A-Z0-9\-]+)/);
+          const title = titleMatch ? titleMatch[1]!.trim() : id;
+          
+          // Extract LaTeX statement if present
+          const latexMatch = block.match(/\\\(([\s\S]*?)\\\)/);
+          const statementLatex = latexMatch ? latexMatch[1]!.trim() : undefined;
+          
+          out[id] = { 
+            id, 
+            title, 
+            statementLatex,
+            filePath 
+          } as MathRecord;
+        }
       } else {
-        console.warn(`Math registry: File not found: ${filePath}`);
+        console.warn(`Math registry: Collection file not found: ${filePath}`);
       }
     }
     

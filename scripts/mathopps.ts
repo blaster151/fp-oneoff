@@ -17,34 +17,37 @@ type RegistryEntry = {
 
 function loadRegistry(): RegistryEntry[] {
   try {
-    const idx = JSON.parse(fs.readFileSync("docs/math/index.json", "utf8")) as Record<string, string>;
+    const idx = JSON.parse(fs.readFileSync("docs/math/index.json", "utf8")) as { collections: string[] };
     const entries: RegistryEntry[] = [];
     
-    for (const [id, relativePath] of Object.entries(idx)) {
+    for (const relativePath of idx.collections) {
       const abs = path.resolve(relativePath);
       if (!fs.existsSync(abs)) continue;
       
       const raw = fs.readFileSync(abs, "utf8");
       
-      // Extract title
-      const titleMatch = raw.match(/title:\s*(.+)/);
-      const title = titleMatch ? titleMatch[1]!.trim() : id;
+      // Parse sections starting with "## [ID]"
+      const re = /^## \[([A-Z0-9\-]+)\][\s\S]*?(?=^## \[|$)/gm;
+      let match: RegExpExecArray | null;
       
-      // Extract tags from content (look for common keywords)
-      const tags: string[] = [];
-      if (raw.toLowerCase().includes("codensity")) tags.push("codensity");
-      if (raw.toLowerCase().includes("ultrafilter")) tags.push("ultrafilter");
-      if (raw.toLowerCase().includes("topology")) tags.push("topology");
-      if (raw.toLowerCase().includes("boolean")) tags.push("boolean");
-      if (raw.toLowerCase().includes("monad")) tags.push("monad");
-      if (raw.toLowerCase().includes("functor")) tags.push("functor");
-      if (raw.toLowerCase().includes("natural")) tags.push("naturality");
-      
-      // Extract future unlocks section
-      const futureMatch = raw.match(/\*\*Future Unlocks\.\*\*([\s\S]*?)(?:\*\*|$)/i);
-      const future = futureMatch ? futureMatch[1]!.trim() : "";
-      
-      entries.push({ id, title, tags, future, filePath: abs });
+      while ((match = re.exec(raw))) {
+        const id = match[1]!;
+        const block = match[0];
+        
+        // Extract title from id: line or use ID as fallback
+        const titleMatch = block.match(/id:\s*([A-Z0-9\-]+)/);
+        const title = titleMatch ? titleMatch[1]!.trim() : id;
+        
+        // Extract tags from explicit tags: line
+        const tagsMatch = block.match(/tags:\s*\[([^\]]*)\]/);
+        const tags = tagsMatch ? tagsMatch[1]!.split(",").map(s => s.trim()).filter(Boolean) : [];
+        
+        // Extract future unlocks section
+        const futureMatch = block.match(/\*\*Future unlocks\*\*([\s\S]*?)(?:\*\*|## \[|$)/i);
+        const future = futureMatch ? futureMatch[1]!.trim() : "";
+        
+        entries.push({ id, title, tags, future, filePath: abs });
+      }
     }
     
     return entries;
