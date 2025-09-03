@@ -206,3 +206,40 @@ Every cocone \(\{f_j: D(j) \to X\}\) factors uniquely through colimit cocone.
 - Colimit preservation by functors
 - Kan extensions as generalized colimits
 - Locally presentable categories
+
+## [COLIM-PRESHEAF-POINTWISE]
+id: COLIM-PRESHEAF-POINTWISE
+tags: [presheaf, colimit, pointwise, transport, naturality]
+source: canonical:"Presheaf colimits computed pointwise with correct transport"
+---
+**Statement (LaTeX)**  
+For diagram \(D: J \to \text{Psh}(C)\), the colimit is pointwise:
+\[
+(\text{colim } D)(c) = \text{colim}_j D(j)(c)
+\]
+with transport \(Q(f): \text{Colim}(b) \to \text{Colim}(a)\) given by:
+\[
+Q(f)([\text{inj}_b^j(y)]) = q_a(P_j(f)(y))
+\]
+
+**Naturality Condition**  
+The transport satisfies: \(Q(f) \circ q_b = q_a \circ \coprod P_j(f)\)
+
+**Implementation Details**  
+- Tagged sum construction: \(\coprod_j P_j(c)\)
+- Quotient maps \(q_c\) stored per object
+- Union-find for equivalence class computation
+- Path compression for performance
+
+**Implications (TS)**  
+- `pshColimitGeneral` with correct `onMor` transport
+- `verifyPresheafColimitNaturality` for law verification
+- Storage of quotient maps for naturality preservation
+
+**Test Hook**  
+`src/types/__tests__/presheaf-colimits-transport.test.ts`
+
+**Future unlocks**  
+- Enriched presheaf colimits
+- Grothendieck construction
+- Topos-theoretic colimits
