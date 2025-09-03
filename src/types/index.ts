@@ -340,6 +340,14 @@ export { ADTMatch };
 import * as ADTRecSchemes from './adt-rec-schemes.js';
 export { ADTRecSchemes };
 
+// Rose trees (arbitrary branching)
+import * as ADTRose from './adt-rose.js';
+export { ADTRose };
+
+// Expression ADT with operators
+import * as ADTExprOp from './adt-expr-op.js';
+export { ADTExprOp };
+
 // GADT-like intrinsically-typed expressions
 import * as GADTExpr from './gadt-expr.js';
 export { GADTExpr };

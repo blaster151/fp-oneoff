@@ -79,6 +79,86 @@ export const apo = <F,A>(coalg: (a:A)=> any /* F<Either<Fix<F>,A>> */) => {
   return go;
 };
 
+/** Zygomorphism.
+ * psi : F<A> -> A   (helper algebra, usually "attributes")
+ * phi : F<B> -> B   (result algebra, can depend on psi-results of children)
+ * Returns only B; use zygoPair if you want both (A,B).
+ */
+export const zygo = <F,A,B>(psi: (fa:F)=>A, phi: (fb:F)=>B) => {
+  const go = (fx: Fix<F>): B => {
+    const fa = Out(fx);                               // F<Fix F>
+    const fPairs = mapF((child: Fix<F>) => {
+      const fb = Out(child); // not needed; call go(child) to get B
+      // compute pair (A,B) for child by recursive descent
+      const b = go(child);
+      // to compute 'a' for child, we need psi over F<A>; get A for that child via zygoPair
+      // Simpler: compute both via zygoPair helper (below). This call is safe (memo below).
+      return zygoPair(psi, phi)._go(child);
+    }, fa) as any;                                    // F<(A,B)>
+
+    const fA = mapF((ab:[A,B]) => ab[0], fPairs) as F; // F<A>
+    const fB = mapF((ab:[A,B]) => ab[1], fPairs) as F; // F<B>
+    // psi uses F<A> over *children*; phi uses F<B> over *children*
+    // Here at the parent, we want the B-result:
+    return phi(fB);
+  };
+  // small memo (optional): WeakMap<Fix<F>, B> to avoid quadratic traversals
+  const memo = new WeakMap<any,B>();
+  const memoized = (fx: Fix<F>): B => {
+    const got = memo.get(fx as any);
+    if (got !== undefined) return got;
+    const b = go(fx);
+    memo.set(fx as any, b);
+    return b;
+  };
+  return memoized;
+};
+
+/** zygoPair: returns both attributes.
+ * Carries a memo to ensure linear time under sharing.
+ */
+export const zygoPair = <F,A,B>(psi:(fa:F)=>A, phi:(fb:F)=>B) => {
+  const memo = new WeakMap<any,[A,B]>();
+  const _go = (fx: Fix<F>): [A,B] => {
+    const g = memo.get(fx as any); if (g) return g;
+    const fa = Out(fx);
+    const childPairs = mapF((child: Fix<F>) => _go(child), fa) as any as F; // F<(A,B)>
+    const fA = mapF((ab:[A,B]) => ab[0], childPairs) as F;                  // F<A>
+    const fB = mapF((ab:[A,B]) => ab[1], childPairs) as F;                  // F<B>
+    const a = psi(fA);
+    const b = phi(fB);
+    const res:[A,B] = [a,b];
+    memo.set(fx as any, res);
+    return res;
+  };
+  return Object.assign((fx: Fix<F>) => _go(fx)[1], { _go });
+};
+
+/** Histomorphism (course-of-value).
+ * Provides each child as { value: A, self: Fix<F>, ask(sub): A } with memoized 'ask'.
+ * Your algebra sees F<Attr<A>> and can dive deeper using 'ask'.
+ */
+export const histo = <F,A>(alg: (fattr: any /* F<Attr<A>> */)=>A) => {
+  type Attr = { value: A; self: Fix<F>; ask: (sub: Fix<F>) => A };
+  const cache = new WeakMap<any,A>();
+  const go = (fx: Fix<F>): A => {
+    const have = cache.get(fx as any); if (have !== undefined) return have;
+    const fa = Out(fx);
+    const lifted = mapF((child: Fix<F>) => {
+      const value = go(child);
+      const ask = (sub: Fix<F>) => {
+        const got = cache.get(sub as any);
+        return got !== undefined ? got : go(sub);
+      };
+      return { value, self: child, ask } as Attr;
+    }, fa);
+    const a = alg(lifted);
+    cache.set(fx as any, a);
+    return a;
+  };
+  return go;
+};
+
 /**
  * Verify algebra laws (if F-algebra structure is well-formed)
  */

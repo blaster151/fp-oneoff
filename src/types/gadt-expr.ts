@@ -162,3 +162,50 @@ export function demonstrateGADTExpressions() {
   
   console.log("\\n🎯 Type-safe expression evaluation with GADT-like guarantees!");
 }
+
+/** Type witnesses: equality & guards */
+export function eqTy<A, B>(a: Ty<A>, b: Ty<B>): a is Ty<B> & Ty<A> {
+  if (a.tag !== b.tag) return false;
+  if (a.tag === "pair" && b.tag === "pair") {
+    return eqTy(a.left as any, b.left as any) && eqTy(a.right as any, b.right as any);
+  }
+  return true;
+}
+
+export function isOfType<T>(e: Expr<any>, ty: Ty<T>): e is Expr<T> { 
+  return eqTy(e.type as any, ty as any); 
+}
+
+/** Typed pattern matching driven by Ty<T> witness (not string tag).
+ * Example:
+ *   tmatch(e, {
+ *     number: n  => n + 1,
+ *     boolean: b => b ? 1 : 0,
+ *     pair: (lTy, rTy, l, r) => …,
+ *     default: (_ty, _e) => …
+ *   })
+ */
+export function tmatch<T, R>(e: Expr<T>, arms: {
+  number?: (n: number) => R;
+  boolean?: (b: boolean) => R;
+  pair?: (lTy: Ty<any>, rTy: Ty<any>, l: Expr<any>, r: Expr<any>) => R;
+  // you can also branch on constructors if desired:
+  add?: (l: Expr<number>, r: Expr<number>) => R;
+  if?: (c: Expr<boolean>, t: Expr<any>, f: Expr<any>) => R;
+  default?: (ty: Ty<T>, e: Expr<T>) => R;
+}): R {
+  const { type } = e;
+  if (eqTy(type, NumT) && arms.number && (e as any).tag === "num") {
+    return arms.number((e as any).value);
+  }
+  if (eqTy(type, BoolT) && arms.boolean && (e as any).tag === "bool") {
+    return arms.boolean((e as any).value);
+  }
+  if (type.tag === "pair" && arms.pair && (e as any).tag === "pair") {
+    return arms.pair(type.left, type.right, (e as any).left, (e as any).right);
+  }
+  if (arms.add && (e as any).tag === "add") return arms.add((e as any).left, (e as any).right);
+  if (arms.if && (e as any).tag === "if") return arms.if((e as any).cond, (e as any).then, (e as any).else);
+  if (arms.default) return arms.default(type, e);
+  throw new Error("Non-exhaustive tmatch");
+}
