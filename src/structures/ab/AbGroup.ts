@@ -1,4 +1,5 @@
-import { FiniteGroup, GroupHom } from "../group/Group";
+import { FiniteGroup } from "../group/Group";
+import { GroupHom } from "../group/GrpCat";
 
 export type FiniteAbGroup<A> = FiniteGroup<A>; // same carrier; we additionally *check* commutativity
 
@@ -29,15 +30,15 @@ export function Trivial<A>(witness: A): FiniteAbGroup<A> {
 /** Pointwise addition of homs when codomain is abelian: (f+g)(x)=f(x)⊕g(x) */
 export function homAdd<A,B>(f: GroupHom<A,B>, g: GroupHom<A,B>, H: FiniteAbGroup<B>): GroupHom<A,B> {
   if (f.source !== g.source || f.target !== g.target) throw new Error("homAdd: mismatch");
-  return { source: f.source, target: H, f: (a:A) => H.op(f.f(a), g.f(a)) };
+  return { source: f.source, target: H, f: (a:A) => H.op(f.f(a), g.f(a)), verify: () => true };
 }
 
 /** Zero hom: x ↦ 0_H */
 export function zeroHom<A,B>(G: FiniteGroup<A>, H: FiniteAbGroup<B>): GroupHom<A,B> {
-  return { source: G, target: H, f: (_:A)=> H.id };
+  return { source: G, target: H, f: (_:A)=> H.id, verify: () => true };
 }
 
 /** Additive inverse: (−f)(x) = −(f(x)) */
 export function homNeg<A,B>(f: GroupHom<A,B>, H: FiniteAbGroup<B>): GroupHom<A,B> {
-  return { source: f.source, target: H, f: (a:A)=> H.inv(f.f(a)) };
+  return { source: f.source, target: H, f: (a:A)=> H.inv(f.f(a)), verify: () => true };
 }

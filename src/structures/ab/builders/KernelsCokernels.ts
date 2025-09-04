@@ -1,11 +1,12 @@
 import { FiniteAbGroup, Trivial } from "../AbGroup";
-import { GroupHom, FiniteGroup } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
+import { FiniteGroup } from "../../group/Group";
 import { kernel, image, quotientGroup } from "../../group/builders/Quotient";
 
 /** Kernel in Ab is the usual kernel subgroup (a ↦ e). */
 export function ker<A,B>(f: GroupHom<A,B>): { K: FiniteAbGroup<A>, ι: GroupHom<A,A> } {
   const K0 = kernel(f) as FiniteAbGroup<A>;
-  const ι: GroupHom<A,A> = { source: K0, target: f.source, f: (x:A)=> x };
+  const ι: GroupHom<A,A> = { source: K0, target: f.source, f: (x:A)=> x, verify: () => true };
   return { K: K0, ι };
 }
 
@@ -20,7 +21,8 @@ export function coker<A,B>(f: GroupHom<A,B>): { C: FiniteAbGroup<{rep:B}>, q: Gr
       // pick the representing coset of b
       const cos = (C0 as any).cosets.find((c:{rep:B, elems:B[]}) => c.elems.some((x:B)=> (f.target as any).eq(x,b)));
       return { rep: cos.rep } as any;
-    }
+    },
+    verify: () => true
   };
   return { C: C0, q };
 }
@@ -31,5 +33,5 @@ export function zeroObject(): FiniteAbGroup<0> {
 }
 
 export function zeroMor<A,B>(G: FiniteAbGroup<A>, H: FiniteAbGroup<B>): GroupHom<A,B> {
-  return { source:G, target:H, f: (_:A)=> H.id };
+  return { source:G, target:H, f: (_:A)=> H.id, verify: () => true };
 }

@@ -2,6 +2,8 @@ import type { FiniteGroup } from "./Group";
 
 /** Group homomorphism */
 export interface GroupHom<A, B> {
+  source: FiniteGroup<A>;
+  target: FiniteGroup<B>;
   f: (a: A) => B;
   verify(): boolean;
 }
@@ -13,6 +15,8 @@ export function hom<A, B>(
   f: (a: A) => B
 ): GroupHom<A, B> {
   return {
+    source: G,
+    target: H,
     f,
     verify() {
       // Check f(id_G) = id_H
@@ -44,6 +48,8 @@ export function comp<A, B, C>(
   g: GroupHom<B, C>
 ): GroupHom<A, C> {
   return {
+    source: f.source,
+    target: g.target,
     f: (a) => g.f(f.f(a)),
     verify() {
       return f.verify() && g.verify();
@@ -91,6 +97,8 @@ export function pairIntoProduct<K, A, B>(
   v: GroupHom<K, B>
 ): GroupHom<K, [A, B]> {
   return {
+    source: K,
+    target: productGroup(G, H),
     f: (k) => [u.f(k), v.f(k)],
     verify() {
       return u.verify() && v.verify();
@@ -103,14 +111,14 @@ import { trivial } from "./Group";
 // Unique hom G → 1 and 1 → G
 export function toTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
   const One = trivial(G.id, G.eq);
-  return { f: (_a: A) => One.id, verify: () => true } as any;
+  return { source: G, target: One, f: (_a: A) => One.id, verify: () => true } as any;
 }
 export function fromTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
   const One = trivial(G.id, G.eq);
-  return { f: (_: A) => G.id, verify: () => true } as any;
+  return { source: One, target: G, f: (_: A) => G.id, verify: () => true } as any;
 }
 
 // "Collapse" hom h : G → G, x ↦ e (always a hom)
 export function collapse<A>(G: FiniteGroup<A>): GroupHom<A,A> {
-  return { f: (_a:A) => G.id, verify: () => true };
+  return { source: G, target: G, f: (_a:A) => G.id, verify: () => true };
 }
