@@ -1,0 +1,19 @@
+{
+  "id": "REL-GRP-QUOTIENTS-P9-P10",
+  "source": { "text": "Smith, Category Theory, pp.9–10 (§2.3 Defs 5–7, quotient scheme, congruence, quotient group)", "page": 9, "section": "2.3" },
+  "definitions": [
+    "Congruence on a group (normal-subgroup–induced): x ~ y iff x*y^{-1} ∈ N",
+    "Quotient group G/∼ (i.e., G/N) with [x]⋆[y] := [x⋆y]"
+  ],
+  "code": [
+    "src/structures/group/builders/Quotient.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/quotient_even_mod8.test.ts"
+  ],
+  "relations": {
+    "dependsOn": ["REL-GRP-SUBGROUP-P8"],
+    "relatesTo": ["REL-GRP-PAIRING-P8"],
+    "enables": ["REL-GRP-FIRST-ISO"]
+  }
+}
