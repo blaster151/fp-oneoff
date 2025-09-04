@@ -1,13 +1,13 @@
-import { GroupHom } from "../GrpCat";
+import { GroupHom, hom } from "../GrpCat";
 
 /** Identity homomorphism. */
 export function id<A>(Obj: GroupHom<A, A>["source"]): GroupHom<A, A> {
-  return { source: Obj, target: Obj, f: (a: A) => a };
+  return hom(Obj, Obj, (a: A) => a, () => true);
 }
 
 /** Composition g ∘ f. Types ensure target/source match. */
 export function comp<A, B, C>(f: GroupHom<A, B>, g: GroupHom<B, C>): GroupHom<A, C> {
-  return { source: f.source, target: g.target, f: (a: A) => g.f(f.f(a)) };
+  return hom(f.source, g.target, (a: A) => g.f(f.f(a)), () => true);
 }
 
 /** Extensional equality of homs on a finite source. */

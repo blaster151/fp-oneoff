@@ -1,5 +1,5 @@
 import { FiniteGroup } from "../Group";
-import { GroupHom } from "../GrpCat";
+import { GroupHom, hom } from "../GrpCat";
 import { GroupIso, isoId, isoComp, isoInverse, isoEqByPoints } from "../iso/GroupIso";
 
 // ---------- Utilities ----------
@@ -22,7 +22,7 @@ function buildHomFromPerm<A>(G: FiniteGroup<A>, perm: number[]): GroupHom<A, A> 
   const dom = G.elems;
   const img = perm.map(i => dom[i]);
   const map = (a: A): A => img[dom.findIndex(d => G.eq(d, a))];
-  return { source: G, target: G, f: map };
+  return hom(G, G, map, () => true);
 }
 
 function isHomomorphism<A>(G: FiniteGroup<A>, h: GroupHom<A, A>): boolean {

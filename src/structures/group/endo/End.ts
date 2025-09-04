@@ -1,5 +1,5 @@
 import { FiniteGroup } from "../Group";
-import { GroupHom as BaseGroupHom } from "../GrpCat";
+import { GroupHom as BaseGroupHom, hom } from "../GrpCat";
 
 // Extended GroupHom interface with source and target for compatibility
 interface GroupHom<A, B> extends BaseGroupHom<A, B> {
@@ -40,8 +40,8 @@ export function endMonoid<A>(G: FiniteGroup<A>) {
   const eq = (f:GroupHom<A,A>, g:GroupHom<A,A>) =>
     G.elems.every(a => G.eq(f.f(a), g.f(a)));
   const op = (f:GroupHom<A,A>, g:GroupHom<A,A>) =>
-    ({ source:G, target:G, f:(a:A)=> g.f(f.f(a)), verify: () => true });
-  const e = { source:G, target:G, f:(a:A)=>a, verify: () => true };
+    hom(G, G, (a:A)=> g.f(f.f(a)), () => true);
+  const e = hom(G, G, (a:A)=>a, () => true);
   const inv = (_:GroupHom<A,A>) => { throw new Error("End(G) is a monoid (no inv in general)"); };
   return { elems, eq, op, e, inv };
 }
