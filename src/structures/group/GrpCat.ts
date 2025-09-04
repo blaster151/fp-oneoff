@@ -8,38 +8,19 @@ export interface GroupHom<A, B> {
   verify?(): boolean;
 }
 
-/** Create a group homomorphism */
+// Factory to build a well-typed homomorphism object.
 export function hom<A, B>(
-  G: FiniteGroup<A>, 
-  H: FiniteGroup<B>, 
-  f: (a: A) => B
+  source: FiniteGroup<A>,
+  target: FiniteGroup<B>,
+  f: (a: A) => B,
+  verify?: () => boolean
 ): GroupHom<A, B> {
-  return {
-    source: G,
-    target: H,
-    f,
-    verify() {
-      // Check f(id_G) = id_H
-      if (!H.eq(f(G.id), H.id)) return false;
-      
-      // Check f(a * b) = f(a) * f(b) for a few sample points
-      // Use a more systematic approach to avoid missing cases
-      const sampleSize = Math.min(4, G.elems.length);
-      for (let i = 0; i < sampleSize; i++) {
-        for (let j = 0; j < sampleSize; j++) {
-          const a = G.elems[i];
-          const b = G.elems[j];
-          if (!H.eq(f(G.op(a, b)), H.op(f(a), f(b)))) return false;
-        }
-      }
-      return true;
-    }
-  };
+  return { source, target, f, verify };
 }
 
 /** Identity homomorphism */
 export function idHom<A>(G: FiniteGroup<A>): GroupHom<A, A> {
-  return hom(G, G, (a) => a);
+  return hom(G, G, (a) => a, () => true);
 }
 
 /** Composition of homomorphisms */
@@ -47,14 +28,12 @@ export function comp<A, B, C>(
   f: GroupHom<A, B>, 
   g: GroupHom<B, C>
 ): GroupHom<A, C> {
-  return {
-    source: f.source,
-    target: g.target,
-    f: (a) => g.f(f.f(a)),
-    verify() {
-      return (f.verify?.() ?? true) && (g.verify?.() ?? true);
-    }
-  };
+  return hom(
+    f.source,
+    g.target,
+    (a) => g.f(f.f(a)),
+    () => (f.verify?.() ?? true) && (g.verify?.() ?? true)
+  );
 }
 
 /** Product group G × H */
@@ -80,12 +59,12 @@ export function productGroup<A, B>(
 
 /** Projection π1: G × H → G */
 export function proj1<A, B>(G: FiniteGroup<A>, H: FiniteGroup<B>): GroupHom<[A, B], A> {
-  return hom(productGroup(G, H), G, ([a, b]) => a);
+  return hom(productGroup(G, H), G, ([a, b]) => a, () => true);
 }
 
 /** Projection π2: G × H → H */
 export function proj2<A, B>(G: FiniteGroup<A>, H: FiniteGroup<B>): GroupHom<[A, B], B> {
-  return hom(productGroup(G, H), H, ([a, b]) => b);
+  return hom(productGroup(G, H), H, ([a, b]) => b, () => true);
 }
 
 /** Pair into product: K → G × H given K → G and K → H */
@@ -96,14 +75,12 @@ export function pairIntoProduct<K, A, B>(
   u: GroupHom<K, A>,
   v: GroupHom<K, B>
 ): GroupHom<K, [A, B]> {
-  return {
-    source: K,
-    target: productGroup(G, H),
-    f: (k) => [u.f(k), v.f(k)],
-    verify() {
-      return (u.verify?.() ?? true) && (v.verify?.() ?? true);
-    }
-  };
+  return hom(
+    K,
+    productGroup(G, H),
+    (k) => [u.f(k), v.f(k)],
+    () => (u.verify?.() ?? true) && (v.verify?.() ?? true)
+  );
 }
 
 import { trivial } from "./Group";
@@ -111,14 +88,14 @@ import { trivial } from "./Group";
 // Unique hom G → 1 and 1 → G
 export function toTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
   const One = trivial(G.id, G.eq);
-  return { source: G, target: One, f: (_a: A) => One.id, verify: () => true } as any;
+  return hom(G, One, (_a: A) => One.id, () => true) as any;
 }
 export function fromTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
   const One = trivial(G.id, G.eq);
-  return { source: One, target: G, f: (_: A) => G.id, verify: () => true } as any;
+  return hom(One, G, (_: A) => G.id, () => true) as any;
 }
 
 // "Collapse" hom h : G → G, x ↦ e (always a hom)
 export function collapse<A>(G: FiniteGroup<A>): GroupHom<A,A> {
-  return { source: G, target: G, f: (_a:A) => G.id, verify: () => true };
+  return hom(G, G, (_a:A) => G.id, () => true);
 }
