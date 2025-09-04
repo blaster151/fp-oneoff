@@ -53,6 +53,8 @@
     "test:gadt:tmatch": "vitest run src/types/__tests__/gadt-tmatch.test.ts",
     "test:gadt:church": "vitest run src/gadt/__tests__/expr.gadt.church.test.ts",
     "test:gadt:term": "vitest run src/gadt/__tests__/term.fold.test.ts",
+    "test:category:foundations": "vitest run src/category/__tests__/category-foundations.test.ts",
+    "test:category:lan-gadt": "vitest run src/category/__tests__/lan-gadt-bridge.test.ts",
     "test:adt:rose": "vitest run src/types/__tests__/adt-rose.test.ts",
     "test:adt:exprop": "vitest run src/types/__tests__/adt-expr-op.test.ts",
     "test:bicat": "vitest run src/types/__tests__/bicategory-coherence.test.ts",

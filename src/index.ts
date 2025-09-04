@@ -9,3 +9,9 @@ export * as GADT_Church from "./gadt/Church.js";
 export * as GADT_Adapters from "./gadt/adapters.js";
 export * as GADT_Reduction from "./gadt/Reduction.js";
 export * as GADT_Term from "./gadt/examples/Term.js";
+
+// Category theory foundations
+export * as Category_Nat from "./category/Nat.js";
+export * as Category_HFunctor from "./category/HFunctor.js";
+export * as Category_Lan from "./category/Lan.js";
+export * as Category_LanGadtBridge from "./category/examples/LanGadtBridge.js";
