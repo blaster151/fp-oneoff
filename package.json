@@ -62,6 +62,7 @@
     "test:gadt:bfin": "vitest run src/gadt/basic/__tests__/bfin.test.ts",
     "test:gadt:bfin:lan": "vitest run src/gadt/basic/__tests__/bfin.lan.test.ts",
     "test:higher:hcata:fusion": "vitest run src/higher/__tests__/hcata.fusion.test.ts",
+    "test:higher:hcata:compose": "vitest run src/higher/__tests__/hcata.compose.demo.test.ts",
     "test:gadt:vec": "vitest run src/gadt/basic/__tests__/vec.test.ts",
     "test:adt:rose": "vitest run src/types/__tests__/adt-rose.test.ts",
     "test:adt:exprop": "vitest run src/types/__tests__/adt-expr-op.test.ts",
