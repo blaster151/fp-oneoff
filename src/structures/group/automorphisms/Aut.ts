@@ -1,0 +1,79 @@
+import { FiniteGroup, GroupHom } from "../Isomorphism";
+import { GroupIso, isoId, isoComp, isoInverse, isoEqByPoints } from "../iso/GroupIso";
+
+// ---------- Utilities ----------
+function eqArray<A>(xs: A[], ys: A[], eq: (a: A, b: A) => boolean): boolean {
+  if (xs.length !== ys.length) return false;
+  return xs.every((x, i) => eq(x, ys[i]));
+}
+
+// All permutations of indices [0..n-1] (for small n only)
+function* permute(n: number): Generator<number[]> {
+  const a = [...Array(n).keys()];
+  function* gen(k: number): Generator<number[]> {
+    if (k === n) { yield a.slice(); return; }
+    for (let i = k; i < n; i++) { [a[k], a[i]] = [a[i], a[k]]; yield* gen(k + 1); [a[k], a[i]] = [a[i], a[k]]; }
+  }
+  yield* gen(0);
+}
+
+function buildHomFromPerm<A>(G: FiniteGroup<A>, perm: number[]): GroupHom<A, A> {
+  const dom = G.elems;
+  const img = perm.map(i => dom[i]);
+  const map = (a: A): A => img[dom.findIndex(d => G.eq(d, a))];
+  return { source: G, target: G, f: map };
+}
+
+function isHomomorphism<A>(G: FiniteGroup<A>, h: GroupHom<A, A>): boolean {
+  for (const a of G.elems) for (const b of G.elems) {
+    const lhs = h.f(G.op(a, b));
+    const rhs = G.op(h.f(a), h.f(b));
+    if (!G.eq(lhs, rhs)) return false;
+  }
+  // identity/inverses preserved automatically if operation is preserved and h is bijection.
+  return true;
+}
+
+function inversePerm(perm: number[]): number[] {
+  const inv = new Array(perm.length);
+  for (let i = 0; i < perm.length; i++) inv[perm[i]] = i;
+  return inv;
+}
+
+// ---------- Public API ----------
+
+export type Auto<A> = GroupIso<A, A>;
+
+/** Enumerate all automorphisms of a small finite group (|G| ≤ maxSize). */
+export function enumerateAutomorphisms<A>(G: FiniteGroup<A>, maxSize: number = 10): Auto<A>[] {
+  if (G.elems.length > maxSize) {
+    throw new Error(`enumerateAutomorphisms: group too large (${G.elems.length} > ${maxSize}).`);
+  }
+  const autos: Auto<A>[] = [];
+  for (const p of permute(G.elems.length)) {
+    // Fast reject: identity must map to identity.
+    if (!G.eq(G.elems[p[G.elems.findIndex(x => G.eq(x, G.id))]], G.id)) continue;
+
+    const f = buildHomFromPerm(G, p);
+    if (!isHomomorphism(G, f)) continue;
+
+    const inv = buildHomFromPerm(G, inversePerm(p));
+    if (!isHomomorphism(G, inv)) continue;
+
+    autos.push({ forward: f, backward: inv });
+  }
+  // Deduplicate by forward pointwise equality
+  const uniq: Auto<A>[] = [];
+  for (const a of autos) if (!uniq.some(u => isoEqByPoints(u, a))) uniq.push(a);
+  return uniq;
+}
+
+/** Group structure on Aut(G) under composition. */
+export function autGroup<A>(G: FiniteGroup<A>): FiniteGroup<Auto<A>> {
+  const elems = enumerateAutomorphisms(G);
+  const eq = isoEqByPoints<A, A>;
+  const op = (x: Auto<A>, y: Auto<A>): Auto<A> => isoComp(x, y);
+  const id = isoId(G);
+  const inv = (x: Auto<A>): Auto<A> => isoInverse(x);
+  return { elems, eq, op, id, inv };
+}

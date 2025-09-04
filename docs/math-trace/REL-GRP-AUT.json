@@ -1,0 +1,23 @@
+{
+  "id": "REL-GRP-AUT",
+  "source": {
+    "text": "Automorphisms: isomorphisms G≅G form a group under composition (Smith §2.5 and standard algebra)."
+  },
+  "statements": [
+    "Aut(G) forms a group under composition with identity id_G and inverses f^{-1}.",
+    "For finite G, Aut(G) can be enumerated by bijections that respect the operation."
+  ],
+  "code": [
+    "src/structures/group/iso/GroupIso.ts",
+    "src/structures/group/automorphisms/Aut.ts",
+    "src/structures/group/automorphisms/Inner.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/aut_sizes.test.ts",
+    "src/structures/group/__tests__/inn_vs_aut.test.ts"
+  ],
+  "unlocks": [
+    "Action of G on itself by conjugation: G → Aut(G).",
+    "Class equation, centers, and G/Z(G) ≅ Inn(G) (future)."
+  ]
+}

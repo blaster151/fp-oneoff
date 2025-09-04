@@ -1,0 +1,10 @@
+{
+  "id": "REL-GRP-CONJ-AUTO",
+  "source": { "text": "Conjugation is an automorphism; inner automorphisms", "page": 14, "section": "2.5 (isomorphisms), standard group fact" },
+  "statements": [
+    "For each g∈G, conj_g(x)=g x g^{-1} is an automorphism; inverse = conj_{g^{-1}}.",
+    "If G abelian, conj_g = id."
+  ],
+  "code": ["src/structures/group/automorphisms/Conjugation.ts"],
+  "tests": ["src/structures/group/__tests__/conjugation_auto.test.ts"]
+}
