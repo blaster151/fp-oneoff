@@ -1,0 +1,11 @@
+{
+  "id": "REL-MONOID-CORE",
+  "source": { "text": "Semigroups and Monoids: associativity, identity; homomorphisms; standard algebra" },
+  "code": [
+    "src/algebra/semiringlike/Semigroup.ts",
+    "src/algebra/semiringlike/Monoid.ts",
+    "src/algebra/semiringlike/examples/Monoids.ts"
+  ],
+  "tests": [],
+  "unlocks": ["Free monoids", "Mon → Set forgetful functor"]
+}

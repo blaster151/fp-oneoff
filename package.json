@@ -80,6 +80,8 @@
     "test:group:endo": "vitest run src/structures/group/__tests__/end_units_aut.test.ts",
     "test:group:actions": "vitest run src/structures/group/__tests__/actions.test.ts",
     "test:group:GmodZ-Inn": "vitest run src/structures/group/__tests__/GmodZ_Inn.test.ts",
+    "test:algebra:free-monoid-adj": "vitest run src/algebra/semiringlike/__tests__/free_monoid_adjunction.test.ts",
+    "test:algebra:monoid-basics": "vitest run src/algebra/semiringlike/__tests__/monoid_basics.test.ts",
     "test:group:aut-sizes": "vitest run src/structures/group/__tests__/aut_sizes.test.ts",
     "test:group:inn-vs-aut": "vitest run src/structures/group/__tests__/inn_vs_aut.test.ts",
     "check:trace": "node scripts/checkTraceIntegrity.js",
