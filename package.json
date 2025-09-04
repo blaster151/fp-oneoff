@@ -75,6 +75,8 @@
     "test:group:cat-laws": "vitest run src/structures/group/__tests__/product_universal_property_laws.test.ts",
     "test:group:first-iso": "vitest run src/structures/group/__tests__/first_iso_parity.test.ts",
     "test:group:conjugation": "vitest run src/structures/group/__tests__/conjugation_auto.test.ts",
+    "test:set:basics": "vitest run src/set/__tests__/set_fn.test.ts",
+    "test:set:constructions": "vitest run src/set/__tests__/product_coproduct_quotient.test.ts",
     "test:group:aut-sizes": "vitest run src/structures/group/__tests__/aut_sizes.test.ts",
     "test:group:inn-vs-aut": "vitest run src/structures/group/__tests__/inn_vs_aut.test.ts",
     "check:trace": "node scripts/checkTraceIntegrity.js",
