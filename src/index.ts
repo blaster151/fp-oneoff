@@ -15,3 +15,9 @@ export * as Category_Nat from "./category/Nat.js";
 export * as Category_HFunctor from "./category/HFunctor.js";
 export * as Category_Lan from "./category/Lan.js";
 export * as Category_LanGadtBridge from "./category/examples/LanGadtBridge.js";
+
+// Core category theory (equality, natural transformations, higher-order functors, Lan)
+export * as Cat_Eq from "./category/Eq";
+export * as Cat_Nat from "./category/Nat";
+export * as Cat_HFunctor from "./category/HFunctor";
+export * as Cat_Lan from "./category/Lan";
