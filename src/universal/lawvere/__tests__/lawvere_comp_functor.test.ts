@@ -44,8 +44,8 @@ describe("Lawvere theory: composition and Set interpretation (monoid)", () => {
     const inp = [3];
 
     // F(s∘r)(3) = F(s)(F(r)(3))
-    const lhs = Fcomp(inp)[0];
-    const rhs = Fs(Fr(inp))[0];
+    const lhs = Fcomp(inp)[0]!;
+    const rhs = Fs(Fr(inp))[0]!;
 
     expect(A.eq(lhs, rhs)).toBe(true);
   });
@@ -55,6 +55,6 @@ describe("Lawvere theory: composition and Set interpretation (monoid)", () => {
     const A = ZmodAsMonoid(5);
     const F = interpretInSet(L, A);
     const f = F.onMor(id1);
-    expect(A.eq(f([2])[0], 2)).toBe(true);
+    expect(A.eq(f([2])[0]!, 2)).toBe(true);
   });
 });

@@ -11,13 +11,13 @@ import { evalTerm } from "../Algebra";
 export function interpretInSet<A>(L: Lawvere, A: UAAlgebra<A>) {
   const Obj = (n: number) => ({
     elems: cartesianPow(A.elems, n),
-    eq: (x:A[],y:A[]) => x.length===y.length && x.every((xi,i)=>A.eq(xi,y[i]))
+    eq: (x:A[],y:A[]) => x.length===y.length && x.every((xi,i)=>A.eq(xi,y[i]!))
   });
 
   const onMor = (s: any[]) => {
     const n = inferArity(s);
     return (tuple: A[]) => {
-      const env = (ix:number)=> tuple[ix];
+      const env = (ix:number)=> tuple[ix]!;
       return s.map(t => {
         if (!t) {
           throw new Error("Undefined term in morphism");
