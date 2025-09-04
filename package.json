@@ -85,6 +85,8 @@
     "test:ab:abelian-biproduct": "vitest run src/structures/ab/__tests__/abelian_biproduct.test.ts",
     "test:ab:ker-coker-universal": "vitest run src/structures/ab/__tests__/ker_coker_universal.test.ts",
     "test:ab:hom-preadditive": "vitest run src/structures/ab/__tests__/hom_preadditive.test.ts",
+    "test:ua:free-monoid-universal": "vitest run src/universal/__tests__/ua_free_monoid_universal.test.ts",
+    "test:ua:equation-satisfaction": "vitest run src/universal/__tests__/ua_equation_satisfaction.test.ts",
     "test:group:aut-sizes": "vitest run src/structures/group/__tests__/aut_sizes.test.ts",
     "test:group:inn-vs-aut": "vitest run src/structures/group/__tests__/inn_vs_aut.test.ts",
     "check:trace": "node scripts/checkTraceIntegrity.js",
