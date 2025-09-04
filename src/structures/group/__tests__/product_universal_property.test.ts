@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import { Z2, Z3, Zn } from "../util/FiniteGroups";
 import { tupleScheme } from "../pairing/PairingScheme";
 import { productGroup } from "../builders/Product";
-import { projections, pairHom, homEqByPoints } from "../builders/ProductUP";
+import { projections, pairHom } from "../builders/ProductUP";
+import { homEqByPoints } from "../cat/GroupCat";
 import { GroupHom } from "../GrpCat";
 import { isHom } from "../Isomorphism";
 

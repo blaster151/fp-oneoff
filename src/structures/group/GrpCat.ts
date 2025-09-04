@@ -15,7 +15,11 @@ export function hom<A, B>(
   f: (a: A) => B,
   verify?: () => boolean
 ): GroupHom<A, B> {
-  return { source, target, f, verify };
+  const result: GroupHom<A, B> = { source, target, f };
+  if (verify !== undefined) {
+    result.verify = verify;
+  }
+  return result;
 }
 
 /** Identity homomorphism */
