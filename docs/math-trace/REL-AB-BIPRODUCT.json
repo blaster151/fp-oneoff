@@ -1,0 +1,11 @@
+{
+  "id": "REL-AB-BIPRODUCT",
+  "source": { "text": "Biproducts in Ab: direct sum with injections/projections and matrix identities." },
+  "code": [
+    "src/structures/ab/builders/Biproduct.ts"
+  ],
+  "tests": [
+    "src/structures/ab/__tests__/abelian_biproduct.test.ts"
+  ],
+  "relatesTo": ["REL-AB-CORE", "REL-GRP-PRODUCT-P8-P9", "REL-GRP-PRODUCT-UP-P14-P15"]
+}
