@@ -66,6 +66,7 @@
     "test:group:iso-u8": "vitest run src/structures/group/__tests__/iso.U8.vs.Z2Z2.test.ts",
     "test:group:hom-laws": "vitest run src/structures/group/__tests__/hom.category.laws.test.ts",
     "test:group:aut": "vitest run src/structures/group/__tests__/aut.small.test.ts",
+    "test:group:theorem2": "vitest run src/structures/group/__tests__/theorem2_and_examples.test.ts",
     "test:gadt:bfin": "vitest run src/gadt/basic/__tests__/bfin.test.ts",
     "test:gadt:bfin:lan": "vitest run src/gadt/basic/__tests__/bfin.lan.test.ts",
     "test:gadt:vec": "vitest run src/gadt/basic/__tests__/vec.test.ts",

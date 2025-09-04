@@ -37,3 +37,6 @@ export * as Grp from "./structures/group/Grp";
 export * as Group_Quotient from "./structures/group/Quotient";
 export * as Group_Isomorphism from "./structures/group/Isomorphism";
 export * as Group_Units from "./structures/group/Units";
+export * as Group_HomHelpers from "./structures/group/HomHelpers";
+export * as Group_Complex from "./structures/group/Complex";
+export * as Group_Examples24 from "./structures/group/homs/Examples24";
