@@ -32,3 +32,4 @@ export * as Basic_BFin from "./gadt/basic/BFin";
 export * as Basic_BFin_Lan from "./gadt/basic/BFin.Lan";
 export * as Basic_Vec from "./gadt/basic/Vec";
 export * as Basic_Vec_Lan from "./gadt/basic/Vec.Lan";
+export * as Grp from "./structures/group/Grp";
