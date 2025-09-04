@@ -71,6 +71,7 @@
     "test:group:pairing": "vitest run src/structures/group/__tests__/product_pairing_isomorphism.test.ts",
     "test:group:quotient": "vitest run src/structures/group/__tests__/quotient_even_mod8.test.ts",
     "test:group:product-up": "vitest run src/structures/group/__tests__/product_universal_property.test.ts",
+    "test:group:klein": "vitest run src/structures/group/__tests__/product_klein.test.ts",
     "check:trace": "node scripts/checkTraceIntegrity.js",
     "gadt:bfin": "vitest run src/gadt/basic/__tests__/bfin.test.ts",
     "gadt:bfin:lan": "vitest run src/gadt/basic/__tests__/bfin.lan.test.ts",
