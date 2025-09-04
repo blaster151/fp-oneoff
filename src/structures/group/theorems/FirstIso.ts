@@ -1,4 +1,6 @@
-import { FiniteGroup, GroupHom, isIsomorphism } from "../Isomorphism";
+import { FiniteGroup } from "../Group";
+import { GroupHom } from "../GrpCat";
+import { isIsomorphism } from "../Isomorphism";
 import { kernel, image, quotientGroup } from "../builders/Quotient";
 
 /** The canonical isomorphism \bar f : G/ker f → im f, plus data. */

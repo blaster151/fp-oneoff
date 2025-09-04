@@ -1,7 +1,7 @@
 import { FiniteAbGroup } from "../AbGroup";
 import { PairingScheme } from "../../group/pairing/PairingScheme";
 import { productGroup } from "../../group/builders/Product";
-import { GroupHom } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
 
 /** Biproduct data (G ⊕ H, i1,i2,p1,p2) with standard identities. */
 export function biproduct<A,B,O>(

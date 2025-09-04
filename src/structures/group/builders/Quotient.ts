@@ -1,4 +1,5 @@
-import { FiniteGroup, GroupHom } from "../Isomorphism";
+import { FiniteGroup } from "../Group";
+import { GroupHom } from "../GrpCat";
 import { isSubgroup } from "../Subgroup";
 
 /** Decide membership in a finite subgroup by carrier + eq. */

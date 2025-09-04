@@ -1,4 +1,5 @@
-import { FiniteGroup, GroupHom } from "../group/Group";
+import { FiniteGroup } from "../group/Group";
+import { GroupHom } from "../group/GrpCat";
 
 export type FiniteAbGroup<A> = FiniteGroup<A>; // same carrier; we additionally *check* commutativity
 

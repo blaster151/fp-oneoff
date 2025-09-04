@@ -1,4 +1,5 @@
-import { FiniteGroup, GroupHom } from "../../group/Group";
+import { FiniteGroup } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
 
 /** Brute-force enumerate homomorphisms G→H for very small G,H (explodes quickly). */
 export function enumerateHoms<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>, maxSize=9): GroupHom<A,B>[] {

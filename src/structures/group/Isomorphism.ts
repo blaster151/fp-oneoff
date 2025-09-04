@@ -8,6 +8,8 @@ export function inclusion<A>(H: FiniteGroup<A>, G: FiniteGroup<A>): GroupHom<A,A
     throw new Error("inclusion: H is not a subgroup of G over the same carrier.");
   }
   return {
+    source: H,
+    target: G,
     f: (h: A) => h,               // identity on the underlying carrier
     verify: () => {
       for (const x of H.elems) for (const y of H.elems) {
@@ -99,7 +101,7 @@ export function automorphismsBruteforce<A>(G: FiniteGroup<A>): Array<GroupHom<A,
       return G.elems[p[i]];
     };
     if (isHom(G,G,map) && bijectionWitness(G,G,map)) {
-      autos.push({ f: map, verify: () => true });
+      autos.push({ source: G, target: G, f: map, verify: () => true });
     }
   }
   return autos;

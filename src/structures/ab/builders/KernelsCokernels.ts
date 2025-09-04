@@ -1,5 +1,6 @@
 import { FiniteAbGroup, Trivial } from "../AbGroup";
-import { GroupHom, FiniteGroup } from "../../group/Group";
+import { FiniteGroup } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
 import { kernel, image, quotientGroup } from "../../group/builders/Quotient";
 
 /** Kernel in Ab is the usual kernel subgroup (a ↦ e). */

@@ -12,8 +12,8 @@ describe("Grp category façade", () => {
 
     const idZ3 = Grp.id(Z3);
     const gf = Grp.comp(f, g);           // g ∘ f = f (since g is identity)
-    expect(idZ3.verify()).toBe(true);
-    expect(gf.verify()).toBe(true);
+    expect(idZ3.verify?.()).toBe(true);
+    expect(gf.verify?.()).toBe(true);
 
     // Left/right identities on a few points
     for (const x of Z6.elems) {

@@ -2,7 +2,8 @@ import { describe, it, expect } from "vitest";
 import { Z2, Z8 } from "../util/FiniteGroups";
 import { subgroupFromPredicate } from "../Subgroup";
 import { isNormalSubgroup, quotientGroup } from "../builders/Quotient";
-import { isIsomorphism, GroupHom } from "../Isomorphism";
+import { isIsomorphism } from "../Isomorphism";
+import { GroupHom } from "../GrpCat";
 
 describe("Quotient Z8 / (even)  ≅  Z2", () => {
   const G = Z8;
