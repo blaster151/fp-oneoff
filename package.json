@@ -52,6 +52,7 @@
     "test:adt:zygo-histo": "vitest run src/types/__tests__/adt-schemes.test.ts",
     "test:gadt:tmatch": "vitest run src/types/__tests__/gadt-tmatch.test.ts",
     "test:gadt:church": "vitest run src/gadt/__tests__/expr.gadt.church.test.ts",
+    "test:gadt:term": "vitest run src/gadt/__tests__/term.fold.test.ts",
     "test:adt:rose": "vitest run src/types/__tests__/adt-rose.test.ts",
     "test:adt:exprop": "vitest run src/types/__tests__/adt-expr-op.test.ts",
     "test:bicat": "vitest run src/types/__tests__/bicategory-coherence.test.ts",

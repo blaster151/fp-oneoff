@@ -7,3 +7,5 @@ export * as GADT_HFun from "./gadt/HFun.js";
 export * as GADT_Initial from "./gadt/Initial.js";
 export * as GADT_Church from "./gadt/Church.js";
 export * as GADT_Adapters from "./gadt/adapters.js";
+export * as GADT_Reduction from "./gadt/Reduction.js";
+export * as GADT_Term from "./gadt/examples/Term.js";

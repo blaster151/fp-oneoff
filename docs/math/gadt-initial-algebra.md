@@ -15,3 +15,15 @@ Fusion law: gfold(alg)(gbuildFrom(coalg)(a)) = gbuildFrom(coalg)(a)(alg).
 
 ## [GADT-COVARIANCE]
 Automation is provided for covariant cases; contravariant indices are out-of-scope here.
+
+## [GADT-REDUCTION]
+Every GADT can be reduced to equality + existentials (EqWit, Exists).
+
+## [GADT-TERM]
+Term GADT modeled as Fix<TermF> with node-local fmap; foldTerm gives evaluator.
+
+## [GADT-COMBINATOR-TRIO]
+Uniform fold/build/fusion suffice for all GADTs once encoded as initial algebras.
+
+## [GADT-HFUNCTOR-NODE]
+Implementation note: we use node-local fmap via withMap, giving a practical HFunctor instance.

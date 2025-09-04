@@ -5,11 +5,13 @@
 export type Ty<T> =
   | { tag: "number" }
   | { tag: "boolean" }
-  | { tag: "pair"; left: Ty<any>; right: Ty<any> };
+  | { tag: "pair"; left: Ty<any>; right: Ty<any> }
+  | { tag: "arrow"; dom: Ty<any>; cod: Ty<any> };
 
 export const NumT: Ty<number> = { tag: "number" };
 export const BoolT: Ty<boolean> = { tag: "boolean" };
 export const PairT = <A, B>(l: Ty<A>, r: Ty<B>): Ty<[A, B]> => ({ tag: "pair", left: l, right: r });
+export const ArrowT = <A,B>(dom: Ty<A>, cod: Ty<B>): Ty<(a:A)=>B> => ({ tag:"arrow", dom, cod });
 
 /** Expr<T> — GADT-like by carrying a Ty<T> witness. */
 export type Expr<T> =
@@ -168,6 +170,9 @@ export function eqTy<A, B>(a: Ty<A>, b: Ty<B>): a is Ty<B> & Ty<A> {
   if (a.tag !== b.tag) return false;
   if (a.tag === "pair" && b.tag === "pair") {
     return eqTy(a.left as any, b.left as any) && eqTy(a.right as any, b.right as any);
+  }
+  if (a.tag === "arrow" && b.tag === "arrow") {
+    return eqTy(a.dom as any, b.dom as any) && eqTy(a.cod as any, b.cod as any);
   }
   return true;
 }
