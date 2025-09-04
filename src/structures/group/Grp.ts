@@ -21,7 +21,20 @@ export const Grp = {
 
     /** Mediating arrow for any cone (u:K→G, v:K→H) */
     function pair<K>(K: Obj<K>, u: Mor<K,A>, v: Mor<K,B>): Mor<K,[A,B]> {
-      return pairIntoProduct(K, G, H, u, v);
+      const pairHom = pairIntoProduct(K, G, H, u, v);
+      // Add a uniqueAgainst method for testing
+      (pairHom as any).uniqueAgainst = (other: Mor<K,[A,B]>) => {
+        // Check that both have the same projections
+        for (const k of K.elems) {
+          const ab1 = pairHom.f(k);
+          const ab2 = other.f(k);
+          if (!G.eq(π1.f(ab1), π1.f(ab2)) || !H.eq(π2.f(ab1), π2.f(ab2))) {
+            return false;
+          }
+        }
+        return true;
+      };
+      return pairHom;
     }
 
     return { P, π1, π2, pair };

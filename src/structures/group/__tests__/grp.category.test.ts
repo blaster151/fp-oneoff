@@ -6,11 +6,12 @@ import { Grp } from "../Grp";
 describe("Grp category façade", () => {
   it("identity and composition (on Zn)", () => {
     const Z6 = Zn(6), Z3 = Zn(3), Z2 = Zn(2);
+    // Use proper homomorphisms: Z6 -> Z3 (mod 3) and Z3 -> Z3 (identity)
     const f = hom(Z6, Z3, x => x % 3);
-    const g = hom(Z3, Z2, x => x % 2);
+    const g = hom(Z3, Z3, x => x); // identity map
 
     const idZ3 = Grp.id(Z3);
-    const gf = Grp.comp(f, g);           // g ∘ f
+    const gf = Grp.comp(f, g);           // g ∘ f = f (since g is identity)
     expect(idZ3.verify()).toBe(true);
     expect(gf.verify()).toBe(true);
 

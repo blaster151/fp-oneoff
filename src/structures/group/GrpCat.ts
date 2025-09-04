@@ -19,8 +19,10 @@ export function hom<A, B>(
       if (!H.eq(f(G.id), H.id)) return false;
       
       // Check f(a * b) = f(a) * f(b) for a few sample points
-      for (let i = 0; i < Math.min(3, G.elems.length); i++) {
-        for (let j = 0; j < Math.min(3, G.elems.length); j++) {
+      // Use a more systematic approach to avoid missing cases
+      const sampleSize = Math.min(4, G.elems.length);
+      for (let i = 0; i < sampleSize; i++) {
+        for (let j = 0; j < sampleSize; j++) {
           const a = G.elems[i];
           const b = G.elems[j];
           if (!H.eq(f(G.op(a, b)), H.op(f(a), f(b)))) return false;
@@ -94,4 +96,21 @@ export function pairIntoProduct<K, A, B>(
       return u.verify() && v.verify();
     }
   };
+}
+
+import { trivial } from "./Group";
+
+// Unique hom G → 1 and 1 → G
+export function toTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
+  const One = trivial(G.id, G.eq);
+  return { f: (_a: A) => One.id, verify: () => true } as any;
+}
+export function fromTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
+  const One = trivial(G.id, G.eq);
+  return { f: (_: A) => G.id, verify: () => true } as any;
+}
+
+// "Collapse" hom h : G → G, x ↦ e (always a hom)
+export function collapse<A>(G: FiniteGroup<A>): GroupHom<A,A> {
+  return { f: (_a:A) => G.id, verify: () => true };
 }
