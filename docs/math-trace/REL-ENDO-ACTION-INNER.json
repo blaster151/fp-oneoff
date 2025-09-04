@@ -1,0 +1,27 @@
+{
+  "id": "REL-ENDO-ACTION-INNER",
+  "source": {
+    "text": "Endomorphisms, group actions, and Inn(G) ≅ G/Z(G) (standard group theory; relates to Smith §2.x)"
+  },
+  "statements": [
+    "End(G) is a monoid under composition; units(End(G)) = Aut(G).",
+    "A group action is a hom G → Sym(X); left-regular and conjugation are canonical actions.",
+    "Z(G) = center; mapping gZ(G) ↦ conj_g gives an isomorphism G/Z(G) ≅ Inn(G)."
+  ],
+  "code": [
+    "src/structures/group/endo/End.ts",
+    "src/structures/group/actions/Action.ts",
+    "src/structures/group/center/Center.ts",
+    "src/structures/group/theorems/GmodZ_Inn.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/end_units_aut.test.ts",
+    "src/structures/group/__tests__/actions.test.ts",
+    "src/structures/group/__tests__/GmodZ_Inn.test.ts"
+  ],
+  "relatesTo": [
+    "REL-GRP-AUT",
+    "REL-GRP-CONJ-AUTO",
+    "REL-GRP-FIRST-ISO"
+  ]
+}
