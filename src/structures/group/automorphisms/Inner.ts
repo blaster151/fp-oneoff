@@ -1,4 +1,4 @@
-import { FiniteGroup } from "../Isomorphism";
+import { FiniteGroup } from "../Group";
 import { conjugation } from "./Conjugation";
 import { GroupIso, isoComp, isoEqByPoints, isoId, isoInverse } from "../iso/GroupIso";
 import { Auto } from "./Aut";

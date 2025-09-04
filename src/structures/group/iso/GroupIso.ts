@@ -1,9 +1,9 @@
 // A tiny iso layer that piggybacks on your existing FiniteGroup/GroupHom code.
 // We store BOTH directions so composition and inverses are trivial.
 
-import { GroupHom } from "../Isomorphism";
+import { GroupHom } from "../GrpCat";
 import { homEqByPoints, comp, id } from "../cat/GroupCat";
-import { FiniteGroup } from "../Isomorphism";
+import { FiniteGroup } from "../Group";
 
 export type GroupIso<A, B> = {
   forward: GroupHom<A, B>;

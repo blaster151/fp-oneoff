@@ -1,4 +1,4 @@
-import { FiniteGroup, GroupHom } from "../Isomorphism";
+import { FiniteGroup, GroupHom } from "../Group";
 import { GroupIso, isoId, isoComp, isoInverse, isoEqByPoints } from "../iso/GroupIso";
 
 // ---------- Utilities ----------

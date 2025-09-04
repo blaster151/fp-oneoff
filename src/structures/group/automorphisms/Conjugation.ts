@@ -1,11 +1,12 @@
-import { FiniteGroup, GroupHom, isIsomorphism } from "../Isomorphism";
+import { FiniteGroup, GroupHom } from "../Group";
+import { isIsomorphism } from "../Isomorphism";
 
 /** conj_g : G → G, x ↦ g x g^{-1} */
 export function conjugation<A>(G: FiniteGroup<A>, g: A): GroupHom<A, A> {
   return {
     source: G,
     target: G,
-    f: (x) => G.op(G.op(g, x), G.inv(g))
+    f: (x: A) => G.op(G.op(g, x), G.inv(g))
   };
 }
 
