@@ -19,3 +19,15 @@ export function ZmodAsMonoid(n: number): UAAlgebra<number> {
   };
   return { sig, elems, eq, interpret };
 }
+
+export function BoolOrAsMonoid(): UAAlgebra<boolean> {
+  const sig = MonoidSig;
+  const elems = [false, true];
+  const eq = (a:boolean,b:boolean)=>a===b;
+  const interpret = (op: any) => {
+    if (op.name === "e") return () => false;
+    if (op.name === "mul") return (a:boolean,b:boolean)=> a || b; // OR as monoid op
+    throw new Error("unknown op");
+  };
+  return { sig, elems, eq, interpret };
+}
