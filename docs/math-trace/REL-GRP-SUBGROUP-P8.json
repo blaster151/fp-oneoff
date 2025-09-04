@@ -1,0 +1,17 @@
+{
+  "id": "REL-GRP-SUBGROUP-P8",
+  "source": { "text": "Smith, Category Theory, p.8, §2.3 (Definition 2)", "page": 8, "section": "2.3" },
+  "definitions": [
+    "Subgroup S ≤ G: same operation restricted to a subset containing identity and closed under op and inverses"
+  ],
+  "code": [
+    "src/structures/group/Subgroup.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/subgroup.test.ts"
+  ],
+  "relations": {
+    "relatesTo": ["REL-GRP-ISO-AUTO-P14", "REL-GRP-ISO-P15"],
+    "enables": ["REL-GRP-PRODUCTS", "REL-GRP-QUOTIENTS"]
+  }
+}

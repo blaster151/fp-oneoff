@@ -1,0 +1,11 @@
+{
+  "id": "REL-AB-KER-COKER",
+  "source": { "text": "Kernels and cokernels in Ab; universal properties; exactness with zero morphisms." },
+  "code": [
+    "src/structures/ab/builders/KernelsCokernels.ts"
+  ],
+  "tests": [
+    "src/structures/ab/__tests__/ker_coker_universal.test.ts"
+  ],
+  "relatesTo": ["REL-GRP-QUOTIENTS-P9-P10", "REL-GRP-FIRST-ISO"]
+}

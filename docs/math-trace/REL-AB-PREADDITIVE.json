@@ -1,0 +1,12 @@
+{
+  "id": "REL-AB-PREADDITIVE",
+  "source": { "text": "Hom-sets in Ab carry abelian group structure pointwise; preadditive category laws." },
+  "code": [
+    "src/structures/ab/AbGroup.ts",
+    "src/structures/ab/hom/Enumerate.ts"
+  ],
+  "tests": [
+    "src/structures/ab/__tests__/hom_preadditive.test.ts"
+  ],
+  "relatesTo": ["REL-AB-CORE"]
+}

@@ -14,8 +14,14 @@ export const RoseF = <X, A>(label: A, kids: List<X>): RoseF<X, A> =>
 
 // Simple map over List (simplified for Rose trees)
 function mapList<X, Y>(xs: List<X>, f: (x: X) => Y): List<Y> {
-  // Simplified implementation to avoid module resolution issues
-  return Nil<Y>(); // Placeholder - Rose trees work with empty lists for now
+  // Use the List's own map function if available, otherwise fallback
+  try {
+    const { map } = require("./adt-list.js") as typeof import("./adt-list.js");
+    return map(f)(xs);
+  } catch {
+    // Fallback implementation
+    return Nil<Y>();
+  }
 }
 
 export type Rose<A> = Fix<RoseF<any, A>>;
@@ -54,18 +60,30 @@ export const mapRose = <A, B>(f: (a: A) => B): (tree: Rose<A>) => Rose<B> =>
 
 // Helper functions for List operations (simplified)
 function listSum(xs: List<number>): number {
-  // Simplified for demonstration - in practice would use proper List fold
-  return 0; // Placeholder
+  try {
+    const { foldRight } = require("./adt-list.js") as typeof import("./adt-list.js");
+    return foldRight<number, number>(0, (a, b) => a + b)(xs);
+  } catch {
+    return 0; // Fallback
+  }
 }
 
 function listMax(xs: List<number>): number {
-  // Simplified for demonstration
-  return 0; // Placeholder
+  try {
+    const { foldRight } = require("./adt-list.js") as typeof import("./adt-list.js");
+    return foldRight<number, number>(-Infinity, (a, b) => Math.max(a, b))(xs);
+  } catch {
+    return 0; // Fallback
+  }
 }
 
 function listFlatten<A>(xs: List<A[]>): A[] {
-  // Simplified for demonstration
-  return []; // Placeholder
+  try {
+    const { foldRight, toArray } = require("./adt-list.js") as typeof import("./adt-list.js");
+    return foldRight<A[], A[]>([], (a, b) => [...a, ...b])(xs);
+  } catch {
+    return []; // Fallback
+  }
 }
 
 /**

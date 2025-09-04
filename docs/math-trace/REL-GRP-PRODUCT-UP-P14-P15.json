@@ -1,0 +1,22 @@
+{
+  "id": "REL-GRP-PRODUCT-UP-P14-P15",
+  "source": { "text": "Smith, Category Theory, pp.14–15 (§§2.5–2.6: isomorphisms, reinterpreting products; product 'same table' principle)", "page": 14, "section": "2.5–2.6" },
+  "definitions": [
+    "Products determined up to isomorphism by their componentwise operation",
+    "Universal property: for any K with homs f:K→G and g:K→H, there is a unique ⟨f,g⟩:K→G×H s.t. π1∘⟨f,g⟩=f and π2∘⟨f,g⟩=g"
+  ],
+  "code": [
+    "src/structures/group/builders/ProductUP.ts",
+    "src/structures/group/builders/Product.ts",
+    "src/structures/group/pairing/PairingScheme.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/product_universal_property.test.ts",
+    "src/structures/group/__tests__/product_pairing_isomorphism.test.ts"
+  ],
+  "relations": {
+    "dependsOn": ["REL-GRP-PAIRING-P8"],
+    "relatesTo": ["REL-GRP-ISO-P15"],
+    "enables": ["REL-GRP-CATEGORICAL"]
+  }
+}

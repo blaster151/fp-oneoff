@@ -1,0 +1,20 @@
+{
+  "id": "REL-GRP-PRODUCT-P8-P9",
+  "source": { "text": "Smith, Category Theory, pp.8–9 (§2.3, Def.4: product group construction)", "page": 8, "section": "2.3" },
+  "definitions": [
+    "Product group G×H = (K,⊙,k) from groups G,H and pairing scheme S",
+    "Operation defined componentwise: (x,y)⊙(x',y') = (x*x', y⋄y')",
+    "Products not unique but isomorphic; e.g. Klein 4-group = Z2×Z2"
+  ],
+  "code": [
+    "src/structures/group/builders/Product.ts",
+    "src/structures/group/pairing/PairingScheme.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/product_klein.test.ts"
+  ],
+  "relations": {
+    "dependsOn": ["REL-GRP-PAIRING-P8"],
+    "enables": ["REL-GRP-PRODUCT-UP-P14-P15"]
+  }
+}

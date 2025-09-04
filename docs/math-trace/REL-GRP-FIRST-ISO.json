@@ -1,0 +1,13 @@
+{
+  "id": "REL-GRP-FIRST-ISO",
+  "source": { "text": "Standard First Isomorphism Theorem for groups; aligns with Smith §2.3–2.6 quotient/product groundwork", "page": 15, "section": "2.x" },
+  "statements": [
+    "For any hom f: G→H, ker f ▹ G, im f ≤ H and G/ker f ≅ im f canonically."
+  ],
+  "code": ["src/structures/group/theorems/FirstIso.ts"],
+  "tests": ["src/structures/group/__tests__/first_iso_parity.test.ts"],
+  "unlocks": [
+    "Classify hom images via quotients",
+    "Factorization f = incl ∘ φ ∘ π with π: G→G/ker f"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "REL-GRP-HOMS-P12-13",
+  "title": "Group homomorphisms & Hom-category laws",
+  "source": { "doc": "SmithCat.pdf", "pages": [12,13] },
+  "latex": [
+    "f(x\\star y)=f(x)\\diamond f(y)",
+    "f(e)=d",
+    "f(x^{-1})=(f(x))^{-1}",
+    "h\\circ(g\\circ f)=(h\\circ g)\\circ f",
+    "id_G\\circ f=f=f\\circ id_H"
+  ],
+  "code": [
+    "src/structures/group/GrpCat.ts",
+    "src/structures/group/Isomorphism.ts",
+    "src/structures/group/HomHelpers.ts",
+    "src/structures/group/Complex.ts",
+    "src/structures/group/homs/Examples24.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/theorem2_and_examples.test.ts"
+  ],
+  "unlocks": [
+    "Quotients & factorization of homs",
+    "Automorphism computations",
+    "Products/terminal object in Grp"
+  ],
+  "depends_on": ["REL-GRP-AXIOMS"],
+  "relates_to": ["REL-GRP-QUOTIENTS-P10-11", "REL-GRP-ISO-THM"]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "REL-AB-CORE",
+  "source": { "text": "Abelian groups: commutativity, trivial object, pointwise operations on Hom; standard algebra / category Ab." },
+  "code": [
+    "src/structures/ab/AbGroup.ts",
+    "src/structures/ab/examples/AbelianGroups.ts"
+  ],
+  "tests": []
+}

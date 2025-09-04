@@ -1,0 +1,1 @@
+          if (!H.eq(f(G.op(a, b)), H.op(f(a), f(b)))) return false;

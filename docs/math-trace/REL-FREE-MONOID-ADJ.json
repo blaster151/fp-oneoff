@@ -1,0 +1,16 @@
+{
+  "id": "REL-FREE-MONOID-ADJ",
+  "source": { "text": "Free monoid adjunction F ⊣ U (Set ⇄ Mon), unit/counit triangle identities" },
+  "code": [
+    "src/algebra/semiringlike/free/FreeMonoid.ts"
+  ],
+  "tests": [
+    "src/algebra/semiringlike/__tests__/free_monoid_adjunction.test.ts"
+  ],
+  "relatesTo": ["REL-MONOID-CORE", "REL-GRP-HOMS-P12-13"],
+  "unlocks": [
+    "Free groups (later)",
+    "Presentations via generators/relations (later)",
+    "Functor/Natural Transformation layer"
+  ]
+}
