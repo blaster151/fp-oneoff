@@ -58,6 +58,7 @@
     "test:cat:eq": "vitest run src/category/__tests__/eq.test.ts",
     "test:cat:hfunctor": "vitest run src/category/__tests__/hfunctor.shim.test.ts",
     "test:cat:lan": "vitest run src/category/__tests__/lan.eq.test.ts",
+    "test:cat:hcomp:lan": "vitest run src/category/__tests__/hcomp.lan.test.ts",
     "test:gadt:bfin": "vitest run src/gadt/basic/__tests__/bfin.test.ts",
     "test:gadt:bfin:lan": "vitest run src/gadt/basic/__tests__/bfin.lan.test.ts",
     "test:higher:hcata:fusion": "vitest run src/higher/__tests__/hcata.fusion.test.ts",

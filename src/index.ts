@@ -21,6 +21,8 @@ export * as Cat_Eq from "./category/Eq";
 export * as Cat_Nat from "./category/Nat";
 export * as Cat_HFunctor from "./category/HFunctor";
 export * as Cat_Lan from "./category/Lan";
+export * as Cat_HComp from "./category/HComp";
+export * as Cat_HFunctor_Lan from "./category/HFunctor.Lan";
 
 // Higher-order fixpoint system and basic GADTs
 export * as Higher_HFix from "./higher/HFix";
