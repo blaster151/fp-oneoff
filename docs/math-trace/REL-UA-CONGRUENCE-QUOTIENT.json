@@ -1,0 +1,17 @@
+{
+  "id": "REL-UA-CONGRUENCE-QUOTIENT",
+  "source": {
+    "text": "Congruence closure on term algebras (finite-depth Nelson–Oppen style), quotient T(X)/≈, and factorization through the quotient."
+  },
+  "code": [
+    "universal/Congruence.ts",
+    "universal/examples/MonoidSig.ts"
+  ],
+  "tests": [
+    "universal/__tests__/congruence_quotient_idem_comm.test.ts"
+  ],
+  "unlocks": [
+    "Varieties: free algebra modulo equations",
+    "Rewriting/normalization strategies (Knuth–Bendix, canonical forms)"
+  ]
+}

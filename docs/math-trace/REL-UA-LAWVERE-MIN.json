@@ -1,0 +1,22 @@
+{
+  "id": "REL-UA-LAWVERE-MIN",
+  "source": {
+    "text": "Lawvere theory as terms modulo equations; morphism composition via substitution; Set interpretation as product-preserving functor."
+  },
+  "code": [
+    "universal/lawvere/Lawvere.ts",
+    "universal/lawvere/SetFunctor.ts"
+  ],
+  "tests": [
+    "universal/lawvere/__tests__/lawvere_comp_functor.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-CORE",
+    "REL-UA-CONGRUENCE-QUOTIENT"
+  ],
+  "unlocks": [
+    "Models = product-preserving functors L→Set",
+    "Natural transformations = homomorphisms of models",
+    "Free-forgetful adjunction via initial L-algebra"
+  ]
+}
