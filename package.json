@@ -67,6 +67,8 @@
     "test:group:hom-laws": "vitest run src/structures/group/__tests__/hom.category.laws.test.ts",
     "test:group:aut": "vitest run src/structures/group/__tests__/aut.small.test.ts",
     "test:group:theorem2": "vitest run src/structures/group/__tests__/theorem2_and_examples.test.ts",
+    "test:group:subgroup": "vitest run src/structures/group/__tests__/subgroup.test.ts",
+    "test:group:pairing": "vitest run src/structures/group/__tests__/product_pairing_isomorphism.test.ts",
     "check:trace": "node scripts/checkTraceIntegrity.js",
     "gadt:bfin": "vitest run src/gadt/basic/__tests__/bfin.test.ts",
     "gadt:bfin:lan": "vitest run src/gadt/basic/__tests__/bfin.lan.test.ts",

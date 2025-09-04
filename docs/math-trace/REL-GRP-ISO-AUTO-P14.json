@@ -1,0 +1,30 @@
+{
+  "id": "REL-GRP-ISO-AUTO-P14",
+  "source": {
+    "text": "Smith, Category Theory, p.14, Section 2.5",
+    "page": 14,
+    "section": "2.5"
+  },
+  "definitions": [
+    "Group isomorphism: bijective homomorphism f: G → H",
+    "Group automorphism: isomorphism f: G → G"
+  ],
+  "examples": [
+    "Any two 2-object groups are isomorphic",
+    "Automorphisms of (Z,+): identity, j ↦ -j",
+    "Automorphisms of (Q,+): x ↦ qx for rational q ≠ 0",
+    "Isomorphism: K2 = {1,3,5,7} ⊂ Z8× vs. K3 = symmetries of rectangle"
+  ],
+  "code": [
+    "src/structures/group/Isomorphism.ts",
+    "src/structures/group/util/FiniteGroups.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/aut.small.test.ts"
+  ],
+  "relations": {
+    "relatesTo": ["REL-GRP-HOMS-P12-13"],
+    "enables": ["REL-GRP-ISO-THM"],
+    "dependsOn": ["REL-GRP-HOMS-P12-13"]
+  }
+}

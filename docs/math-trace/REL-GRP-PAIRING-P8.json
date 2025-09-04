@@ -1,0 +1,18 @@
+{
+  "id": "REL-GRP-PAIRING-P8",
+  "source": { "text": "Smith, Category Theory, p.8, §2.3 (Definition 3, pairing scheme)", "page": 8, "section": "2.3" },
+  "definitions": [
+    "Pairing scheme for X and Y provides pair-objects O and pairing/unpairing functions coding pairs"
+  ],
+  "code": [
+    "src/structures/group/pairing/PairingScheme.ts",
+    "src/structures/group/builders/Product.ts"
+  ],
+  "tests": [
+    "src/structures/group/__tests__/product_pairing_isomorphism.test.ts"
+  ],
+  "relations": {
+    "dependsOn": ["REL-GRP-SUBGROUP-P8"],
+    "relatesTo": ["REL-GRP-ISO-P15"]
+  }
+}
