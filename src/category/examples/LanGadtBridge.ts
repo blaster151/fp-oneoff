@@ -8,7 +8,7 @@ import { Eq } from "../../types/eq.js";
  */
 
 // Define some simple functors for demonstration
-type Id<A> = A;
+type Id<A = unknown> = A;
 type Const<A, B> = A;
 type Maybe<A> = A | null;
 

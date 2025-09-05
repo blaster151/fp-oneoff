@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Signature } from "../../Signature";
 import { Var, App } from "../../Term";
 import { monoidNormalForm, semilatticeNormalForm } from "../Oriented";
+import { must } from "../../../util/guards";
 
 /** Signatures */
 const MonSig: Signature = { ops: [{ name:"e", arity:0 }, { name:"mul", arity:2 }] };
@@ -9,8 +10,8 @@ const JoinSig: Signature = { ops: [{ name:"bot", arity:0 }, { name:"join", arity
 
 describe("Monoid NF (assoc+unit): right-associated canonical shape", () => {
   const { nf } = monoidNormalForm(MonSig, "mul", "e");
-  const e = { tag:"App", op: MonSig.ops[0], args: [] } as any;
-  const mul = MonSig.ops[1];
+  const e = { tag:"App", op: must(MonSig.ops[0], "missing unit operator"), args: [] } as any;
+  const mul = must(MonSig.ops[1], "missing multiplication operator");
   const x = Var(0), y = Var(1), z = Var(2);
 
   it("drops units and right-associates deterministically", () => {
@@ -44,8 +45,8 @@ describe("Monoid NF (assoc+unit): right-associated canonical shape", () => {
 
 describe("Semilattice NF (ACI+unit): flattened, sorted, deduped", () => {
   const { nf } = semilatticeNormalForm(JoinSig, "join", "bot");
-  const bot = { tag:"App", op: JoinSig.ops[0], args: [] } as any;
-  const join = JoinSig.ops[1];
+  const bot = { tag:"App", op: must(JoinSig.ops[0], "missing bottom operator"), args: [] } as any;
+  const join = must(JoinSig.ops[1], "missing join operator");
   const x = Var(0), y = Var(1), z = Var(2);
 
   it("x ⋁ (x ⋁ y) ⋁ bot  ↦  x ⋁ y", () => {
@@ -100,8 +101,8 @@ describe("Semilattice NF (ACI+unit): flattened, sorted, deduped", () => {
 describe("Edge cases and robustness", () => {
   const { nf: monoidNf } = monoidNormalForm(MonSig, "mul", "e");
   const { nf: semilatticeNf } = semilatticeNormalForm(JoinSig, "join", "bot");
-  const e = { tag:"App", op: MonSig.ops[0], args: [] } as any;
-  const bot = { tag:"App", op: JoinSig.ops[0], args: [] } as any;
+  const e = { tag:"App", op: must(MonSig.ops[0], "missing unit operator"), args: [] } as any;
+  const bot = { tag:"App", op: must(JoinSig.ops[0], "missing bottom operator"), args: [] } as any;
   const x = Var(0);
 
   it("variables remain unchanged", () => {
@@ -115,12 +116,12 @@ describe("Edge cases and robustness", () => {
   });
 
   it("idempotence: applying NF twice gives same result", () => {
-    const t1 = App(MonSig.ops[1], [Var(0), App(MonSig.ops[1], [e, Var(1)])]);
+    const t1 = App(must(MonSig.ops[1], "missing multiplication operator"), [Var(0), App(must(MonSig.ops[1], "missing multiplication operator"), [e, Var(1)])]);
     const n1 = monoidNf(t1);
     const n2 = monoidNf(n1);
     expect(JSON.stringify(n1)).toBe(JSON.stringify(n2));
 
-    const t2 = App(JoinSig.ops[1], [Var(0), App(JoinSig.ops[1], [Var(0), Var(1)])]);
+    const t2 = App(must(JoinSig.ops[1], "missing join operator"), [Var(0), App(must(JoinSig.ops[1], "missing join operator"), [Var(0), Var(1)])]);
     const n3 = semilatticeNf(t2);
     const n4 = semilatticeNf(n3);
     expect(JSON.stringify(n3)).toBe(JSON.stringify(n4));

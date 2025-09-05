@@ -9,7 +9,7 @@ import type { Lan1 } from "../Lan";
 /** A tiny higher-order functor:
  * Wrap<G,A> = { wrap: Array<G<A>> }
  */
-type Wrap<G, A> = { wrap: Array<G> };
+type Wrap<G, A = unknown> = { wrap: Array<G> };
 
 const WrapH: HFunctor<Wrap> = {
   hfmap<G, H>(nt: Nat1<G, H>) {
@@ -18,8 +18,8 @@ const WrapH: HFunctor<Wrap> = {
 };
 
 /** Base functors for the test */
-type Id<A> = A;
-type Box<A> = { box: A };
+type Id<A = unknown> = A;
+type Box<A = unknown> = { box: A };
 const toBox: Nat1<Id, Box> = <A>(x: A) => ({ box: x });
 
 /** A simple Lan value when h = Id: Lan Id g c = ∀b. Eq(b, c) -> g b

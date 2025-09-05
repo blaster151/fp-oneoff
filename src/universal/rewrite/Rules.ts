@@ -1,5 +1,6 @@
 import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
+import { must } from "../../util/guards";
 
 /** A rewrite rule: lhs -> rhs with optional AC properties */
 export type RewriteRule = {
@@ -57,12 +58,12 @@ function subst(term: Term, env: Map<number, Term>): Term {
     return replacement || term;
   }
   
-  return App(term.op, term.args.map(arg => subst(arg, env)));
+  return App(must(term.op, "term without operator"), term.args.map(arg => subst(arg, env)));
 }
 
 /** Flatten nested applications of an associative operator */
 function flatten(op: any, term: Term): Term[] {
-  if (term.tag !== "App" || term.op !== op) return [term];
+  if (term.tag !== "App" || must(term.op, "term without operator") !== op) return [term];
   
   const result: Term[] = [];
   for (const arg of term.args) {
@@ -90,10 +91,10 @@ function dedupTerms(terms: Term[]): Term[] {
 
 /** Apply AC(I) normalization at the head of a term */
 export function normalizeHead(term: Term, ac: RewriteRule['ac']): Term {
-  if (!ac || term.tag !== "App" || term.op.name !== ac.name) return term;
+  if (!ac || term.tag !== "App" || must(term.op, "term without operator").name !== ac.name) return term;
   
   // Flatten by associativity
-  const flatArgs = flatten(term.op, term);
+  const flatArgs = flatten(must(term.op, "term without operator"), term);
   
   // Sort by commutativity
   const sortedArgs = ac.comm ? sortTerms(flatArgs) : flatArgs;
@@ -109,7 +110,7 @@ export function normalizeHead(term: Term, ac: RewriteRule['ac']): Term {
     return dedupedArgs[0];
   }
   
-  return App(term.op, dedupedArgs);
+  return App(must(term.op, "term without operator"), dedupedArgs);
 }
 
 /** Apply a single rewrite rule to a term */
@@ -147,7 +148,7 @@ export function normalizeRecursive(term: Term, rules: RewriteRule[]): Term {
   
   // First normalize subterms
   const normalizedArgs = term.args.map(arg => normalizeRecursive(arg, rules));
-  const termWithNormalizedArgs = App(term.op, normalizedArgs);
+  const termWithNormalizedArgs = App(must(term.op, "term without operator"), normalizedArgs);
   
   // Then apply rules at the head
   return normalize(termWithNormalizedArgs, rules);

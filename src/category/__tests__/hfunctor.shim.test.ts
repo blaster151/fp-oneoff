@@ -3,7 +3,7 @@ import { HFunctor } from "../HFunctor";
 import type { Nat1 } from "../Nat";
 
 /** A tiny example HFunctor: simple wrapper that applies a transformation. */
-interface Wrap<G> { 
+interface Wrap<G, A = unknown> { 
   wrap: G; 
 }
 

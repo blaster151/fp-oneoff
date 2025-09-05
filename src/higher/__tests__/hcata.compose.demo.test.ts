@@ -6,7 +6,7 @@ import type { Lan1 } from "../../category/Lan";
 import { refl } from "../../category/Eq";
 
 /** --- Simple higher-order functor: Wrap --- */
-type Wrap<G, A> = { wrap: Array<G> };
+type Wrap<G, A = unknown> = { wrap: Array<G> };
 const WrapH = {
   hfmap<G, H>(nt: <X>(gx: G) => H) {
     return <A>(wa: Wrap<G, A>): Wrap<H, A> => ({ wrap: wa.wrap.map(nt) });
@@ -14,7 +14,7 @@ const WrapH = {
 };
 
 /** h = Id (so Lan h g c = ∀b. Eq(b,c) -> g b) */
-type Id<A> = A;
+type Id<A = unknown> = A;
 
 /** --- Our composed node family: WLanF<G,A> stores Wrap<Lan<Id, G, A>> plus a weight --- */
 type WLanF<G, A> = { _t: "node"; w: number; val: Wrap<Lan1<Id, G, A>, A> };

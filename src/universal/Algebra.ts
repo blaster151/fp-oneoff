@@ -1,7 +1,7 @@
 import type { Signature, OpSym } from "./Signature";
 import type { Term } from "./Term";
 
-export type Eq<A> = (x:A,y:A)=>boolean;
+export type Eq<A, B = A> = (x:A,y:B)=>boolean;
 
 export type UAAlgebra<A> = {
   sig: Signature;

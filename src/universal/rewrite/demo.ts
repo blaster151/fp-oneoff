@@ -17,6 +17,7 @@ import {
 } from "./index";
 import { Signature } from "../Signature";
 import { Var, App } from "../Term";
+import { must } from "../../util/guards";
 
 console.log("=== ORIENTED REWRITE SYSTEMS DEMO ===\n");
 
@@ -40,12 +41,12 @@ const { nf: monoidNF } = monoidNormalForm(MonSig, "mul", "e");
 const { nf: semilatticeNF } = semilatticeNormalForm(JoinSig, "join", "bot");
 
 // Test terms
-const e = App(MonSig.ops[0], []);
-const mul = MonSig.ops[1];
+const e = App(must(MonSig.ops[0], "missing unit operator"), []);
+const mul = must(MonSig.ops[1], "missing multiplication operator");
 const x = Var(0), y = Var(1), z = Var(2);
 
-const bot = App(JoinSig.ops[0], []);
-const join = JoinSig.ops[1];
+const bot = App(must(JoinSig.ops[0], "missing bottom operator"), []);
+const join = must(JoinSig.ops[1], "missing join operator");
 
 console.log("1. MONOID NORMAL FORMS (Right-associative)");
 console.log("==========================================");

@@ -7,7 +7,7 @@
 //  - and a tiny relational Hoare-logic helper.
 
 /************ Finite sets & helpers ************/
-export type Eq<T> = (x:T,y:T)=>boolean;
+export type Eq<A, B = A> = (x:A,y:B)=>boolean;
 const defaultEq = <T>() => (x:T,y:T) => x===y;
 
 export class Finite<T> {

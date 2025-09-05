@@ -1,6 +1,7 @@
 import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
 import { normalize, rule, RewriteRule, normalizeHead, key } from "./Rules";
+import { must } from "../../util/guards";
 
 /** Canonical right-association of a flat list with a fixed binary op symbol. */
 function packRight(op: any, xs: Term[]): Term {
@@ -27,8 +28,8 @@ function isUnit(unit: Term): (t: Term) => boolean {
 
 /** ===== MONOID (assoc + unit), no commutativity ===== */
 export function monoidNormalForm(sig: Signature, opName = "mul", unitName = "e") {
-  const op = opOf(sig, opName);
-  const e = opOf(sig, unitName);
+  const op = must(opOf(sig, opName), "unknown operator: " + opName);
+  const e = must(opOf(sig, unitName), "unknown operator: " + unitName);
   const E = App(e, []);
   const ac = { name: op.name, assoc: true, comm: false, idem: false };
 
@@ -67,8 +68,8 @@ export function monoidNormalForm(sig: Signature, opName = "mul", unitName = "e")
 
 /** ===== SEMILATTICE (ACI + unit) ===== */
 export function semilatticeNormalForm(sig: Signature, opName = "join", unitName = "bot") {
-  const op = opOf(sig, opName);
-  const e = opOf(sig, unitName);
+  const op = must(opOf(sig, opName), "unknown operator: " + opName);
+  const e = must(opOf(sig, unitName), "unknown operator: " + unitName);
   const ac = { name: op.name, assoc: true, comm: true, idem: true };
 
   // unit deletion rules; AC(I) at head supplies flatten/sort/dedup
