@@ -1,0 +1,22 @@
+{
+  "critical": [
+    "Monoid/number/sum",
+    "CompleteLattice/powerset/{1,2,3}",
+    "Codensity ≅ Nat(G^A, G)"
+  ],
+  "important": [
+    "Monoid/string/concat",
+    "Poset/number/leq",
+    "Group/finite",
+    "AbelianGroup/finite",
+    "Ring/Zn",
+    "Ring/M2(Zn)",
+    "Ring/Poly(Zn)[trunc]",
+    "Spec(Zn)",
+    "CPO/powerset",
+    "Adjunction/Galois/basic",
+    "Recursion/HFunctor",
+    "Recursion/cata-histo-zygo"
+  ],
+  "allowlistTags": []
+}

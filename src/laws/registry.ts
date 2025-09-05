@@ -34,8 +34,8 @@ export function runAll() {
     let env: any = {};
     if (p.tag.includes("Monoid")) {
       // Monoid laws expect { M, xs } environment
-      env = { M: p.struct, xs: [p.struct.empty] };
-    } else if (p.tag.includes("Poset") || p.tag.includes("CompleteLattice")) {
+      env = { M: p.struct, xs: (p.struct as any).elems || [(p.struct as any).empty] };
+    } else if (p.tag.includes("Poset") || p.tag.includes("CompleteLattice") || p.tag.includes("CPO")) {
       // Poset laws expect { P } environment
       env = { P: p.struct };
     }
