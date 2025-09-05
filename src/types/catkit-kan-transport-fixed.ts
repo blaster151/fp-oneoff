@@ -132,7 +132,7 @@ export function transportRightKanAlongEquivalenceFixed<C_O,C_M,D_O,D_M,Dp_O,Dp_M
         // FIXED: Consistent key space usage
         for (const g of D.hom(E.G.Fobj(dP), F.Fobj(c))) {
           const Kg   = E.F.Fmor(g);               // K(g) : K(G d') → K(F c)
-          const hP   = Dp.comp(Kg, epsInv);       // d' → K(F c)
+          const hP   = Dp.compose(Kg, epsInv);       // d' → K(F c)
           const keyH_D_prime = keyDMorP(hP);      // FIXED: Use consistent key space
           const keyG_D = keyDMor(g);              // Key in D space
           
@@ -161,7 +161,7 @@ export function transportRightKanAlongEquivalenceFixed<C_O,C_M,D_O,D_M,Dp_O,Dp_M
         // FIXED: Consistent key space usage
         for (const h of Dp.hom(dP, E.F.Fobj(F.Fobj(c)))) {
           const Gh   = E.G.Fmor(h);                 // G(h): G d' → G K F c
-          const g    = D.comp(etaInvFc, Gh);        // G d' → F c
+          const g    = D.compose(etaInvFc, Gh);        // G d' → F c
           const keyH_D_prime = keyDMorP(h);         // Key in D' space
           const keyG_D = keyDMor(g);                // Key in D space
           
@@ -383,7 +383,7 @@ function classifyLeftKan<C_O, C_M, D_O, D_M>(
     const c = C.src(u) as C_O, cp = C.dst(u) as C_O;
     const Hu = H.map(u);
     for (const h of D.hom(F.Fobj(cp), d)) {
-      const f1 = D.comp(h, F.Fmor(u));
+      const f1 = D.compose(h, F.Fmor(u));
       for (const x of H.obj(c).elems) {
         const x2 = Hu(x);
         const kL = `${keyC(c)}|f=${keyDMor(f1)}|x=${keyFromValue(x)}`;

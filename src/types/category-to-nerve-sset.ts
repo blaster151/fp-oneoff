@@ -76,9 +76,9 @@ export function checkFunctorLaws<C_O, C_M, D_O, D_M>(
   const preservesComp = samples.every(m => {
     // try composing with an identity on either side as a lightweight check
     const x = C.src(m);
-    const lhs = F.Fmor(C.comp(m, C.id(x))); // m ∘ id_x = m
+    const lhs = F.Fmor(C.compose(m, C.id(x))); // m ∘ id_x = m
     const rhs = F.Fmor(m);
-    const lhsD = D.comp(F.Fmor(m), F.Fmor(C.id(x))); // F m ∘ F id_x
+    const lhsD = D.compose(F.Fmor(m), F.Fmor(C.id(x))); // F m ∘ F id_x
     const eq = eqJSON<unknown>();
     return eq(D.src(lhs), D.src(rhs)) && eq(D.dst(lhs), D.dst(rhs)) &&
            eq(D.src(lhsD), D.src(rhs)) && eq(D.dst(lhsD), D.dst(rhs));
@@ -97,8 +97,8 @@ export function checkNaturality<C_O, C_M, D_O, D_M>(
   // For each m: x→y, G(m) ∘ η_x = η_y ∘ F(m)
   return samples.every(m => {
     const x = C.src(m), y = C.dst(m);
-    const left  = D.comp(G.Fmor(m), eta.eta(x));
-    const right = D.comp(eta.eta(y), F.Fmor(m));
+    const left  = D.compose(G.Fmor(m), eta.eta(x));
+    const right = D.compose(eta.eta(y), F.Fmor(m));
     const eq = eqJSON<unknown>();
     return eq(D.src(left), D.src(right)) && eq(D.dst(left), D.dst(right));
   });
@@ -163,7 +163,7 @@ export function Nerve<O, M>(C: SmallCategory<O, M>): SimplicialSet<O, M> {
     }
     // compose fi+1 ∘ fi at position i-1
     const before = s.chain.slice(0, i - 1);
-    const mid = C.comp(s.chain[i]!, s.chain[i - 1]!);
+    const mid = C.compose(s.chain[i]!, s.chain[i - 1]!);
     const after = s.chain.slice(i + 1);
     return { head: s.head, chain: [...before, mid, ...after] };
   };
@@ -265,7 +265,7 @@ export function compose1From1<O, M>(
   m2: M  // y→z
 ): NSimplex<O, M> {
   if (C.dst(m1) !== C.src(m2)) throw new Error(`compose1From1: morphisms not composable`);
-  const comp = C.comp(m2, m1); // m2 ∘ m1 : x→z
+  const comp = C.compose(m2, m1); // m2 ∘ m1 : x→z
   const head = C.src(m1);
   return { head, chain: [comp] };
 }
@@ -276,7 +276,7 @@ export function compose1From2<O, M>(
   s: NSimplex<O, M>
 ): NSimplex<O, M> {
   if (s.chain.length !== 2) throw new Error(`compose1From2: expected a 2-simplex`);
-  const comp = C.comp(s.chain[1]!, s.chain[0]!);
+  const comp = C.compose(s.chain[1]!, s.chain[0]!);
   return { head: s.head, chain: [comp] };
 }
 
@@ -472,7 +472,7 @@ export function d1_of_2simplex<O, M>(
   s: NSimplex<O, M>
 ): NSimplex<O, M> {
   if (s.chain.length !== 2) throw new Error("d1_of_2simplex: expected a 2-simplex");
-  const comp = C.comp(s.chain[1]!, s.chain[0]!);
+  const comp = C.compose(s.chain[1]!, s.chain[0]!);
   return { head: s.head, chain: [comp] };
 }
 
@@ -499,7 +499,7 @@ export function checkFilledHorn2<O, M>(
     })();
 
   const compFace = d1_of_2simplex(C, filler);
-  const expectedComp = C.comp(horn.d0.chain[0]!, horn.d2.chain[0]!); // m12∘m01
+  const expectedComp = C.compose(horn.d0.chain[0]!, horn.d2.chain[0]!); // m12∘m01
   const compOk = compFace.chain[0] === expectedComp && compFace.head === horn.d2.head;
   return okFaces && compOk;
 }
@@ -571,8 +571,8 @@ export function makeCommutingSquaresDouble<O, M>(
   };
 
   const commuteCheck = (b: Square<O, M, M>) => {
-    const topThenRight = C.comp(b.vRight, b.hTop);
-    const leftThenBot  = C.comp(b.hBot,  b.vLeft);
+    const topThenRight = C.compose(b.vRight, b.hTop);
+    const leftThenBot  = C.compose(b.hBot,  b.vLeft);
     if (!eqM(topThenRight, leftThenBot)) {
       throw new Error("Square does not commute: vRight ∘ hTop ≠ hBot ∘ vLeft");
     }
@@ -596,8 +596,8 @@ export function makeCommutingSquaresDouble<O, M>(
     if (C.dst(alpha.vRight) !== C.src(beta.vLeft))
       throw new Error("hcomp: alpha.vRight must equal beta.vLeft (same object boundary)");
 
-    const hTop = C.comp(beta.hTop, alpha.hTop);
-    const hBot = C.comp(beta.hBot, alpha.hBot);
+    const hTop = C.compose(beta.hTop, alpha.hTop);
+    const hBot = C.compose(beta.hBot, alpha.hBot);
     const vLeft  = alpha.vLeft;
     const vRight = beta.vRight;
 
@@ -613,8 +613,8 @@ export function makeCommutingSquaresDouble<O, M>(
 
     const hTop = alpha.hTop;
     const hBot = beta.hBot;
-    const vLeft  = C.comp(beta.vLeft,  alpha.vLeft);
-    const vRight = C.comp(beta.vRight, alpha.vRight);
+    const vLeft  = C.compose(beta.vLeft,  alpha.vLeft);
+    const vRight = C.compose(beta.vRight, alpha.vRight);
 
     return mkSquare({ hTop, hBot, vLeft, vRight });
   };
@@ -840,13 +840,13 @@ export const conjointOf = (f: FnM): Rel => ({
 export function unitSquare(D = makeRelationsDouble(), f: FnM) {
   const H = RelCat(), V = FuncCat();
   const etaTop  = H.id(f.src);                                  // id_A
-  const etaBot  = H.comp(conjointOf(f), companionOf(f));         // Γ_f^† ∘ Γ_f
+  const etaBot  = H.compose(conjointOf(f), companionOf(f));         // Γ_f^† ∘ Γ_f
   return D.mkSquare({ hTop: etaTop, hBot: etaBot, vLeft: V.id(f.src), vRight: V.id(f.src) });
 }
 
 export function counitSquare(D = makeRelationsDouble(), f: FnM) {
   const H = RelCat(), V = FuncCat();
-  const epsTop = H.comp(companionOf(f), conjointOf(f));          // Γ_f ∘ Γ_f^†
+  const epsTop = H.compose(companionOf(f), conjointOf(f));          // Γ_f ∘ Γ_f^†
   const epsBot = H.id(f.dst);                                    // id_B
   return D.mkSquare({ hTop: epsTop, hBot: epsBot, vLeft: V.id(f.dst), vRight: V.id(f.dst) });
 }
@@ -856,8 +856,8 @@ export function trianglesHold(f: FnM): boolean {
   const H = RelCat();
   const G  = companionOf(f);   // A↔B
   const Gd = conjointOf(f);    // B↔A
-  const leftTriangle  = H.comp(H.comp(G, Gd), G);   // (Γ ∘ Γ†) ∘ Γ
-  const rightTriangle = H.comp(Gd, H.comp(G, Gd));  // Γ† ∘ (Γ ∘ Γ†)
+  const leftTriangle  = H.compose(H.compose(G, Gd), G);   // (Γ ∘ Γ†) ∘ Γ
+  const rightTriangle = H.compose(Gd, H.compose(G, Gd));  // Γ† ∘ (Γ ∘ Γ†)
   return equalRel(leftTriangle, G) && equalRel(rightTriangle, Gd);
 }
 
@@ -892,8 +892,8 @@ export function makeRelationsDouble() {
 
   const hcomp = (beta: Square<SetObj<any>,Rel,FnM>, alpha: Square<SetObj<any>,Rel,FnM>) =>
     mkSquare({
-      hTop: H.comp(beta.hTop, alpha.hTop),
-      hBot: H.comp(beta.hBot, alpha.hBot),
+      hTop: H.compose(beta.hTop, alpha.hTop),
+      hBot: H.compose(beta.hBot, alpha.hBot),
       vLeft: alpha.vLeft,
       vRight: beta.vRight
     });
@@ -902,8 +902,8 @@ export function makeRelationsDouble() {
     mkSquare({
       hTop: alpha.hTop,
       hBot: beta.hBot,
-      vLeft: V.comp(beta.vLeft, alpha.vLeft),
-      vRight: V.comp(beta.vRight, alpha.vRight)
+      vLeft: V.compose(beta.vLeft, alpha.vLeft),
+      vRight: V.compose(beta.vRight, alpha.vRight)
     });
 
   const idVCell = (h: Rel) => mkSquare({

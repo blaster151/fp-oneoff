@@ -40,7 +40,7 @@ function demonstrateCategoryToNerve() {
   
   // 3. Show composition in the free category
   console.log('3. Composition in Free Category:');
-  const fg = C_free.comp(g1, f1); // g ∘ f
+  const fg = C_free.compose(g1, f1); // g ∘ f
   console.log('   g ∘ f:', showPath(fg));
   console.log('   Note: g ∘ f ≠ h (different paths, same endpoints)');
   console.log();
