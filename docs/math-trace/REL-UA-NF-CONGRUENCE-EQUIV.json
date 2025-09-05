@@ -1,0 +1,20 @@
+{
+  "id": "REL-UA-NF-CONGRUENCE-EQUIV",
+  "source": { "text": "Rewrite normal forms ↔ Congruence equivalence: for ACI+unit theories, two terms are congruent iff their oriented normal forms are syntactically equal." },
+  "code": [
+    "universal/rewrite/Oriented.ts",
+    "universal/Congruence.ts"
+  ],
+  "tests": [
+    "universal/rewrite/__tests__/nf_vs_congruence_equiv.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-ORIENTED-THEORIES",
+    "REL-UA-CONGRUENCE-QUOTIENT"
+  ],
+  "unlocks": [
+    "Efficient equality via canonical forms",
+    "Bridging syntactic and semantic equivalence",
+    "Rewrite systems as quotient constructions"
+  ]
+}
