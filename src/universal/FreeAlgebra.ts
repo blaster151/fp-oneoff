@@ -39,7 +39,7 @@ export function FreeAlgebra(sig: Signature, genCount: number, maxDepth = 2): UAA
   }
 
   // interpret ops as syntactic application (this is the term algebra)
-  const interpret = (op: OpSym) => (...args: Term) => App(op, args);
+  const interpret = (op: OpSym) => (...args: Term[]): Term => App(op, args);
 
   // alpha-equality: our builders share OpSym object identity & Var indices,
   // so structural equality reduces to JSON string (safe here), but
