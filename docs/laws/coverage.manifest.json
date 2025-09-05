@@ -1,7 +1,8 @@
 {
   "critical": [
     "Monoid/number/sum",
-    "Prob/Dist/Monad<number>"
+    "Prob/Dist/Monad<number>",
+    "Prob/Kleisli/Category"
   ],
   "important": [
     "Monoid/string/concat",
@@ -10,7 +11,8 @@
     "Ring/Zn",
     "Ring/Poly(Zn)[trunc]",
     "CPO/powerset",
-    "Codensity ≅ Nat(G^A, G)"
+    "Codensity ≅ Nat(G^A, G)",
+    "Top/ProductUP"
   ],
   "allowlistTags": []
 }

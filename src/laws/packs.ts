@@ -5,6 +5,8 @@ import { runLaws } from "./Witness";
 import { powersetLattice } from "../order/Lattice";
 import { powersetCPO } from "../order/Domain";
 import { lawfulDistNumber } from "./Prob";
+import { lawfulKleisliCategory } from "./ProbKleisli";
+import { lawfulTopProductUP } from "./TopProductUP";
 
 // Example: Monoid<number> under addition
 const eqNum = (a:number,b:number)=> a===b;
@@ -17,6 +19,16 @@ registerLawful(sumPack);
 const distPack = lawfulDistNumber();
 distPack.run = () => runLaws(distPack.laws, {});
 registerLawful(distPack);
+
+// Kleisli category laws for probability distributions
+const kleisliPack = lawfulKleisliCategory();
+kleisliPack.run = () => runLaws(kleisliPack.laws, {});
+registerLawful(kleisliPack);
+
+// Topology product universal property laws
+const topPack = lawfulTopProductUP();
+topPack.run = () => runLaws(topPack.laws, {});
+registerLawful(topPack);
 
 // Example: Monoid<string> under concatenation
 const eqString = (a:string,b:string)=> a===b;
