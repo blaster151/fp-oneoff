@@ -1,5 +1,6 @@
 import type { UAAlgebra } from "./Algebra";
 import type { OpSym } from "./Signature";
+import { must, idx } from "../util/guards";
 
 export type UAHom<A,B> = {
   source: UAAlgebra<A>;
@@ -21,7 +22,7 @@ export function isUAHom<A,B>(f: UAHom<A,B>): boolean {
     const tuple: number[] = Array(ar).fill(0);
     const next = (i:number): boolean => {
       if (i === ar) {
-        const argsA = tuple.map(ix => pool[ix]);
+        const argsA = tuple.map(ix => idx(pool, ix));
         const lhs = h(fA(...argsA));
         const rhs = fB(...argsA.map(h));
         if (!B.eq(lhs, rhs)) return false;

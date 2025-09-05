@@ -1,5 +1,6 @@
 import { FiniteGroup } from "./Group";
 import { GroupHom } from "./GrpCat";
+import { must, idx } from "../../util/guards";
 
 /** Subgroup inclusion ι : H ↪ G (carriers share the same A; H.elems ⊆ G.elems). */
 export function inclusion<A>(H: FiniteGroup<A>, G: FiniteGroup<A>): GroupHom<A,A> {
@@ -87,9 +88,11 @@ export function automorphismsBruteforce<A>(G: FiniteGroup<A>): Array<GroupHom<A,
   const permute = (arr: number[], l=0) => {
     if (l === arr.length) { perms.push(arr.slice()); return; }
     for (let i=l;i<arr.length;i++){
-      [arr[l],arr[i]]=[arr[i],arr[l]];
+      const lVal = idx(arr, l);
+      const iVal = idx(arr, i);
+      [arr[l],arr[i]]=[iVal,lVal];
       permute(arr,l+1);
-      [arr[l],arr[i]]=[arr[i],arr[l]];
+      [arr[l],arr[i]]=[lVal,iVal];
     }
   };
   permute(idx);
@@ -98,7 +101,8 @@ export function automorphismsBruteforce<A>(G: FiniteGroup<A>): Array<GroupHom<A,
   for (const p of perms) {
     const map = (a:A) => {
       const i = G.elems.findIndex(x => G.eq(x,a));
-      return G.elems[p[i]];
+      const permIdx = idx(p, i);
+      return idx(G.elems, permIdx);
     };
     if (isHom(G,G,map) && bijectionWitness(G,G,map)) {
       autos.push({ source: G, target: G, f: map, verify: () => true });
