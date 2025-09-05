@@ -4,6 +4,7 @@ import { posetLaws } from "./Order";
 import { runLaws } from "./Witness";
 import { powersetLattice } from "../order/Lattice";
 import { powersetCPO } from "../order/Domain";
+import { lawfulDistNumber } from "./Prob";
 
 // Example: Monoid<number> under addition
 const eqNum = (a:number,b:number)=> a===b;
@@ -11,6 +12,11 @@ const Sum = { empty: 0, concat: (x:number,y:number)=> x+y };
 const sumPack = lawfulMonoid("Monoid/number/sum", eqNum, Sum, [0,1,2,3]);
 sumPack.run = () => runLaws(sumPack.laws, { M: Sum, xs: [0,1,2,3] });
 registerLawful(sumPack);
+
+// Probability distribution monad laws
+const distPack = lawfulDistNumber();
+distPack.run = () => runLaws(distPack.laws, {});
+registerLawful(distPack);
 
 // Example: Monoid<string> under concatenation
 const eqString = (a:string,b:string)=> a===b;
