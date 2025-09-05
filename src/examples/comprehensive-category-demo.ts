@@ -79,7 +79,7 @@ function Disc<X extends string>(objs: ReadonlyArray<X>): FiniteSmallCategory<X, 
     morphisms: objs.map(x=>({tag:"id", x})),
     id: (o:X)=>({tag:"id", x:o}),
     src:(m)=>m.x, dst:(m)=>m.x,
-    comp:(g,f)=> g.x===f.x ? g : (():any=>{throw new Error("discrete")})()
+    compose:(g,f)=> g.x===f.x ? g : (():any=>{throw new Error("discrete")})()
   };
 }
 type Id<X extends string> = { tag:"id", x:X };
@@ -128,7 +128,7 @@ const C1: SmallCategoryKan<CObj, CM> & { objects:CObj[]; morphisms:CM[] } = {
   id: (o)=> ({tag:"id", o}),
   src: (m)=> m.tag==="id" ? m.o : "X",
   dst: (m)=> m.tag==="id" ? m.o : "Y",
-  comp: (g,f) => {
+  compose: (g,f) => {
     const s = (m:CM)=> C1.src(m), d = (m:CM)=> C1.dst(m);
     if (d(f)!==s(g)) throw new Error("C comp mismatch");
     if (f.tag==="id") return g;
@@ -146,7 +146,7 @@ const D1: SmallCategoryKan<DObj, DM> & HasHom<DObj, DM> & { objects:DObj[] } = {
   id: (o)=> o==="d0" ? {tag:"id0"} : {tag:"id1"},
   src: (m)=> m.tag==="id0" ? "d0" : (m.tag==="id1" ? "d1" : "d0"),
   dst: (m)=> m.tag==="id0" ? "d0" : (m.tag==="id1" ? "d1" : "d1"),
-  comp: (g,f) => {
+  compose: (g,f) => {
     if (D1.dst(f)!==D1.src(g)) throw new Error("D comp mismatch");
     if (f.tag==="id0"||f.tag==="id1") return g;
     if (g.tag==="id0"||g.tag==="id1") return f;

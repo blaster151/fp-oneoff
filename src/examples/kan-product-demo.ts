@@ -28,7 +28,7 @@ const DiscreteCategory: SmallCategory<CObj, CM> & { objects: CObj[]; morphisms: 
   id: (o: CObj) => ({ tag: "id", o }),
   src: (m: CM) => m.o,
   dst: (m: CM) => m.o,
-  comp: (g: CM, f: CM) => {
+  compose: (g: CM, f: CM) => {
     if (g.o === f.o) return g;
     throw new Error("Cannot compose across different objects in discrete category");
   }
@@ -43,7 +43,7 @@ const TerminalCategory: SmallCategory<DObj, DM> & HasHom<DObj, DM> & { objects: 
   id: (_) => ({ tag: "id" }),
   src: (_) => "★",
   dst: (_) => "★", 
-  comp: (_g, _f) => ({ tag: "id" }),
+  compose: (_g, _f) => ({ tag: "id" }),
   hom: (_x, _y) => [{ tag: "id" }]
 };
 

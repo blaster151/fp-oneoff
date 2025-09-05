@@ -24,7 +24,7 @@ const createTerminalCategory = () => {
     id: (_: BObj) => ({ tag: "id" }),
     src: (_: BM) => "*",
     dst: (_: BM) => "*",
-    comp: (_g: BM, _f: BM) => ({ tag: "id" })
+    compose: (_g: BM, _f: BM) => ({ tag: "id" })
   };
   
   return Terminal;

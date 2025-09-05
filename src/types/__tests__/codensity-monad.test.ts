@@ -16,7 +16,7 @@ const createTerminalCategory = () => {
     id: (_: BObj) => ({ tag: "id" }),
     src: (_: BM) => "b",
     dst: (_: BM) => "b",
-    comp: (_g: BM, _f: BM) => ({ tag: "id" }),
+    compose: (_g: BM, _f: BM) => ({ tag: "id" }),
     hom: (_x: BObj, _y: BObj) => [{ tag: "id" }]
   };
   

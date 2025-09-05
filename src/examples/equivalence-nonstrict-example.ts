@@ -20,7 +20,7 @@ const A: SmallCategory<AObj,AM> & {objects:AObj[]; morphisms:AM[]} = {
   id:(o)=>({tag:"id",o}),
   src:(m)=> m.tag==="id" ? m.o : (m.tag==="s" ? "a0" : "a1"),
   dst:(m)=> m.tag==="id" ? m.o : (m.tag==="s" ? "a1" : "a0"),
-  comp:(g,f)=>{
+  compose:(g,f)=>{
     if (A.dst(f)!==A.src(g)) throw new Error("A comp");
     if (f.tag==="id") return g;
     if (g.tag==="id") return f;
@@ -40,7 +40,7 @@ const B: SmallCategory<BObj,BM> & {objects:BObj[]; morphisms:BM[]} = {
   id:(o)=> o==="bX"?{tag:"idX"}:o==="bY"?{tag:"idY"}:{tag:"idZ"},
   src:(m)=> m.tag==="idX"?"bX":m.tag==="idY"?"bY":m.tag==="idZ"?"bZ":(m.tag==="sigma"?"bX":"bY"),
   dst:(m)=> m.tag==="idX"?"bX":m.tag==="idY"?"bY":m.tag==="idZ"?"bZ":(m.tag==="sigma"?"bY":"bX"),
-  comp:(g,f)=>{
+  compose:(g,f)=>{
     if (B.dst(f)!==B.src(g)) throw new Error("B comp");
     if (f.tag==="idX"||f.tag==="idY"||f.tag==="idZ") return g;
     if (g.tag==="idX"||g.tag==="idY"||g.tag==="idZ") return f;
