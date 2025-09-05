@@ -1,0 +1,15 @@
+{
+  "id": "REL-UA-EM-LAWVERE",
+  "source": { "text": "Bridge between UA models and Eilenberg–Moore algebras for the Set-level monad induced by a finitary theory; homomorphisms coincide." },
+  "code": [
+    "universal/em/Equivalence.ts"
+  ],
+  "tests": [
+    "universal/em/__tests__/em_lawvere_equiv.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-CORE",
+    "REL-UA-MONAD-SET",
+    "REL-UA-LAWVERE-MIN"
+  ]
+}

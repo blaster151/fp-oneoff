@@ -1,0 +1,14 @@
+{
+  "id": "REL-UA-ACI-NF-EQUIV",
+  "source": { "text": "For ACI+unit monoid theory, oriented normal form equals congruence class (finite-depth setting); executable equivalence test." },
+  "code": [
+    "universal/rewrite/Oriented.ts"
+  ],
+  "tests": [
+    "universal/rewrite/__tests__/nf_vs_congruence_equiv.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-REWRITE-ACI",
+    "REL-UA-CONGRUENCE-QUOTIENT"
+  ]
+}
