@@ -1,0 +1,7 @@
+{
+  "id": "REL-UA-KLEISLI-DIAGRAMS",
+  "source": { "text": "Executable commutativity checks (triangles/squares) in the Kleisli category for the monad from a finitary theory." },
+  "code": ["universal/monad/Diagram.ts"],
+  "tests": ["universal/monad/__tests__/kleisli_diagrams.test.ts"],
+  "relatesTo": ["REL-UA-KLEISLI-SET","REL-UA-MONAD-SET"]
+}
