@@ -1,0 +1,13 @@
+{
+  "id": "REL-ORDER-THEORY",
+  "source": { "text": "Order theory foundations: posets, lattices (powerset), Galois connections, least fixed points." },
+  "code": [
+    "order/Poset.ts",
+    "order/Lattice.ts", 
+    "order/Galois.ts"
+  ],
+  "tests": [
+    "order/__tests__/poset_lattice_galois.test.ts"
+  ],
+  "relatesTo": []
+}
