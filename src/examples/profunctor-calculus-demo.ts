@@ -124,7 +124,7 @@ const RelDouble = makeRelationsDouble();
 try {
   RelDouble.mkSquare({
     hTop: RelCat().id(set1),
-    hBot: RelCat().comp(conjoint, companion),
+    hBot: RelCat().compose(conjoint, companion),
     vLeft: FuncCat().id(set1),
     vRight: FuncCat().id(set1)
   });
@@ -135,7 +135,7 @@ try {
 
 try {
   RelDouble.mkSquare({
-    hTop: RelCat().comp(companion, conjoint),
+    hTop: RelCat().compose(companion, conjoint),
     hBot: RelCat().id(set2),
     vLeft: FuncCat().id(set2),
     vRight: FuncCat().id(set2)

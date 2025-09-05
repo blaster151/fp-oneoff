@@ -14,7 +14,7 @@ describe('Equivalence: triangle identities (smoke)', () => {
       id: (o: string) => o === 'A' ? 'idA' : 'idB',
       src: (m: string) => m === 'idA' || m === 'f' ? 'A' : 'B',
       dst: (m: string) => m === 'idB' || m === 'g' ? 'B' : 'A',
-      comp: (h: string, k: string) => {
+      compose: (h: string, k: string) => {
         // Simple composition rules for this tiny category
         if (h === 'idA' || h === 'idB') return k;
         if (k === 'idA' || k === 'idB') return h;
@@ -66,7 +66,7 @@ describe('Equivalence: triangle identities (smoke)', () => {
       id: (o: string) => 'idA',
       src: (m: string) => 'A',
       dst: (m: string) => 'A',
-      comp: (h: string, k: string) => h === 'idA' ? k : k === 'idA' ? h : 'broken'
+      compose: (h: string, k: string) => h === 'idA' ? k : k === 'idA' ? h : 'broken'
     };
 
     const idFunctor: Eqv.Functor<string, string, string, string> = {

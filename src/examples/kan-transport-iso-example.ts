@@ -19,7 +19,7 @@ const C: SmallCategory<CObj,CM> & {objects:CObj[]; morphisms:CM[]} = {
   id:(o)=>({tag:"id",o}), 
   src:(m)=> m.tag==="id"?m.o:"X", 
   dst:(m)=> m.tag==="id"?m.o:"Y",
-  comp:(g,f)=>{ 
+  compose:(g,f)=>{ 
     if (C.dst(f)!==C.src(g)) throw new Error("C comp");
     if (f.tag==="id") return g; 
     if (g.tag==="id") return f; 
@@ -36,7 +36,7 @@ const D: SmallCategory<DObj,DM> & HasHom<DObj,DM> & {objects:DObj[]; morphisms:D
   id:(o)=> o==="d0"?{tag:"id0"}:{tag:"id1"},
   src:(m)=> m.tag==="id0"?"d0":m.tag==="id1"?"d1":"d0",
   dst:(m)=> m.tag==="id0"?"d0":m.tag==="id1"?"d1":"d1",
-  comp:(g,f)=>{ 
+  compose:(g,f)=>{ 
     if (D.dst(f)!==D.src(g)) throw new Error("D comp");
     if (f.tag==="id0"||f.tag==="id1") return g;
     if (g.tag==="id0"||g.tag==="id1") return f;
@@ -54,7 +54,7 @@ const Dp: SmallCategory<DpObj,DpM> & HasHom<DpObj,DpM> & {objects:DpObj[]; morph
   id:(o)=> o==="e0"?{tag:"idE0"}:{tag:"idE1"},
   src:(m)=> m.tag==="idE0"?"e0":m.tag==="idE1"?"e1":"e0",
   dst:(m)=> m.tag==="idE0"?"e0":m.tag==="idE1"?"e1":"e1",
-  comp:(g,f)=>{ 
+  compose:(g,f)=>{ 
     if (Dp.dst(f)!==Dp.src(g)) throw new Error("Dp comp");
     if (f.tag==="idE0"||f.tag==="idE1") return g;
     if (g.tag==="idE0"||g.tag==="idE1") return f;

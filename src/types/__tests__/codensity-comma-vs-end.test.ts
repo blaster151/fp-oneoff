@@ -18,7 +18,7 @@ describe("Codensity by End vs Comma-limit (discrete B sanity)", () => {
     id,
     src: (m: Mor) => m.at,
     dst: (m: Mor) => m.at,
-    comp: (g: Mor, f: Mor) => { 
+    compose: (g: Mor, f: Mor) => { 
       if (g.at !== f.at) throw new Error("discrete: compose only identities"); 
       return id(f.at); 
     },

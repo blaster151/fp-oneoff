@@ -10,7 +10,7 @@ export interface SmallCategory<O, M> {
   id:  (o: O) => M;
   src: (m: M) => O;
   dst: (m: M) => O;
-  comp:(g: M, f: M) => M; // g ∘ f
+  compose:(g: M, f: M) => M; // g ∘ f
 }
 
 // ---- Functors & Naturality ----------------------------------------------------------------------
@@ -52,8 +52,8 @@ export function checkNaturality<A_O, A_M, B_O, B_M>(
   const { F, G, at } = nt;
   return A.morphisms.every(u => {
     const a  = A.src(u), a2 = A.dst(u);
-    const lhs = B.comp(G.Fmor(u), at(a));
-    const rhs = B.comp(at(a2),    F.Fmor(u));
+    const lhs = B.compose(G.Fmor(u), at(a));
+    const rhs = B.compose(at(a2),    F.Fmor(u));
     const eq = eqJSON<any>();
     return eq(lhs, rhs);
   });
@@ -79,7 +79,7 @@ export function checkAdjunctionTriangles<A_O, A_M, B_O, B_M>(Adj: Adjunction<A_O
   // (1) for each a in A, compare in B
   const ok1 = (A as any).objects
     ? (A as any).objects.every((a: A_O) => {
-        const left  = B.comp(counit.at(F.Fobj(a)), F.Fmor(unit.at(a)));
+        const left  = B.compose(counit.at(F.Fobj(a)), F.Fmor(unit.at(a)));
         const right = B.id(F.Fobj(a));
         const eq = eqJSON<any>();
         return eq(left, right);
@@ -89,7 +89,7 @@ export function checkAdjunctionTriangles<A_O, A_M, B_O, B_M>(Adj: Adjunction<A_O
   // (2) for each b in B, compare in A
   const ok2 = (B as any).objects
     ? (B as any).objects.every((b: B_O) => {
-        const left  = A.comp(G.Fmor(counit.at(b)), unit.at(G.Fobj(b)));
+        const left  = A.compose(G.Fmor(counit.at(b)), unit.at(G.Fobj(b)));
         const right = A.id(G.Fobj(b));
         const eq = eqJSON<any>();
         return eq(left, right);
@@ -123,8 +123,8 @@ export function companionHomProf<A_O, A_M, B_O, B_M>(
 ): FiniteProf<A_O, A_M, B_O, B_M, B_M> {
   return {
     elems: (a, b) => B.hom(F.Fobj(a), b),
-    lmap:  (u, b, m) => B.comp(m, F.Fmor(u)),
-    rmap:  (_a, v, m) => B.comp(v, m),
+    lmap:  (u, b, m) => B.compose(m, F.Fmor(u)),
+    rmap:  (_a, v, m) => B.compose(v, m),
     keyT: (m) => String(m),
     eqT: eqJSON<B_M>()
   };
@@ -137,8 +137,8 @@ export function conjointHomProf<A_O, A_M, B_O, B_M>(
 ): FiniteProf<A_O, A_M, B_O, B_M, B_M> {
   return {
     elems: (a, b) => B.hom(b, F.Fobj(a)),
-    lmap:  (u, b, m) => B.comp(F.Fmor(u), m), // precompose in codomain of m
-    rmap:  (_a, v, m) => B.comp(m, v),       // postcompose
+    lmap:  (u, b, m) => B.compose(F.Fmor(u), m), // precompose in codomain of m
+    rmap:  (_a, v, m) => B.compose(m, v),       // postcompose
     keyT: (m) => String(m),
     eqT: eqJSON<B_M>()
   };
@@ -164,7 +164,7 @@ export function mateLeftToRight<X_O, X_M, A_O, A_M, B_O, B_M>(
     at: (x: X_O) => {
       const eta = unit.at(H.Fobj(x));            // Hx → G(F(Hx))
       const Galpha = G.Fmor(alpha.at(x));        // G(F(Hx)) → G(Kx)
-      return A.comp(Galpha, eta);                // G(α_x) ∘ η_{Hx}
+      return A.compose(Galpha, eta);                // G(α_x) ∘ η_{Hx}
     }
   };
 }
@@ -186,7 +186,7 @@ export function mateRightToLeft<X_O, X_M, A_O, A_M, B_O, B_M>(
     at: (x: X_O) => {
       const Fbeta = F.Fmor(beta.at(x));          // F(Hx) → F(GKx)
       const eps   = counit.at(K.Fobj(x));        // F(GKx) → Kx
-      return B.comp(eps, Fbeta);                 // ε_{Kx} ∘ F(β_x)
+      return B.compose(eps, Fbeta);                 // ε_{Kx} ∘ F(β_x)
     }
   };
 }

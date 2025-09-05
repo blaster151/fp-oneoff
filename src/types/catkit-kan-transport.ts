@@ -111,7 +111,7 @@ function classifyLeftKan<C_O, C_M, D_O, D_M>(
     const c = C.src(u) as C_O, cp = C.dst(u) as C_O;
     const Hu = H.map(u);
     for (const h of D.hom(F.Fobj(cp), d)) {
-      const f1 = D.comp(h, F.Fmor(u));
+      const f1 = D.compose(h, F.Fmor(u));
       for (const x of H.obj(c).elems) {
         const x2 = Hu(x);
         const kL = `${keyC(c)}|f=${keyDMor(f1)}|x=${keyFromValue(x)}`;
@@ -161,7 +161,7 @@ export function transportLeftKanAlongEquivalence<C_O,C_M,D_O,D_M,Dp_O,Dp_M>(
       // map f' : K(Fc)→d'  to  f : Fc → G(d')
       const f_in_D = E.G.Fmor(fp);               // G(f') : G(K Fc) → G(d')
       const etaFc  = E.unit.at(F.Fobj(c));       // Fc → G(K Fc)
-      const f = D.comp(f_in_D, etaFc);           // Fc → G(d')
+      const f = D.compose(f_in_D, etaFc);           // Fc → G(d')
       return classifyD.normalize({ c, f, x });
     };
   };
@@ -174,7 +174,7 @@ export function transportLeftKanAlongEquivalence<C_O,C_M,D_O,D_M,Dp_O,Dp_M>(
       // map f : Fc → G(d')  to  f' : K(Fc) → d'
       const Kf  = E.F.Fmor(f);            // K(f) : K(Fc) → K(G d')
       const eps = E.counit.at(dP);        // ε_{d'} : K(G d') → d'
-      const fp  = Dp.comp(eps, Kf);       // K(Fc) → d'
+      const fp  = Dp.compose(eps, Kf);       // K(Fc) → d'
       return classifyDp.normalize({ c, f: fp, x });
     };
   };
@@ -216,7 +216,7 @@ export function transportRightKanAlongEquivalence<C_O,C_M,D_O,D_M,Dp_O,Dp_M>(
         // For each g : G d' → F c in D, compute h' = ε^{-1}_{d'} ∘ K(g)
         for (const g of D.hom(E.G.Fobj(dP), F.Fobj(c))) {
           const Kg   = E.F.Fmor(g);               // K(g) : K(G d') → K(F c)
-          const hP   = Dp.comp(Kg, epsInv);       // d' → K(F c)
+          const hP   = Dp.compose(Kg, epsInv);       // d' → K(F c)
           const keyH = keyDMorP(hP);
           mOut.set(keyDMor(g), alphaP.get(keyH));
         }
@@ -239,7 +239,7 @@ export function transportRightKanAlongEquivalence<C_O,C_M,D_O,D_M,Dp_O,Dp_M>(
         const etaInvFc = E.unit.invAt(F.Fobj(c));  // G(K(F c)) → F c
         for (const h of Dp.hom(dP, E.F.Fobj(F.Fobj(c)))) {
           const Gh   = E.G.Fmor(h);                 // G(h): G d' → G K F c
-          const g    = D.comp(etaInvFc, Gh);        // G d' → F c
+          const g    = D.compose(etaInvFc, Gh);        // G d' → F c
           mOut.set(keyDMorP(h), alpha.get(keyDMor(g)));
         }
         out[kc] = mOut;

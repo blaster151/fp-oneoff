@@ -20,7 +20,7 @@ const A: SmallCategory<AObj,AM> & { objects:AObj[]; morphisms:AM[] } = {
   id: (o)=>({tag:"id",o}),
   src: (m)=> m.tag==="id" ? m.o : (m.tag==="s" ? "a0" : "a1"),
   dst: (m)=> m.tag==="id" ? m.o : (m.tag==="s" ? "a1" : "a0"),
-  comp: (g,f) => {
+  compose: (g,f) => {
     // type check
     if (A.dst(f)!==A.src(g)) throw new Error("A: bad comp");
     // identities
@@ -43,7 +43,7 @@ const B: SmallCategory<BObj,BM> & { objects:BObj[]; morphisms:BM[] } = {
   id: (o)=> o==="bX" ? {tag:"idX"} : {tag:"idY"},
   src: (m)=> m.tag==="idX" ? "bX" : (m.tag==="idY" ? "bY" : (m.tag==="sigma" ? "bX" : "bY")),
   dst: (m)=> m.tag==="idX" ? "bX" : (m.tag==="idY" ? "bY" : (m.tag==="sigma" ? "bY" : "bX")),
-  comp: (g,f) => {
+  compose: (g,f) => {
     if (B.dst(f)!==B.src(g)) throw new Error("B: bad comp");
     if (f.tag==="idX"||f.tag==="idY") return g;
     if (g.tag==="idX"||g.tag==="idY") return f;

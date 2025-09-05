@@ -21,7 +21,7 @@ const C = {
   id: (o: Obj) => o === "A" ? idA : idB,
   src: (m: Mor) => m.src,
   dst: (m: Mor) => m.dst,
-  comp: (g: Mor, f2: Mor) => { 
+  compose: (g: Mor, f2: Mor) => { 
     if (f2.dst !== g.src) throw new Error("composition mismatch");
     if (f2.name.startsWith("id")) return g; 
     if (g.name.startsWith("id")) return f2; 
@@ -64,7 +64,7 @@ const J = {
   id: (o: JObj) => o === "j1" ? id1 : id2,
   src: (m: JMor) => m.src,
   dst: (m: JMor) => m.dst,
-  comp: (g: JMor, f2: JMor) => { 
+  compose: (g: JMor, f2: JMor) => { 
     if (f2.dst !== g.src) throw new Error("composition mismatch");
     return g; 
   },

@@ -21,7 +21,7 @@ const C = {
   id: (o: CObj) => o === "A" ? idA : idB,
   src: (f: CMor) => f.src,
   dst: (f: CMor) => f.dst,
-  comp: (g: CMor, f: CMor) => {
+  compose: (g: CMor, f: CMor) => {
     if (f.dst !== g.src) throw new Error("composition mismatch");
     if (f.name.startsWith("id")) return g;
     if (g.name.startsWith("id")) return f;
@@ -50,7 +50,7 @@ const J = {
   id: (o: JObj) => { throw new Error("no morphisms in discrete category"); },
   src: (f: any) => { throw new Error("no morphisms"); },
   dst: (f: any) => { throw new Error("no morphisms"); },
-  comp: (g: any, f: any) => { throw new Error("no morphisms"); },
+  compose: (g: any, f: any) => { throw new Error("no morphisms"); },
   hom: (x: JObj, y: JObj) => ({
     id: `hom-${x}-${y}`,
     elems: x === y ? [] : [], // No non-identity morphisms in discrete category
@@ -121,7 +121,7 @@ describe("Presheaf colimits with correct transport", () => {
       id: (o: any) => { throw new Error("no objects"); },
       src: (m: any) => { throw new Error("no morphisms"); },
       dst: (m: any) => { throw new Error("no morphisms"); },
-      comp: (g: any, f: any) => { throw new Error("no morphisms"); },
+      compose: (g: any, f: any) => { throw new Error("no morphisms"); },
       hom: (x: any, y: any) => ({ id: "empty", elems: [], eq: (a: any, b: any) => false })
     };
     

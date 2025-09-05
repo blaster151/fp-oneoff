@@ -30,7 +30,7 @@ const One: SmallCategory<"•", { tag: "id" }> & { objects: ["•"]; morphisms: 
   id: (_: "•") => ({ tag: "id" }),
   src: (_: { tag: "id" }) => "•",
   dst: (_: { tag: "id" }) => "•",
-  comp: (_g: { tag: "id" }, _f: { tag: "id" }) => ({ tag: "id" }),
+  compose: (_g: { tag: "id" }, _f: { tag: "id" }) => ({ tag: "id" }),
   hom: (_x: "•", _y: "•") => [{ tag: "id" }]
 };
 

@@ -33,7 +33,7 @@ const C: SmallCategory<CObj, CM> & { objects:CObj[]; morphisms:CM[] } = {
   id: (o: CObj)=> ({tag:"id", o}),
   src: (m: CM)=> m.tag==="id" ? m.o : "X",
   dst: (m: CM)=> m.tag==="id" ? m.o : "Y",
-  comp: (g: CM, f: CM) => {
+  compose: (g: CM, f: CM) => {
     const s = (m:CM)=> C.src(m), d = (m:CM)=> C.dst(m);
     if (d(f)!==s(g)) throw new Error("C comp mismatch");
     if (f.tag==="id") return g;
@@ -51,7 +51,7 @@ const D: SmallCategory<DObj, DM> & HasHom<DObj, DM> & { objects:DObj[] } = {
   id: (o: DObj)=> o==="d0" ? {tag:"id0"} : {tag:"id1"},
   src: (m: DM)=> m.tag==="id0" ? "d0" : (m.tag==="id1" ? "d1" : "d0"),
   dst: (m: DM)=> m.tag==="id0" ? "d0" : (m.tag==="id1" ? "d1" : "d1"),
-  comp: (g: DM, f: DM) => {
+  compose: (g: DM, f: DM) => {
     if (D.dst(f)!==D.src(g)) throw new Error("D comp mismatch");
     if (f.tag==="id0"||f.tag==="id1") return g;
     if (g.tag==="id0"||g.tag==="id1") return f;

@@ -24,7 +24,7 @@ describe("Right Kan Extension (RanSet)", () => {
       id: (o: CObj) => ({ tag: "id", o }),
       src: (m: CM) => m.tag === "id" ? m.o : "X",
       dst: (m: CM) => m.tag === "id" ? m.o : "Y",
-      comp: (g: CM, f: CM) => {
+      compose: (g: CM, f: CM) => {
         if (f.tag === "id") return g;
         if (g.tag === "id") return f;
         return { tag: "u" };
@@ -44,7 +44,7 @@ describe("Right Kan Extension (RanSet)", () => {
       id: (_) => ({ tag: "id" }),
       src: (_) => "*",
       dst: (_) => "*",
-      comp: (_g, _f) => ({ tag: "id" }),
+      compose: (_g, _f) => ({ tag: "id" }),
       hom: (_x, _y) => [{ tag: "id" }]
     };
     
@@ -62,7 +62,7 @@ describe("Right Kan Extension (RanSet)", () => {
       id: (o: CObj) => ({ tag: "id", o }),
       src: (m: CM) => m.o,
       dst: (m: CM) => m.o,
-      comp: (g: CM, f: CM) => {
+      compose: (g: CM, f: CM) => {
         if (g.o === f.o) return g;
         throw new Error("Cannot compose morphisms in discrete category");
       }

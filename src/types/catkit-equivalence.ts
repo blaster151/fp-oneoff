@@ -8,7 +8,7 @@ export interface SmallCategory<O,M> {
   id:  (o: O) => M;
   src: (m: M) => O;
   dst: (m: M) => O;
-  comp:(g: M, f: M) => M; // g ∘ f
+  compose:(g: M, f: M) => M; // g ∘ f
 }
 export interface Functor<A_O,A_M,B_O,B_M> {
   Fobj:(a:A_O)=>B_O;
@@ -42,8 +42,8 @@ export function checkNaturality<A_O,A_M,B_O,B_M>(
   const { F,G,at } = nt;
   return A.morphisms.every(u => {
     const a  = A.src(u), a2 = A.dst(u);
-    const lhs = B.comp(G.Fmor(u), at(a));
-    const rhs = B.comp(at(a2),    F.Fmor(u));
+    const lhs = B.compose(G.Fmor(u), at(a));
+    const rhs = B.compose(at(a2),    F.Fmor(u));
     const eq = eqJSON<any>();
     return eq(lhs, rhs);
   });
@@ -57,9 +57,9 @@ export interface Iso<O,M> {
 }
 export function checkIso<O,M>(iso: Iso<O,M>): boolean {
   const { C,a,b,f,g } = iso;
-  const left  = C.comp(g,f);
+  const left  = C.compose(g,f);
   const right = C.id(a);
-  const left2 = C.comp(f,g);
+  const left2 = C.compose(f,g);
   const right2= C.id(b);
   const eq = eqJSON<any>();
   return eq(left, right) && eq(left2, right2);
@@ -79,8 +79,8 @@ export function composeNatIso<A_O,A_M,B_O,B_M>(
   return {
     F: alpha.F,
     G: beta.G,
-    at:   (a:A_O)=> B.comp(beta.at(a), alpha.at(a)),
-    invAt:(a:A_O)=> B.comp(alpha.invAt(a), beta.invAt(a))
+    at:   (a:A_O)=> B.compose(beta.at(a), alpha.at(a)),
+    invAt:(a:A_O)=> B.compose(alpha.invAt(a), beta.invAt(a))
   };
 }
 export function invertNatIso<A_O,A_M,B_O,B_M>(alpha: NatIso<A_O,A_M,B_O,B_M>): NatIso<A_O,A_M,B_O,B_M> {
@@ -95,9 +95,9 @@ export function checkNatIso<A_O,A_M,B_O,B_M>(
   const nat = checkNaturality(A,B,alpha);
   const pointwise = (A.objects as A_O[]).every(a => {
     const f = alpha.at(a), g = alpha.invAt(a);
-    const left  = B.comp(g,f);
+    const left  = B.compose(g,f);
     const right = B.id(alpha.F.Fobj(a));
-    const left2 = B.comp(f,g);
+    const left2 = B.compose(f,g);
     const right2= B.id(alpha.G.Fobj(a));
     const eq = eqJSON<any>();
     return eq(left, right) && eq(left2, right2);
@@ -120,14 +120,14 @@ export function checkAdjointEquivalence<A_O,A_M,B_O,B_M>(E: AdjointEquivalence<A
   const cIso = checkNatIso(B,B,counit);
   const ok1 = (A.objects as A_O[]).every(a => {
     const Fa = F.Fobj(a);
-    const left  = B.comp(counit.at(Fa), F.Fmor(unit.at(a)));
+    const left  = B.compose(counit.at(Fa), F.Fmor(unit.at(a)));
     const right = B.id(Fa);
     const eq = eqJSON<any>();
     return eq(left, right);
   });
   const ok2 = (B.objects as B_O[]).every(b => {
     const Gb = G.Fobj(b);
-    const left  = A.comp(G.Fmor(counit.at(b)), unit.at(Gb));
+    const left  = A.compose(G.Fmor(counit.at(b)), unit.at(Gb));
     const right = A.id(Gb);
     const eq = eqJSON<any>();
     return eq(left, right);
@@ -147,10 +147,10 @@ export function homIsoViaEquivalence<A_O,A_M,B_O,B_M>(
     const Fa2 = F.Fobj(a2);
     const unitA = unit.at(a);
     // Use type assertion to avoid complex type checking
-    return B.comp(B.comp(counit.at(Fa2), Fh), unitA as any) as B_M;
+    return B.compose(B.compose(counit.at(Fa2), Fh), unitA as any) as B_M;
   };
   const invUnitAtA = unit.invAt(a);
-  const toA = (k:B_M) => A.comp( G.Fmor(k), invUnitAtA );
+  const toA = (k:B_M) => A.compose( G.Fmor(k), invUnitAtA );
   return { toB, toA };
 }
 

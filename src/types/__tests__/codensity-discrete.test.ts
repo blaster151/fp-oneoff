@@ -14,7 +14,7 @@ const createDiscrete2 = () => {
     id: (o: BObj) => ({ tag: "id", o }),
     src: (m: BM) => m.o,
     dst: (m: BM) => m.o,
-    comp: (g: BM, f: BM) => {
+    compose: (g: BM, f: BM) => {
       if (g.o === f.o) return g;
       throw new Error("Cannot compose across different objects in discrete category");
     },
@@ -100,7 +100,7 @@ describe("Codensity for discrete B reduces to product of exponentials", () => {
       id: (_: BObj) => ({ tag: "id" }),
       src: (_: BM) => "*",
       dst: (_: BM) => "*",
-      comp: (_g: BM, _f: BM) => ({ tag: "id" }),
+      compose: (_g: BM, _f: BM) => ({ tag: "id" }),
       hom: (_x: BObj, _y: BObj) => [{ tag: "id" }]
     };
 

@@ -22,7 +22,7 @@ const B: SmallCategory<Obj, Mor> & { objects: ReadonlyArray<Obj>; morphisms: Rea
   id,
   src: (m: Mor) => m.at,
   dst: (m: Mor) => m.at,
-  comp: (g: Mor, f: Mor) => {
+  compose: (g: Mor, f: Mor) => {
     if (f.at !== g.at) throw new Error("discrete: compose only identities");
     return id(f.at);
   },

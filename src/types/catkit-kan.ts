@@ -75,7 +75,7 @@ export function LeftKan_Set<C_O, C_M, D_O, D_M>(
       const cp = C.dst(u) as C_O;
       const Hu = H.map(u);
       for (const h of D.hom(F.Fobj(cp), d)) {
-        const f1 = D.comp(h, F.Fmor(u)); // F(u): Fc→Fcp;  h∘F(u): Fc→d
+        const f1 = D.compose(h, F.Fmor(u)); // F(u): Fc→Fcp;  h∘F(u): Fc→d
         const Huxs = H.obj(c).elems.map(x => ({ x, x2: Hu(x) }));
         for (const {x, x2} of Huxs) {
           const kLeft  = `${keyC(c)}|f=${keyDMor(f1)}|x=${keyFromValue(x)}`;
@@ -111,7 +111,7 @@ export function LeftKan_Set<C_O, C_M, D_O, D_M>(
     const dprime = D.dst(v);
     const { normalize } = buildUF(dprime);
     const { c, f, x } = cls.rep;
-    return normalize({ c, f: D.comp(v, f), x });
+    return normalize({ c, f: D.compose(v, f), x });
   };
 
   return { obj, map };
@@ -196,7 +196,7 @@ export function RightKan_Set<C_O, C_M, D_O, D_M>(
         // For every g: d→F c, we need H(u)(α_c(g)) = α_{c'}(F(u)∘g)
         for (const g of D.hom(d, F.Fobj(c))) {
           const left  = Hu(alpha_c.get(keyDMor(g)));
-          const right = alpha_cp.get(keyDMor( D.comp(F.Fmor(u), g) ));
+          const right = alpha_cp.get(keyDMor( D.compose(F.Fmor(u), g) ));
           const eq = eqJSON<unknown>();
           if (!eq(left, right)) return false;
         }
@@ -227,7 +227,7 @@ export function RightKan_Set<C_O, C_M, D_O, D_M>(
       out.__dom = D.hom(dprime, F.Fobj(c));
       out.__cod = H.obj(c).elems;
       for (const g of out.__dom) {
-        const gv = D.comp(g, v); // g ∘ v : d → F c
+        const gv = D.compose(g, v); // g ∘ v : d → F c
         out.set(keyDMor(g), alpha_c.get(keyDMor(gv)));
       }
       result[keyc] = out;
@@ -252,7 +252,7 @@ export function demoKanExample() {
     id: (o)=> ({tag:"id", o}),
     src: (m)=> m.tag==="id" ? m.o : "X",
     dst: (m)=> m.tag==="id" ? m.o : "Y",
-    comp: (g,f) => {
+    compose: (g,f) => {
       const s = (m:any)=> C.src(m), d=(m:any)=>C.dst(m);
       if (d(f)!==s(g)) throw new Error("C comp mismatch");
       if (f.tag==="id") return g;
@@ -270,7 +270,7 @@ export function demoKanExample() {
     id: (_)=>({tag:"id"}),
     src: (_)=>"*",
     dst: (_)=>"*",
-    comp: (_g,_f)=>({tag:"id"}),
+    compose: (_g,_f)=>({tag:"id"}),
     hom: (_x,_y)=> [ {tag:"id"} ]
   };
 

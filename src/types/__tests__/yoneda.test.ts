@@ -19,7 +19,7 @@ const C: SmallCategory<Obj, Mor> & { objects: Obj[]; hom: (x: Obj, y: Obj) => Se
   id: (o: Obj) => (o === "A" ? idA : idB),
   src: (m: Mor) => m.src,
   dst: (m: Mor) => m.dst,
-  comp: (g: Mor, f: Mor): Mor => {
+  compose: (g: Mor, f: Mor): Mor => {
     if (f.dst !== g.src) throw new Error("bad comp");
     // collapse to rightmost name when identity; otherwise keep 'm' as only nontrivial
     if (f.name.startsWith("id")) return g;

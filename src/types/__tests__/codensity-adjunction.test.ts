@@ -42,7 +42,7 @@ const discreteB = {
   id: (o) => ({ tag: "id", o }),
   src: (m) => m.o,
   dst: (m) => m.o,
-  comp: (g, f) => g.o === f.o ? g : (() => { throw new Error("No morphisms"); })(),
+  compose: (g, f) => g.o === f.o ? g : (() => { throw new Error("No morphisms"); })(),
   hom: (x, y) => x === y ? [{ tag: "id", o: x }] : []
 };
 

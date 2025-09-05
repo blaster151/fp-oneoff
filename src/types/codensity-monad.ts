@@ -178,7 +178,7 @@ export function terminalCodensity<A>(
     id: (_: BObj) => ({ tag: "id" }),
     src: (_: BM) => "*",
     dst: (_: BM) => "*",
-    comp: (_g: BM, _f: BM) => ({ tag: "id" }),
+    compose: (_g: BM, _f: BM) => ({ tag: "id" }),
     hom: (_x: BObj, _y: BObj) => [{ tag: "id" }]
   };
 
@@ -206,7 +206,7 @@ export function discreteCodensity<B_O>(
     id: (o: B_O) => ({ tag: "id", o }),
     src: (m: BM) => m.o,
     dst: (m: BM) => m.o,
-    comp: (g: BM, f: BM) => {
+    compose: (g: BM, f: BM) => {
       if (g.o === f.o) return g;
       throw new Error("Cannot compose across different objects in discrete category");
     },
