@@ -18,6 +18,7 @@ import {
 import { Signature } from "../Signature";
 import { Var, App } from "../Term";
 import { must } from "../../util/guards";
+import { mkFiniteSet } from "../../set/Set";
 
 console.log("=== ORIENTED REWRITE SYSTEMS DEMO ===\n");
 
@@ -126,16 +127,16 @@ console.log("\n4. MONAD LAW VERIFICATION");
 console.log("=========================");
 
 // Test monad laws on finite sets
-const testSet1: string[] = ["a", "b"];
-const testSet2: number[] = [1, 2, 3];
+const testSet1 = mkFiniteSet(["a", "b"], (a, b) => a === b);
+const testSet2 = mkFiniteSet([1, 2, 3], (a, b) => a === b);
 
-console.log("Monoid Monad Laws on", testSet1, ":");
+console.log("Monoid Monad Laws on", testSet1.elems, ":");
 const monoidLaws = testMonadLaws(monoidMonad, testSet1);
 console.log("  Left Identity:", monoidLaws.leftIdentity);
 console.log("  Right Identity:", monoidLaws.rightIdentity);
 console.log("  Associativity:", monoidLaws.associativity);
 
-console.log("\nSemilattice Monad Laws on", testSet2, ":");
+console.log("\nSemilattice Monad Laws on", testSet2.elems, ":");
 const semilatticeLaws = testMonadLaws(semilatticeMonad, testSet2);
 console.log("  Left Identity:", semilatticeLaws.leftIdentity);
 console.log("  Right Identity:", semilatticeLaws.rightIdentity);
@@ -145,7 +146,7 @@ console.log("\n5. EDGE CASES");
 console.log("=============");
 
 // Empty set
-const emptySet: string[] = [];
+const emptySet = mkFiniteSet([], (a: string, b: string) => a === b);
 const emptyLaws = testMonadLaws(monoidMonad, emptySet);
 console.log("Empty set laws (should all be true):");
 console.log("  Left Identity:", emptyLaws.leftIdentity);
@@ -153,7 +154,7 @@ console.log("  Right Identity:", emptyLaws.rightIdentity);
 console.log("  Associativity:", emptyLaws.associativity);
 
 // Singleton set
-const singletonSet: string[] = ["single"];
+const singletonSet = mkFiniteSet(["single"], (a, b) => a === b);
 const singletonLaws = testMonadLaws(monoidMonad, singletonSet);
 console.log("\nSingleton set laws:");
 console.log("  Left Identity:", singletonLaws.leftIdentity);

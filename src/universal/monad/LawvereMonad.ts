@@ -2,6 +2,7 @@ import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
 import { normalize, rule, RewriteRule } from "../rewrite/Rules";
 import { must, idx } from "../../util/guards";
+import { FiniteSet } from "../../set/Set";
 
 /**
  * Lawvere Monad from a finitary theory
@@ -13,11 +14,8 @@ import { must, idx } from "../../util/guards";
  * - bind: T(X) × (X → T(Y)) → T(Y) (Kleisli extension)
  */
 
-/** A finite set with equality */
-export interface FiniteSet<A> {
-  elems: A[];
-  eq: (a: A, b: A) => boolean;
-}
+// Re-export FiniteSet from canonical location
+export { type FiniteSet } from "../../set/Set";
 
 /** The T-carrier (free algebra) on a finite set */
 export interface TCarrier<A> {

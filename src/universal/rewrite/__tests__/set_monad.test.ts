@@ -4,9 +4,9 @@ import {
   createMonoidSetMonad, 
   createSemilatticeSetMonad,
   testMonadLaws,
-  type SetMonad,
-  type FiniteSet
+  type SetMonad
 } from "../SetMonad";
+import { type FiniteSet, mkFiniteSet } from "../../../set/Set";
 import { Signature } from "../../Signature";
 import { rule } from "../Rules";
 import { opOf } from "../../Signature";
@@ -81,7 +81,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     });
     
     it("satisfies monad laws on small finite sets", () => {
-      const testSet: FiniteSet<string> = ["a", "b"];
+      const testSet: FiniteSet<string> = mkFiniteSet(["a", "b"], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       // Note: The current implementation is simplified, so these tests
@@ -115,7 +115,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     });
     
     it("satisfies monad laws on small finite sets", () => {
-      const testSet: FiniteSet<number> = [1, 2, 3];
+      const testSet: FiniteSet<number> = mkFiniteSet([1, 2, 3], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       expect(typeof laws.leftIdentity).toBe("boolean");
@@ -128,25 +128,25 @@ describe("Set-level Monad from Finitary Theory", () => {
     const monad = createMonoidSetMonad<string>();
     
     it("tests left identity law", () => {
-      const testSet: FiniteSet<string> = ["x"];
+      const testSet: FiniteSet<string> = mkFiniteSet(["x"], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       expect(laws.leftIdentity).toBeDefined();
     });
     
     it("tests right identity law", () => {
-      const testSet: FiniteSet<string> = ["y"];
+      const testSet: FiniteSet<string> = mkFiniteSet(["y"], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       expect(laws.rightIdentity).toBeDefined();
     });
     
     it("tests associativity law", () => {
-      const testSet: FiniteSet<string> = ["z"];
+      const testSet: FiniteSet<string> = mkFiniteSet(["z"], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       expect(laws.associativity).toBeDefined();
     });
     
     it("tests all laws together", () => {
-      const testSet: FiniteSet<string> = ["a", "b", "c"];
+      const testSet: FiniteSet<string> = mkFiniteSet(["a", "b", "c"], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       expect(laws).toHaveProperty("leftIdentity");
@@ -159,7 +159,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     const monad = createMonoidSetMonad<string>();
     
     it("handles empty finite sets", () => {
-      const testSet: FiniteSet<string> = [];
+      const testSet: FiniteSet<string> = mkFiniteSet([], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       // Empty set should trivially satisfy all laws
@@ -169,7 +169,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     });
     
     it("handles singleton sets", () => {
-      const testSet: FiniteSet<string> = ["single"];
+      const testSet: FiniteSet<string> = mkFiniteSet(["single"], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       expect(typeof laws.leftIdentity).toBe("boolean");
@@ -178,7 +178,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     });
     
     it("handles larger finite sets", () => {
-      const testSet: FiniteSet<number> = [1, 2, 3, 4, 5];
+      const testSet: FiniteSet<number> = mkFiniteSet([1, 2, 3, 4, 5], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       expect(typeof laws.leftIdentity).toBe("boolean");

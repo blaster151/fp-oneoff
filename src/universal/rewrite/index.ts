@@ -31,10 +31,12 @@ export {
 // Set-level monads
 export {
   type SetMonad,
-  type FiniteSet,
   type FreeAlgebra,
   createSetMonad,
   createMonoidSetMonad,
   createSemilatticeSetMonad,
   testMonadLaws
 } from "./SetMonad";
+
+// Re-export FiniteSet from canonical location
+export { type FiniteSet } from "../../set/Set";

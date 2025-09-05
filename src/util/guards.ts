@@ -6,5 +6,5 @@ export function must<T>(x: T | undefined | null, msg = "Undefined"): T {
 
 export function idx<T>(arr: T[], i: number, msg = "Index out of range"): T {
   if (i < 0 || i >= arr.length) throw new Error(msg);
-  return arr[i];
+  return arr[i]!; // Safe after bounds check
 }

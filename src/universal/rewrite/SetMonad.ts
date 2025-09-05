@@ -2,6 +2,7 @@ import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
 import { normalize, rule, RewriteRule } from "./Rules";
 import { idx } from "../../util/guards";
+import { FiniteSet } from "../../set/Set";
 
 /**
  * Set-level Monad from a finitary theory
@@ -13,9 +14,6 @@ import { idx } from "../../util/guards";
  * 
  * The monad laws are verified by testing on finite sets.
  */
-
-/** A finite set represented as an array of elements */
-export type FiniteSet<A> = A[];
 
 /** The free T-algebra on a finite set X */
 export type FreeAlgebra<A> = Term[];
@@ -121,7 +119,7 @@ export function testMonadLaws<A>(
 } {
   
   // Left identity: bind(unit(x), f) = f(x)
-  const leftIdentity = testSet.every(x => {
+  const leftIdentity = testSet.elems.every(x => {
     const unitX = monad.unit(x);
     const f = (a: A) => monad.unit(a); // Simple test function
     const bound = monad.bind(unitX, f);
@@ -132,7 +130,7 @@ export function testMonadLaws<A>(
   });
   
   // Right identity: bind(m, unit) = m
-  const rightIdentity = testSet.every(x => {
+  const rightIdentity = testSet.elems.every(x => {
     const m = monad.unit(x);
     const bound = monad.bind(m, monad.unit);
     
@@ -141,7 +139,7 @@ export function testMonadLaws<A>(
   });
   
   // Associativity: bind(bind(m, f), g) = bind(m, x => bind(f(x), g))
-  const associativity = testSet.every(x => {
+  const associativity = testSet.elems.every(x => {
     const m = monad.unit(x);
     const f = (a: A) => monad.unit(a);
     const g = (a: A) => monad.unit(a);
