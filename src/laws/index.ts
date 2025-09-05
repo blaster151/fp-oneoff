@@ -5,6 +5,8 @@ export * from "./Natural";
 export * from "./Adjunction";
 export * from "./Prob";
 export * from "./ProbKleisli";
+export * from "./ProbMatrixKernelIso";
 export * from "./TopProductUP";
+export * from "./TopContinuity";
 export * from "./registry";
 export * from "./examples/CodensityNat";

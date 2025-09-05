@@ -1,0 +1,14 @@
+{
+  "id": "REL-KERNEL-MATRIX-ISO",
+  "source": { "text": "Isomorphism between Markov kernels (A → Dist<B>) and row-stochastic matrices, with round-trip laws and sample kernel builders." },
+  "code": [
+    "prob/MarkovKernelIso.ts"
+  ],
+  "tests": [
+    "prob/__tests__/markov_kernel_iso.test.ts"
+  ],
+  "laws": [
+    "laws/ProbMatrixKernelIso.ts"
+  ],
+  "relatesTo": ["REL-KLEISLI-TOPOLOGY", "REL-PROB-COALGEBRA"]
+}

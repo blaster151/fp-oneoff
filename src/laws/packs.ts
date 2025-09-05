@@ -6,7 +6,9 @@ import { powersetLattice } from "../order/Lattice";
 import { powersetCPO } from "../order/Domain";
 import { lawfulDistNumber } from "./Prob";
 import { lawfulKleisliCategory } from "./ProbKleisli";
+import { lawfulKernelMatrixIso } from "./ProbMatrixKernelIso";
 import { lawfulTopProductUP } from "./TopProductUP";
+import { lawfulTopContinuity } from "./TopContinuity";
 
 // Example: Monoid<number> under addition
 const eqNum = (a:number,b:number)=> a===b;
@@ -25,10 +27,20 @@ const kleisliPack = lawfulKleisliCategory();
 kleisliPack.run = () => runLaws(kleisliPack.laws, {});
 registerLawful(kleisliPack);
 
+// Kernel ↔ Matrix isomorphism laws
+const kernelMatrixPack = lawfulKernelMatrixIso();
+kernelMatrixPack.run = () => runLaws(kernelMatrixPack.laws, {});
+registerLawful(kernelMatrixPack);
+
 // Topology product universal property laws
 const topPack = lawfulTopProductUP();
 topPack.run = () => runLaws(topPack.laws, {});
 registerLawful(topPack);
+
+// Topology continuity laws
+const continuityPack = lawfulTopContinuity();
+continuityPack.run = () => runLaws(continuityPack.laws, {});
+registerLawful(continuityPack);
 
 // Example: Monoid<string> under concatenation
 const eqString = (a:string,b:string)=> a===b;
