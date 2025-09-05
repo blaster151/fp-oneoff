@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-SPEC-TOY",
+  "source": { "text": "Toy Spec for finite commutative rings: enumerate ideals, prime ideals, Zariski closed V(I), basic open D(a), closure via intersections." },
+  "code": ["structures/ring/Spec.ts"],
+  "tests": ["structures/ring/__tests__/spec_toy.test.ts"],
+  "relatesTo": ["REL-RING-IDEAL","REL-RING-CORE"]
+}
