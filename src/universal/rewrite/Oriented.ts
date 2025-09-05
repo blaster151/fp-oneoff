@@ -1,13 +1,13 @@
 import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
 import { normalize, rule, RewriteRule, normalizeHead, key } from "./Rules";
-import { must } from "../../util/guards";
+import { must, idx } from "../../util/guards";
 
 /** Canonical right-association of a flat list with a fixed binary op symbol. */
 function packRight(op: any, xs: Term[]): Term {
   if (xs.length === 0) throw new Error("packRight: empty list");
-  let acc = xs[xs.length - 1];
-  for (let i = xs.length - 2; i >= 0; i--) acc = App(op, [xs[i], acc]);
+  let acc = idx(xs, xs.length - 1);
+  for (let i = xs.length - 2; i >= 0; i--) acc = App(op, [idx(xs, i), acc]);
   return acc;
 }
 
@@ -58,7 +58,7 @@ export function monoidNormalForm(sig: Signature, opName = "mul", unitName = "e")
         // Now we have a possibly flat form; collect args, drop units, pack right
         const xs = flatten(op, u2).filter(a => !isUnit(E)(a));
         if (xs.length === 0) return E;       // all units => unit
-        if (xs.length === 1) return xs[0];   // single arg => itself
+        if (xs.length === 1) return idx(xs, 0);   // single arg => itself
         return packRight(op, xs);
       };
       return rec(t0);

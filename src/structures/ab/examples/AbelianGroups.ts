@@ -14,7 +14,7 @@ export const Z5 = asAbelian(Zn(5));
 export function directSum<A,B,O>(
   G: FiniteAbGroup<A>,
   H: FiniteAbGroup<B>,
-  S: PairingScheme<A,B,O> = tupleScheme<A,B>()
+  S: PairingScheme<A,B,O>
 ): FiniteAbGroup<O> {
   const P = productGroup(G as unknown as FiniteGroup<A>, H as unknown as FiniteGroup<B>, S);
   // product of abelian groups is abelian

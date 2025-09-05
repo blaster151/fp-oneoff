@@ -1,7 +1,7 @@
 import { FiniteGroup } from "../Group";
 import { GroupHom, hom } from "../GrpCat";
 import { GroupIso, isoId, isoComp, isoInverse, isoEqByPoints } from "../iso/GroupIso";
-import { must, idx } from "../../util/guards";
+import { must, idx } from "../../../util/guards";
 
 // ---------- Utilities ----------
 function eqArray<A>(xs: A[], ys: A[], eq: (a: A, b: A) => boolean): boolean {
@@ -11,10 +11,15 @@ function eqArray<A>(xs: A[], ys: A[], eq: (a: A, b: A) => boolean): boolean {
 
 // All permutations of indices [0..n-1] (for small n only)
 function* permute(n: number): Generator<number[]> {
-  const a = [...Array(n).keys()];
+  const a: number[] = [...Array(n).keys()];
   function* gen(k: number): Generator<number[]> {
     if (k === n) { yield a.slice(); return; }
-    for (let i = k; i < n; i++) { [a[k], a[i]] = [a[i], a[k]]; yield* gen(k + 1); [a[k], a[i]] = [a[i], a[k]]; }
+    for (let i = k; i < n; i++) { 
+      const kVal = idx(a, k), iVal = idx(a, i);
+      [a[k], a[i]] = [iVal, kVal]; 
+      yield* gen(k + 1); 
+      [a[k], a[i]] = [kVal, iVal]; 
+    }
   }
   yield* gen(0);
 }

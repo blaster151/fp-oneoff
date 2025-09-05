@@ -1,6 +1,7 @@
 import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
 import { normalize, rule, RewriteRule } from "./Rules";
+import { idx } from "../../util/guards";
 
 /**
  * Set-level Monad from a finitary theory
@@ -52,7 +53,7 @@ export function createSetMonad<A>(
   /** Convert a variable term back to an element */
   const varToElement = (t: Term, elements: A[]): A | null => {
     if (t.tag === "Var" && t.ix < elements.length) {
-      return elements[t.ix];
+      return idx(elements, t.ix);
     }
     return null;
   };

@@ -1,4 +1,4 @@
-import { must, idx } from "../../util/guards";
+import { must, idx } from "../../../util/guards";
 
 /** Abstract pairing scheme X×Y ↔ O with destructors. */
 export interface PairingScheme<A, B, O> {
@@ -30,8 +30,8 @@ export function indexScheme<A, B>(
   Aelems: A[],
   Belems: B[]
 ): PairingScheme<A, B, number> {
-  const iA = (a: A) => Aelems.findIndex(x => x === a);
-  const iB = (b: B) => Belems.findIndex(y => y === b);
+  const iA = (a: A) => must(Aelems.findIndex(x => x === a), "element not found in A");
+  const iB = (b: B) => must(Belems.findIndex(y => y === b), "element not found in B");
   const pair = (a: A, b: B) => iA(a) * Belems.length + iB(b);
   const left = (o: number) => idx(Aelems, Math.floor(o / Belems.length));
   const right = (o: number) => idx(Belems, o % Belems.length);

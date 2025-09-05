@@ -25,7 +25,7 @@ describe("Equation satisfaction in a UA algebra", () => {
 
   // Environments: assign 0..4 to each var in simple grid (finite sampling)
   const vals = M.elems;
-  const envs = [];
+  const envs: Array<(ix:number)=>number> = [];
   for (const a of vals) for (const b of vals) for (const c of vals) {
     envs.push((ix:number)=> ix===0?a : ix===1?b : c);
   }

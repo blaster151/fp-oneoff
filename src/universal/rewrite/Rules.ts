@@ -1,6 +1,6 @@
 import { Term, Var, App } from "../Term";
 import { Signature, opOf } from "../Signature";
-import { must } from "../../util/guards";
+import { must, idx } from "../../util/guards";
 
 /** A rewrite rule: lhs -> rhs with optional AC properties */
 export type RewriteRule = {
@@ -16,7 +16,7 @@ export type RewriteRule = {
 
 /** Create a rewrite rule */
 export function rule(lhs: Term, rhs: Term, ac?: RewriteRule['ac']): RewriteRule {
-  return { lhs, rhs, ac };
+  return ac !== undefined ? { lhs, rhs, ac } : { lhs, rhs };
 }
 
 /** Generate a canonical key for term comparison */
@@ -43,7 +43,7 @@ function matches(pattern: Term, term: Term): Map<number, Term> | null {
     if (p.args.length !== t.args.length) return false;
     
     for (let i = 0; i < p.args.length; i++) {
-      if (!match(p.args[i], t.args[i])) return false;
+      if (!match(idx(p.args, i), idx(t.args, i))) return false;
     }
     return true;
   }
@@ -80,10 +80,10 @@ function sortTerms(terms: Term[]): Term[] {
 /** Remove duplicates from sorted terms (for idempotent operations) */
 function dedupTerms(terms: Term[]): Term[] {
   if (terms.length === 0) return terms;
-  const result = [terms[0]];
+  const result = [idx(terms, 0)];
   for (let i = 1; i < terms.length; i++) {
-    if (key(terms[i]) !== key(terms[i-1])) {
-      result.push(terms[i]);
+    if (key(idx(terms, i)) !== key(idx(terms, i-1))) {
+      result.push(idx(terms, i));
     }
   }
   return result;
@@ -107,7 +107,7 @@ export function normalizeHead(term: Term, ac: RewriteRule['ac']): Term {
     throw new Error("Empty term after AC(I) normalization");
   }
   if (dedupedArgs.length === 1) {
-    return dedupedArgs[0];
+    return idx(dedupedArgs, 0);
   }
   
   return App(must(term.op, "term without operator"), dedupedArgs);

@@ -83,7 +83,7 @@ export function automorphismsBruteforce<A>(G: FiniteGroup<A>): Array<GroupHom<A,
   const n = G.elems.length;
   if (n > 8) throw new Error("automorphismsBruteforce: set too large; use a specialized routine.");
   // enumerate permutations as arrays of indices
-  const idx = [...Array(n).keys()];
+  const indices = [...Array(n).keys()];
   const perms: number[][] = [];
   const permute = (arr: number[], l=0) => {
     if (l === arr.length) { perms.push(arr.slice()); return; }
@@ -95,7 +95,7 @@ export function automorphismsBruteforce<A>(G: FiniteGroup<A>): Array<GroupHom<A,
       [arr[l],arr[i]]=[lVal,iVal];
     }
   };
-  permute(idx);
+  permute(indices);
 
   const autos: Array<GroupHom<A,A>> = [];
   for (const p of perms) {

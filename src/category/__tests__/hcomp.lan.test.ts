@@ -10,10 +10,11 @@ import type { Lan1 } from "../Lan";
  * Wrap<G,A> = { wrap: Array<G<A>> }
  */
 type Wrap<G, A = unknown> = { wrap: Array<G> };
+type Wrap1<G> = { wrap: Array<G> };
 
-const WrapH: HFunctor<Wrap> = {
+const WrapH: HFunctor<Wrap1<any>> = {
   hfmap<G, H>(nt: Nat1<G, H>) {
-    return <A>(wa: Wrap<G, A>): Wrap<H, A> => ({ wrap: wa.wrap.map(nt) });
+    return (wa: Wrap1<G>): Wrap1<H> => ({ wrap: wa.wrap.map(nt) });
   },
 };
 
@@ -48,11 +49,11 @@ describe("HComp with Lan(h) behaves like sequential lifting", () => {
     const value: Composed<number> = { wrap: [lanVal, lanVal] };
 
     // Left: lift to Box through the COMPOSED HFunctor in one go
-    const leftLift = LanWrap.hfmap<Id<number>, Box<number>>(toBox);
+    const leftLift = LanWrap.hfmap<Id, Box>(toBox);
     const left = leftLift<number>(value); // Wrap< Lan h Box, number >
 
     // Right: lift through Lan, then lift through Wrap (sequential)
-    const step1 = LanH.hfmap<Id<number>, Box<number>>(toBox);         // Nat (Lan h Id) (Lan h Box)
+    const step1 = LanH.hfmap<Id, Box>(toBox);         // Nat (Lan h Id) (Lan h Box)
     const step2 = WrapH.hfmap(step1);                 // Nat (Wrap (Lan h Id)) (Wrap (Lan h Box))
     const right = step2<number>(value);
 

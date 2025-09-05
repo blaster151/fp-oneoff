@@ -1,6 +1,6 @@
 import { FiniteGroup } from "../Group";
 import { GroupHom as BaseGroupHom, hom } from "../GrpCat";
-import { must, idx } from "../../util/guards";
+import { must, idx } from "../../../util/guards";
 
 // Extended GroupHom interface with source and target for compatibility
 interface GroupHom<A, B> extends BaseGroupHom<A, B> {

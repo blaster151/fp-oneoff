@@ -1,4 +1,4 @@
-export type Eq<A, B = A> = (x:A,y:B)=>boolean;
+export type Eq<A> = (x:A,y:A)=>boolean;
 
 export type FiniteSet<A> = {
   elems: A[];

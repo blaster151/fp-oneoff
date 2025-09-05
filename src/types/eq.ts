@@ -1,4 +1,4 @@
-export type Eq<A, B = A> = (x: A, y: B) => boolean;
+export type Eq<T> = (x: T, y: T) => boolean;
 
 // Default: structural JSON compare (explicit & overridable)
 export const eqJSON = <T>(): Eq<T> =>

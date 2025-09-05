@@ -1,6 +1,6 @@
 import { Lan } from "../Lan.js";
 import { Nat } from "../Nat.js";
-import { Eq } from "../../types/eq.js";
+import type { Eq } from "../Eq.js";
 
 /**
  * Example: Bridge between Lan and GADT equality witnesses.
@@ -17,7 +17,7 @@ type Maybe<A> = A | null;
 export type LanIdId<c> = Lan<Id<any>, Id<any>, c>;
 
 // Concrete implementation using equality witnesses
-export const lanIdIdImpl: LanIdId<number> = (eq: Eq<any>) => {
+export const lanIdIdImpl: LanIdId<number> = (eq: Eq<any, any>) => {
   // Given an equality witness, we can construct a value
   // This is a simplified example - in practice you'd use the equality witness
   // to ensure type safety and proper construction
@@ -28,7 +28,7 @@ export const lanIdIdImpl: LanIdId<number> = (eq: Eq<any>) => {
 // Lan Id Maybe c = ∀ b. Eq(Id b, c) → Maybe b
 export type LanIdMaybe<c> = Lan<Id<any>, Maybe<any>, c>;
 
-export const lanIdMaybeImpl: LanIdMaybe<number> = (eq: Eq<any>) => {
+export const lanIdMaybeImpl: LanIdMaybe<number> = (eq: Eq<any, any>) => {
   // Return a Maybe value based on the equality witness
   return "some value" as any; // Placeholder implementation
 };
@@ -36,7 +36,7 @@ export const lanIdMaybeImpl: LanIdMaybe<number> = (eq: Eq<any>) => {
 // Example: Natural transformation composition via Lan
 export const composeViaLan = <h, g, c>(
   lan: Lan<h, g, c>,
-  eq: Eq<any>
+  eq: Eq<any, any>
 ): g => {
   return lan(eq);
 };

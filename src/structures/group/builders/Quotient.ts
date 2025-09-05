@@ -44,6 +44,17 @@ export interface Quotient<A> extends FiniteGroup<{ rep: A }> {
   cosets: { rep: A; elems: A[] }[];
 }
 
+/** Adapter to convert Quotient<A> to FiniteGroup<A> by extracting representatives. */
+export function asFiniteGroup<A>(Q: Quotient<A>): FiniteGroup<A> {
+  return { 
+    elems: Q.elems.map(coset => coset.rep), 
+    eq: (a: A, b: A) => Q.eq({ rep: a }, { rep: b }), 
+    op: (a: A, b: A) => Q.op({ rep: a }, { rep: b }).rep, 
+    id: Q.id.rep, 
+    inv: (a: A) => Q.inv({ rep: a }).rep 
+  };
+}
+
 /** Finite quotient group G/N (left cosets). Requires N ▹ G. */
 export function quotientGroup<A>(G: FiniteGroup<A>, N: FiniteGroup<A>): Quotient<A> {
   if (!isNormalSubgroup(G, N)) throw new Error("quotientGroup: N is not normal in G");

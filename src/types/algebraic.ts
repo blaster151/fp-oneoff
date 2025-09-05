@@ -6,8 +6,8 @@
 import { Fn, HKT } from './hkt';
 
 // Set-like basics (no structure yet)
-export interface Eq<A, B = A> { 
-  equals: (x: A, y: B) => boolean 
+export interface Eq<A> { 
+  equals: (x: A, y: A) => boolean 
 }
 
 export interface Show<A> { 
