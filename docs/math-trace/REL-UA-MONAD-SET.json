@@ -1,0 +1,19 @@
+{
+  "id": "REL-UA-MONAD-SET",
+  "source": { "text": "Free–forgetful adjunction for finitary theories induces a monad T on Set; unit and multiplication realized by variable injection and substitution; Eilenberg–Moore algebras." },
+  "code": [
+    "universal/rewrite/SetMonad.ts"
+  ],
+  "tests": [
+    "universal/rewrite/__tests__/set_monad.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-CORE",
+    "REL-UA-LAWVERE-MIN",
+    "REL-UA-CONGRUENCE-QUOTIENT"
+  ],
+  "unlocks": [
+    "Kleisli category for T",
+    "Comparing models as Eilenberg–Moore algebras vs. product-preserving functors L→Set"
+  ]
+}
