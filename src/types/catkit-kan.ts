@@ -252,7 +252,7 @@ export function demoKanExample() {
     id: (o)=> ({tag:"id", o}),
     src: (m)=> m.tag==="id" ? m.o : "X",
     dst: (m)=> m.tag==="id" ? m.o : "Y",
-    comp: (g,f) => {
+    compose: (g,f) => {
       const s = (m:any)=> C.src(m), d=(m:any)=>C.dst(m);
       if (d(f)!==s(g)) throw new Error("C comp mismatch");
       if (f.tag==="id") return g;
@@ -270,7 +270,7 @@ export function demoKanExample() {
     id: (_)=>({tag:"id"}),
     src: (_)=>"*",
     dst: (_)=>"*",
-    comp: (_g,_f)=>({tag:"id"}),
+    compose: (_g,_f)=>({tag:"id"}),
     hom: (_x,_y)=> [ {tag:"id"} ]
   };
 

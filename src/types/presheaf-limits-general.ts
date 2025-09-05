@@ -58,7 +58,7 @@ export function pshPullbackGeneral<C>(
     id: (o: string) => ({ src: o, dst: o, name: `id${o.slice(1)}` }),
     src: (m: any) => m.src,
     dst: (m: any) => m.dst,
-    comp: (g: any, f: any) => {
+    compose: (g: any, f: any) => {
       if (f.dst !== g.src) throw new Error("composition mismatch");
       if (f.name.startsWith("id")) return g;
       if (g.name.startsWith("id")) return f;

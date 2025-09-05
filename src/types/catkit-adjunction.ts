@@ -10,7 +10,7 @@ export interface SmallCategory<O, M> {
   id:  (o: O) => M;
   src: (m: M) => O;
   dst: (m: M) => O;
-  comp:(g: M, f: M) => M; // g ∘ f
+  compose:(g: M, f: M) => M; // g ∘ f
 }
 
 // ---- Functors & Naturality ----------------------------------------------------------------------

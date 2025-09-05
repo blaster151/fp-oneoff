@@ -8,7 +8,7 @@ export interface SmallCategory<O,M> {
   id:  (o: O) => M;
   src: (m: M) => O;
   dst: (m: M) => O;
-  comp:(g: M, f: M) => M; // g ∘ f
+  compose:(g: M, f: M) => M; // g ∘ f
 }
 export interface Functor<A_O,A_M,B_O,B_M> {
   Fobj:(a:A_O)=>B_O;

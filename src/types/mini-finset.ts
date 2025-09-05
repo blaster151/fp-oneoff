@@ -166,7 +166,7 @@ export const MiniFinSet: SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: 
   src: (m: Mor): Obj => m.src,
   dst: (m: Mor): Obj => m.dst,
   
-  comp: (g: Mor, f: Mor): Mor => {
+  compose: (g: Mor, f: Mor): Mor => {
     if (f.dst !== g.src) {
       throw new Error(`Cannot compose: dst(${f.src}→${f.dst}) ≠ src(${g.src}→${g.dst})`);
     }

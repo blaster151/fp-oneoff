@@ -14,7 +14,7 @@ describe('Kan (transport iso) naturality (smoke)', () => {
       id: (o: string) => o === 'X' ? 'idX' : 'idY',
       src: (m: string) => m === 'idX' || m === 'f' ? 'X' : 'Y',
       dst: (m: string) => m === 'idY' ? 'Y' : m === 'f' ? 'Y' : 'X',
-      comp: (h: string, k: string) => {
+      compose: (h: string, k: string) => {
         if (h === 'idX' || h === 'idY') return k;
         if (k === 'idX' || k === 'idY') return h;
         if (h === 'f' && k === 'idX') return 'f';
@@ -60,7 +60,7 @@ describe('Kan (transport iso) naturality (smoke)', () => {
       id: (o: string) => 'idX',
       src: (m: string) => 'X',
       dst: (m: string) => 'X',
-      comp: (h: string, k: string) => 'idX'
+      compose: (h: string, k: string) => 'idX'
     };
 
     // Create set functors that are not isomorphic

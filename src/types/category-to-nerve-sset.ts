@@ -12,7 +12,7 @@ export interface SmallCategory<O, M> {
   id:  (o: O) => M;                 // identity at o
   src: (m: M) => O;                 // domain of m
   dst: (m: M) => O;                 // codomain of m
-  comp:(g: M, f: M) => M;           // g ∘ f, requires dst(f) = src(g)
+  compose:(g: M, f: M) => M;           // g ∘ f, requires dst(f) = src(g)
 }
 
 /** Simple arrow for building quivers / free categories. */
@@ -1049,7 +1049,7 @@ export function Disc<X extends string>(objs: ReadonlyArray<X>): FiniteSmallCateg
     id: (o:X)=>({tag:"id", x:o}),
     src: (m)=>m.x,
     dst: (m)=>m.x,
-    comp: (g,f)=> (g.x===f.x ? g : (()=>{ throw new Error("impossible in discrete"); })()),
+    compose: (g,f)=> (g.x===f.x ? g : (()=>{ throw new Error("impossible in discrete"); })()),
     hom: (x, y) => x === y ? [{tag:"id", x}] : []
   };
 }
