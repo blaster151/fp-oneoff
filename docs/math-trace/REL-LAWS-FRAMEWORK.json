@@ -1,17 +1,24 @@
 {
   "id": "REL-LAWS-FRAMEWORK",
-  "source": { "text": "Comprehensive laws framework for testing mathematical structures: monoids, posets, lattices, isomorphisms, natural transformations, adjunctions." },
+  "source": { "text": "Comprehensive laws framework for testing mathematical structures: monoids, posets, lattices, isomorphisms, natural transformations, adjunctions. Includes centralized registry system and Codensity equivalence patterns." },
   "code": [
     "laws/Witness.ts",
     "laws/Monoid.ts",
     "laws/Order.ts",
     "laws/Natural.ts",
-    "laws/Adjunction.ts"
+    "laws/Adjunction.ts",
+    "laws/registry.ts",
+    "laws/packs.ts",
+    "laws/examples/CodensityNat.ts",
+    "laws/examples/ConcreteCodensity.ts"
   ],
   "tests": [
     "laws/__tests__/monoid_laws.test.ts",
     "laws/__tests__/order_laws.test.ts",
-    "laws/__tests__/iso_laws.test.ts"
+    "laws/__tests__/iso_laws.test.ts",
+    "laws/__tests__/all_laws.test.ts",
+    "laws/__tests__/registry_extensions.test.ts",
+    "laws/__tests__/examples.test.ts"
   ],
-  "relatesTo": ["REL-ORDER-THEORY"]
+  "relatesTo": ["REL-ORDER-THEORY", "REL-RING-CORE"]
 }
