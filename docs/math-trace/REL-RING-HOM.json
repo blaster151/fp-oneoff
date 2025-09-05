@@ -1,0 +1,11 @@
+{
+  "id": "REL-RING-HOM",
+  "source": { "text": "Unit-preserving ring homomorphisms on finite rings; composition and identity." },
+  "code": [
+    "structures/ring/RingHom.ts"
+  ],
+  "tests": [
+    "structures/ring/__tests__/ring_hom.test.ts"
+  ],
+  "relatesTo": ["REL-RING-CORE"]
+}

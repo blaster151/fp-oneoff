@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-POLY",
+  "source": { "text": "Finite polynomial rings Z/n[x]/(x^{d+1}); evaluation homs Z/n[x]/(x^{d+1})→Z/n." },
+  "code": ["structures/ring/Poly.ts"],
+  "tests": ["structures/ring/__tests__/poly_znx_trunc.test.ts"],
+  "relatesTo": ["REL-RING-CORE","REL-RING-HOM"]
+}

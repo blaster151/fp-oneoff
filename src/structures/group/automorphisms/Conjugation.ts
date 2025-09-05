@@ -1,4 +1,5 @@
-import { FiniteGroup, GroupHom } from "../Group";
+import { FiniteGroup } from "../Group";
+import { GroupHom } from "../GrpCat";
 import { isIsomorphism } from "../Isomorphism";
 
 /** conj_g : G → G, x ↦ g x g^{-1} */

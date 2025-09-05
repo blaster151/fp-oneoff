@@ -1,0 +1,14 @@
+{
+  "id": "REL-RING-CORE",
+  "source": { "text": "Rings with 1 on finite carriers; ℤ/n and 2×2 matrix rings; total law checker." },
+  "code": [
+    "structures/ring/Ring.ts"
+  ],
+  "tests": [
+    "structures/ring/__tests__/ring_laws.test.ts"
+  ],
+  "unlocks": [
+    "Ring homomorphisms & category structure",
+    "Ideals, quotients, and spectrum-like explorations on finite rings"
+  ]
+}

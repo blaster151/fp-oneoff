@@ -4,6 +4,7 @@ import { hom, idHom, comp } from "../GrpCat";
 import { injectiveOn, surjectiveTo, approxEq } from "../HomHelpers";
 import { parityHom, Z_to_Q, R_to_Cstar_expix } from "../homs/Examples24";
 import { FiniteGroup } from "../Group";
+import { idx } from "../../../util/guards";
 
 // ---------- Theorem 2: Hom category laws
 describe("Theorem 2 (Grp homs form a category)", () => {
@@ -77,7 +78,7 @@ describe("Examples 4–6 (page 12–13)", () => {
 
     // Not injective (x and x+2π collide)
     const approx = approxEq(1e-9);
-    const collide = approx(samples[0] + 2*Math.PI, samples[samples.length-1]); // 0 vs 2π sample
+    const collide = approx(idx(samples, 0) + 2*Math.PI, idx(samples, samples.length-1)); // 0 vs 2π sample
     expect(collide).toBe(true);
     expect(eqC(j.f(0), j.f(2*Math.PI))).toBe(true);
 

@@ -1,4 +1,5 @@
-import { FiniteGroup, GroupHom } from "../Isomorphism";
+import { FiniteGroup } from "../Group";
+import { GroupHom } from "../GrpCat";
 import { isSubgroup } from "../Subgroup";
 
 /** Decide membership in a finite subgroup by carrier + eq. */
@@ -41,6 +42,17 @@ function enumerateCosets<A>(G: FiniteGroup<A>, N: FiniteGroup<A>): { rep: A; ele
 export interface Quotient<A> extends FiniteGroup<{ rep: A }> {
   /** All cosets with their chosen representatives and element lists (debug aid). */
   cosets: { rep: A; elems: A[] }[];
+}
+
+/** Adapter to convert Quotient<A> to FiniteGroup<A> by extracting representatives. */
+export function asFiniteGroup<A>(Q: Quotient<A>): FiniteGroup<A> {
+  return { 
+    elems: Q.elems.map(coset => coset.rep), 
+    eq: (a: A, b: A) => Q.eq({ rep: a }, { rep: b }), 
+    op: (a: A, b: A) => Q.op({ rep: a }, { rep: b }).rep, 
+    id: Q.id.rep, 
+    inv: (a: A) => Q.inv({ rep: a }).rep 
+  };
 }
 
 /** Finite quotient group G/N (left cosets). Requires N ▹ G. */

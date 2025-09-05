@@ -7,7 +7,7 @@
  * IMPORTANT: This is a *witness*, not a runtime proof system.
  * We use it to model the equality GADT (Eql) discussed in Ghani/Johann.
  */
-export interface Eq<A, B> {
+export interface Eq<A, B = A> {
   readonly cast: (a: A) => B;
   readonly sym: () => Eq<B, A>;
   readonly andThen: <C>(next: Eq<B, C>) => Eq<A, C>;

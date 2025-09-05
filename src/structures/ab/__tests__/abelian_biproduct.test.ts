@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Z2, Z3, directSum } from "../examples/AbelianGroups";
 import { tupleScheme } from "../../group/pairing/PairingScheme";
 import { biproduct } from "../builders/Biproduct";
-import { GroupHom } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
 
 // extensional hom equality on a finite source
 function homEq<A,B>(h1: GroupHom<A,B>, h2: GroupHom<A,B>): boolean {

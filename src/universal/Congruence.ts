@@ -3,6 +3,7 @@ import type { UAAlgebra } from "./Algebra";
 import { Var, App, type Term } from "./Term";
 import { opOf } from "./Signature";
 import { FreeAlgebra } from "./FreeAlgebra";
+import { must, idx } from "../util/guards";
 
 export type Equation = { lhs: Term; rhs: Term };
 
@@ -197,7 +198,7 @@ function termEq(x: Term, y: Term): boolean {
   if (a.op !== b.op) return false;
   if (a.args.length !== b.args.length) return false;
   for (let i = 0; i < a.args.length; i++) {
-    if (!termEq(a.args[i], b.args[i])) return false;
+    if (!termEq(idx(a.args, i), idx(b.args, i))) return false;
   }
   return true;
 }

@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-CRT",
+  "source": { "text": "Chinese Remainder for Z/n: factorization into prime powers, idempotents, explicit iso Z/n ≅ Π Z/p_i^{k_i}." },
+  "code": ["structures/ring/CRT.ts"],
+  "tests": ["structures/ring/__tests__/crt_zn.test.ts"],
+  "relatesTo": ["REL-RING-CORE","REL-RING-IDEAL"]
+}

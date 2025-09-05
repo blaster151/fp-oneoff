@@ -1,5 +1,6 @@
 import { FiniteGroup } from "../Group";
-import { GroupHom as BaseGroupHom } from "../GrpCat";
+import { GroupHom as BaseGroupHom, hom } from "../GrpCat";
+import { must, idx } from "../../../util/guards";
 
 // Extended GroupHom interface with source and target for compatibility
 interface GroupHom<A, B> extends BaseGroupHom<A, B> {
@@ -18,11 +19,15 @@ export function enumerateEndomorphisms<A>(G: FiniteGroup<A>, maxSize=9): GroupHo
     for (let i=0;i<n;i++) { acc[pos]=i; backtrack(pos+1, acc); }
   };
   backtrack(0, []);
-  const idx = (a:A)=> G.elems.findIndex(x=>G.eq(x,a));
+  const getIdx = (a:A)=> G.elems.findIndex(x=>G.eq(x,a));
 
   const endos: GroupHom<A,A>[] = [];
   outer: for (const m of maps) {
-    const f = (a:A)=> G.elems[m[idx(a)]];
+    const f = (a:A)=> {
+      const i = getIdx(a);
+      const mapIdx = idx(m, i);
+      return idx(G.elems, mapIdx);
+    };
     // hom check
     for (const x of G.elems) for (const y of G.elems) {
       const lhs = f(G.op(x,y));
@@ -40,8 +45,8 @@ export function endMonoid<A>(G: FiniteGroup<A>) {
   const eq = (f:GroupHom<A,A>, g:GroupHom<A,A>) =>
     G.elems.every(a => G.eq(f.f(a), g.f(a)));
   const op = (f:GroupHom<A,A>, g:GroupHom<A,A>) =>
-    ({ source:G, target:G, f:(a:A)=> g.f(f.f(a)), verify: () => true });
-  const e = { source:G, target:G, f:(a:A)=>a, verify: () => true };
+    hom(G, G, (a:A)=> g.f(f.f(a)), () => true);
+  const e = hom(G, G, (a:A)=>a, () => true);
   const inv = (_:GroupHom<A,A>) => { throw new Error("End(G) is a monoid (no inv in general)"); };
   return { elems, eq, op, e, inv };
 }

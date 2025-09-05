@@ -1,0 +1,15 @@
+{
+  "id": "REL-TOPOLOGY-EXTENDED",
+  "source": { "text": "Extended topology framework with Sierpinski space, subspace embeddings, product universal arrows, and continuity laws beyond discrete spaces." },
+  "code": [
+    "top/Spaces.ts",
+    "top/Embeddings.ts"
+  ],
+  "tests": [
+    "top/__tests__/continuity_laws.test.ts"
+  ],
+  "laws": [
+    "laws/TopContinuity.ts"
+  ],
+  "relatesTo": ["REL-KLEISLI-TOPOLOGY", "REL-KERNEL-MATRIX-ISO"]
+}

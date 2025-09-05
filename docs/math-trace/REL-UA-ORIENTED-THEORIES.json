@@ -1,0 +1,14 @@
+{
+  "id": "REL-UA-ORIENTED-THEORIES",
+  "source": { "text": "Deterministic normal forms per theory: monoid (assoc+unit) with right-association; semilattice (ACI+unit) with sort/dedup." },
+  "code": [
+    "universal/rewrite/Oriented.ts"
+  ],
+  "tests": [
+    "universal/rewrite/__tests__/oriented_nfs.test.ts"
+  ],
+  "unlocks": [
+    "Efficient equality via NF",
+    "Bridging rewrite NF and quotient congruence classes"
+  ]
+}

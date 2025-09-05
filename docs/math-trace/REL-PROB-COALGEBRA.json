@@ -1,0 +1,15 @@
+{
+  "id": "REL-PROB-COALGEBRA",
+  "source": { "text": "Finite probability distributions with monad laws, Markov kernels (stochastic matrices), and coalgebras for Moore machines (F(X)=O×X^Σ)." },
+  "code": [
+    "prob/Dist.ts",
+    "prob/Markov.ts",
+    "coalgebra/Coalgebra.ts"
+  ],
+  "tests": [
+    "prob/__tests__/dist_monad_laws.test.ts",
+    "prob/__tests__/markov_laws.test.ts",
+    "coalgebra/__tests__/moore_hom.test.ts"
+  ],
+  "relatesTo": ["REL-LAWS-FRAMEWORK"]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "REL-ORDER-THEORY",
+  "source": { "text": "Order theory foundations: posets, lattices (powerset), Galois connections, least fixed points, finite domain theory (CPOs, Kleene iteration), DSL builders." },
+  "code": [
+    "order/Poset.ts",
+    "order/Lattice.ts", 
+    "order/Galois.ts",
+    "order/Domain.ts",
+    "order/dsl.ts"
+  ],
+  "tests": [
+    "order/__tests__/poset_lattice_galois.test.ts",
+    "order/__tests__/domain_cpo.test.ts",
+    "order/__tests__/dsl_builders.test.ts"
+  ],
+  "relatesTo": []
+}

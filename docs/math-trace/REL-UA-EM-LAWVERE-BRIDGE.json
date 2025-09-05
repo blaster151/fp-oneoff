@@ -1,0 +1,19 @@
+{
+  "id": "REL-UA-EM-LAWVERE-BRIDGE",
+  "source": { "text": "Eilenberg–Moore ↔ Lawvere models bridge: UA algebras and T-algebras are equivalent; homomorphisms coincide with T-algebra morphisms; round-trip conversion preserves operations." },
+  "code": [
+    "universal/em/Equivalence.ts"
+  ],
+  "tests": [
+    "universal/em/__tests__/em_lawvere_equiv.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-MONAD-SET",
+    "REL-UA-CORE"
+  ],
+  "unlocks": [
+    "Eilenberg–Moore algebras as models",
+    "Monad-algebra correspondence",
+    "Universal algebra via categorical semantics"
+  ]
+}

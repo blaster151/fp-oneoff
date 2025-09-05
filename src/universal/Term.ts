@@ -1,4 +1,5 @@
 import type { OpSym } from "./Signature";
+import { must, idx } from "../util/guards";
 
 export type Var = { tag: "Var"; ix: number };
 export type App = { tag: "App"; op: OpSym; args: Term[] };
@@ -20,6 +21,6 @@ export function termEq(x: Term, y: Term): boolean {
   const a = x as App, b = y as App;
   if (a.op !== b.op) return false; // same OpSym object expected
   if (a.args.length !== b.args.length) return false;
-  for (let i = 0; i < a.args.length; i++) if (!termEq(a.args[i], b.args[i])) return false;
+  for (let i = 0; i < a.args.length; i++) if (!termEq(idx(a.args, i), idx(b.args, i))) return false;
   return true;
 }

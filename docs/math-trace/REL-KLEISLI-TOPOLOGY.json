@@ -1,0 +1,19 @@
+{
+  "id": "REL-KLEISLI-TOPOLOGY",
+  "source": { "text": "Kleisli category for probability distributions (Markov kernels) and finite topology with product universal property." },
+  "code": [
+    "prob/Kleisli.ts",
+    "top/Topology.ts",
+    "top/Subspace.ts",
+    "top/ProductUP.ts"
+  ],
+  "tests": [
+    "prob/__tests__/kleisli_laws.test.ts",
+    "top/__tests__/product_up.test.ts"
+  ],
+  "laws": [
+    "laws/ProbKleisli.ts",
+    "laws/TopProductUP.ts"
+  ],
+  "relatesTo": ["REL-PROB-COALGEBRA", "REL-LAWS-FRAMEWORK"]
+}

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Z2 } from "../examples/AbelianGroups";
 import { enumerateHoms } from "../hom/Enumerate";
 import { homAdd, zeroHom, homNeg } from "../AbGroup";
-import { GroupHom } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
 
 describe("Hom(Z2,Z2) forms an abelian group under pointwise +", () => {
   const G = Z2, H = Z2;

@@ -1,0 +1,12 @@
+{
+  "id": "REL-AB-CATEGORY",
+  "source": { "text": "Category Ab: objects finite abelian groups; morphisms group homs; identities/compose; zero object/morphisms; biproducts as product+coproduct with universal properties; exactness at middle (im=ker)." },
+  "code": ["structures/ab/AbCategory.ts"],
+  "tests": [
+    "structures/ab/__tests__/ab_category_laws.test.ts",
+    "structures/ab/__tests__/ab_biproduct_up.test.ts",
+    "structures/ab/__tests__/ab_exact_sequence.test.ts",
+    "structures/ab/__tests__/ab_bilinearity.test.ts"
+  ],
+  "relatesTo": ["REL-AB-CORE","REL-AB-BIPRODUCT","REL-AB-KER-COKER","REL-AB-PREADDITIVE"]
+}

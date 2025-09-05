@@ -92,7 +92,7 @@ export function projToQuotient<A>(
 ): GroupHom<A, Coset<A>> {
   const Q = quotientGroup(G, N);
   const f = (g: A) => ({ rep: g });
-  return { f, verify: () => true };
+  return { source: G, target: Q, f, verify: () => true };
 }
 
 /** Kernel of hom f : G→H (as subgroup of G). */

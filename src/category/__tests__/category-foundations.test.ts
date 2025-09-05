@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Nat } from "../Nat.js";
 import { HFunctor } from "../HFunctor.js";
 import { Lan } from "../Lan.js";
+import type { Eq } from "../Eq.js";
 
 describe("Category Theory Foundations", () => {
   it("Natural transformations can be composed", () => {
@@ -48,7 +49,7 @@ describe("Category Theory Foundations", () => {
     type LanIdId<c> = Lan<Id<any>, Id<any>, c>;
     
     // A concrete implementation
-    const lanIdId: LanIdId<number> = (eq: (x: any, y: number) => boolean) => {
+    const lanIdId: LanIdId<number> = (eq: Eq<any, number>) => {
       // Given equality with number, we can return a value of type b
       // This is a simplified example - in practice you'd use the equality witness
       return {} as any;

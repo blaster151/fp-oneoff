@@ -3,14 +3,15 @@ import { HFunctor } from "../HFunctor";
 import type { Nat1 } from "../Nat";
 
 /** A tiny example HFunctor: simple wrapper that applies a transformation. */
-interface Wrap<G> { 
+interface Wrap<G, A = unknown> { 
   wrap: G; 
 }
+type Wrap1<G> = { wrap: G };
 
 // Implement hfmap: given nt: G ~> H, send Wrap<G> ~> Wrap<H>
-const WrapHFunctor: HFunctor<Wrap> = {
+const WrapHFunctor: HFunctor<Wrap1<any>> = {
   hfmap<G, H>(nt: Nat1<G, H>) {
-    return <A>(wa: Wrap<G>): Wrap<H> => ({ wrap: nt(wa.wrap) });
+    return (wa: Wrap1<G>): Wrap1<H> => ({ wrap: nt(wa.wrap) });
   }
 };
 

@@ -1,5 +1,6 @@
 import { FiniteGroup } from "./Group";
 import { GroupHom } from "./GrpCat";
+import { must, idx } from "../../util/guards";
 
 /** Subgroup inclusion ι : H ↪ G (carriers share the same A; H.elems ⊆ G.elems). */
 export function inclusion<A>(H: FiniteGroup<A>, G: FiniteGroup<A>): GroupHom<A,A> {
@@ -8,6 +9,8 @@ export function inclusion<A>(H: FiniteGroup<A>, G: FiniteGroup<A>): GroupHom<A,A
     throw new Error("inclusion: H is not a subgroup of G over the same carrier.");
   }
   return {
+    source: H,
+    target: G,
     f: (h: A) => h,               // identity on the underlying carrier
     verify: () => {
       for (const x of H.elems) for (const y of H.elems) {
@@ -80,26 +83,29 @@ export function automorphismsBruteforce<A>(G: FiniteGroup<A>): Array<GroupHom<A,
   const n = G.elems.length;
   if (n > 8) throw new Error("automorphismsBruteforce: set too large; use a specialized routine.");
   // enumerate permutations as arrays of indices
-  const idx = [...Array(n).keys()];
+  const indices = [...Array(n).keys()];
   const perms: number[][] = [];
   const permute = (arr: number[], l=0) => {
     if (l === arr.length) { perms.push(arr.slice()); return; }
     for (let i=l;i<arr.length;i++){
-      [arr[l],arr[i]]=[arr[i],arr[l]];
+      const lVal = idx(arr, l);
+      const iVal = idx(arr, i);
+      [arr[l],arr[i]]=[iVal,lVal];
       permute(arr,l+1);
-      [arr[l],arr[i]]=[arr[i],arr[l]];
+      [arr[l],arr[i]]=[lVal,iVal];
     }
   };
-  permute(idx);
+  permute(indices);
 
   const autos: Array<GroupHom<A,A>> = [];
   for (const p of perms) {
     const map = (a:A) => {
       const i = G.elems.findIndex(x => G.eq(x,a));
-      return G.elems[p[i]];
+      const permIdx = idx(p, i);
+      return idx(G.elems, permIdx);
     };
     if (isHom(G,G,map) && bijectionWitness(G,G,map)) {
-      autos.push({ f: map, verify: () => true });
+      autos.push({ source: G, target: G, f: map, verify: () => true });
     }
   }
   return autos;

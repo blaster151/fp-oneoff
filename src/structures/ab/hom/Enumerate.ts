@@ -1,4 +1,6 @@
-import { FiniteGroup, GroupHom } from "../../group/Group";
+import { FiniteGroup } from "../../group/Group";
+import { GroupHom, hom } from "../../group/GrpCat";
+import { must, idx } from "../../../util/guards";
 
 /** Brute-force enumerate homomorphisms G→H for very small G,H (explodes quickly). */
 export function enumerateHoms<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>, maxSize=9): GroupHom<A,B>[] {
@@ -16,7 +18,7 @@ export function enumerateHoms<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>, maxSize
 
   const homs: GroupHom<A,B>[] = [];
   outer: for (const map of funcs) {
-    const f = (a:A)=> H.elems[map[idxA(a)]];
+    const f = (a:A)=> idx(H.elems, must(map[idxA(a)], "missing mapping"), "element not found");
     // hom law
     for (const x of G.elems) for (const y of G.elems) {
       const lhs = f(G.op(x,y));
@@ -25,7 +27,7 @@ export function enumerateHoms<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>, maxSize
     }
     // identity check
     if (!H.eq(f(G.id), H.id)) continue;
-    homs.push({ source:G, target:H, f });
+    homs.push(hom(G, H, f, () => true));
   }
   return homs;
 }

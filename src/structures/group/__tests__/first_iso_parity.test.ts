@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Z2, Z8 } from "../util/FiniteGroups";
-import { GroupHom } from "../Isomorphism";
+import { GroupHom } from "../GrpCat";
 import { firstIsomorphism } from "../theorems/FirstIso";
 import { subgroupFromPredicate } from "../Subgroup";
 import { quotientGroup } from "../builders/Quotient";

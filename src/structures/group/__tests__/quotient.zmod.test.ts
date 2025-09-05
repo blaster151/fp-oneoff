@@ -17,7 +17,7 @@ describe("Z6 / ker(mod3) ≅ im(mod3)", () => {
   it("First Isomorphism: Z6/ker → Z3 is iso onto image", () => {
     const Z6 = Zn(6), Z3 = Zn(3);
     const f = hom(Z6, Z3, x => x % 3);
-    expect(f.verify()).toBe(true);
+    expect(f.verify?.()).toBe(true);
 
     // ker(f) = {0,3}
     const kerElems = Z6.elems.filter(x => Z3.eq(f.f(x), Z3.id));

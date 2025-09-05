@@ -1,27 +1,37 @@
-import { FiniteGroup, GroupHom } from "../Group";
+import { FiniteGroup } from "../Group";
+import { GroupHom, hom } from "../GrpCat";
 import { GroupIso, isoId, isoComp, isoInverse, isoEqByPoints } from "../iso/GroupIso";
+import { must, idx } from "../../../util/guards";
 
 // ---------- Utilities ----------
 function eqArray<A>(xs: A[], ys: A[], eq: (a: A, b: A) => boolean): boolean {
   if (xs.length !== ys.length) return false;
-  return xs.every((x, i) => eq(x, ys[i]));
+  return xs.every((x, i) => eq(x, idx(ys, i)));
 }
 
 // All permutations of indices [0..n-1] (for small n only)
 function* permute(n: number): Generator<number[]> {
-  const a = [...Array(n).keys()];
+  const a: number[] = [...Array(n).keys()];
   function* gen(k: number): Generator<number[]> {
     if (k === n) { yield a.slice(); return; }
-    for (let i = k; i < n; i++) { [a[k], a[i]] = [a[i], a[k]]; yield* gen(k + 1); [a[k], a[i]] = [a[i], a[k]]; }
+    for (let i = k; i < n; i++) { 
+      const kVal = idx(a, k), iVal = idx(a, i);
+      [a[k], a[i]] = [iVal, kVal]; 
+      yield* gen(k + 1); 
+      [a[k], a[i]] = [kVal, iVal]; 
+    }
   }
   yield* gen(0);
 }
 
 function buildHomFromPerm<A>(G: FiniteGroup<A>, perm: number[]): GroupHom<A, A> {
   const dom = G.elems;
-  const img = perm.map(i => dom[i]);
-  const map = (a: A): A => img[dom.findIndex(d => G.eq(d, a))];
-  return { source: G, target: G, f: map };
+  const img = perm.map(i => idx(dom, i));
+  const map = (a: A): A => {
+    const j = dom.findIndex(d => G.eq(d, a));
+    return idx(img, j, "element not found");
+  };
+  return hom(G, G, map, () => true);
 }
 
 function isHomomorphism<A>(G: FiniteGroup<A>, h: GroupHom<A, A>): boolean {
@@ -36,7 +46,7 @@ function isHomomorphism<A>(G: FiniteGroup<A>, h: GroupHom<A, A>): boolean {
 
 function inversePerm(perm: number[]): number[] {
   const inv = new Array(perm.length);
-  for (let i = 0; i < perm.length; i++) inv[perm[i]] = i;
+  for (let i = 0; i < perm.length; i++) inv[idx(perm, i)] = i;
   return inv;
 }
 
@@ -52,7 +62,9 @@ export function enumerateAutomorphisms<A>(G: FiniteGroup<A>, maxSize: number = 1
   const autos: Auto<A>[] = [];
   for (const p of permute(G.elems.length)) {
     // Fast reject: identity must map to identity.
-    if (!G.eq(G.elems[p[G.elems.findIndex(x => G.eq(x, G.id))]], G.id)) continue;
+    const idIdx = G.elems.findIndex(x => G.eq(x, G.id));
+    const mappedIdIdx = idx(p, idIdx);
+    if (!G.eq(idx(G.elems, mappedIdIdx), G.id)) continue;
 
     const f = buildHomFromPerm(G, p);
     if (!isHomomorphism(G, f)) continue;

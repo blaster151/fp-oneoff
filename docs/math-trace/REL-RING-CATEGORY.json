@@ -1,0 +1,11 @@
+{
+  "id": "REL-RING-CATEGORY",
+  "source": { "text": "Category of (unital) rings: product ring and projections; forgetful functor Ring→Ab (additive group)." },
+  "code": [
+    "structures/ring/RingCategory.ts"
+  ],
+  "tests": [
+    "structures/ring/__tests__/ring_product_category.test.ts"
+  ],
+  "relatesTo": ["REL-RING-CORE", "REL-AB-CORE", "REL-AB-CATEGORY"]
+}

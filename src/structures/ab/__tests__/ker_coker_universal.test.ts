@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Z4, Z2 } from "../examples/AbelianGroups";
 import { ker, coker, zeroMor } from "../builders/KernelsCokernels";
-import { GroupHom } from "../../group/Group";
+import { GroupHom } from "../../group/GrpCat";
 
 /** f: Z4 → Z2, x ↦ x mod 2. ker f = {0,2}; coker f is trivial (since image=Z2). */
 describe("Kernels & cokernels in Ab with universal properties", () => {

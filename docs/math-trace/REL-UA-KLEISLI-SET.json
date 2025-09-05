@@ -1,0 +1,14 @@
+{
+  "id": "REL-UA-KLEISLI-SET",
+  "source": { "text": "Kleisli category for monad built from a finitary theory on Set; identity via η, composition via bind; laws tested." },
+  "code": [
+    "universal/monad/Kleisli.ts"
+  ],
+  "tests": [
+    "universal/monad/__tests__/kleisli_laws.test.ts"
+  ],
+  "relatesTo": [
+    "REL-UA-MONAD-SET",
+    "REL-UA-LAWVERE-MIN"
+  ]
+}
