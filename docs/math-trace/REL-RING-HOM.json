@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-HOM",
+  "source": { "text": "Ring homomorphisms: preservation of +, *, 0, 1; composition; identity; verification of homomorphism properties." },
+  "code": ["structures/ring/RingHom.ts"],
+  "tests": ["structures/ring/__tests__/ring_hom.test.ts"],
+  "relatesTo": ["REL-RING-CORE"]
+}

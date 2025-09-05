@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-CATEGORY",
+  "source": { "text": "Category Ring: product rings, zero morphisms, universal properties, forgetful functor Ring→Ab, biproduct preservation." },
+  "code": ["structures/ring/RingCategory.ts"],
+  "tests": ["structures/ring/__tests__/ring_category.test.ts"],
+  "relatesTo": ["REL-RING-CORE", "REL-AB-CATEGORY"]
+}

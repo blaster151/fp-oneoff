@@ -1,5 +1,6 @@
 import { FiniteAbGroup, Trivial } from "./AbGroup";
-import { GroupHom, FiniteGroup } from "../group/GrpCat";
+import { GroupHom } from "../group/GrpCat";
+import { FiniteGroup } from "../group/Group";
 import { PairingScheme, tupleScheme } from "../group/pairing/PairingScheme";
 import { productGroup } from "../group/builders/Product";
 import { kernel, image } from "../group/builders/Quotient";
@@ -22,52 +23,52 @@ export function zero<A,B>(G: FiniteAbGroup<A>, H: FiniteAbGroup<B>): GroupHom<A,
 }
 
 /** biproduct: reuse productGroup as the underlying carrier (direct sum for finite Ab) */
-export function biproduct<A,B,O>(
+export function biproduct<A,B>(
   G: FiniteAbGroup<A>,
-  H: FiniteAbGroup<B>,
-  S: PairingScheme<A,B,O> = tupleScheme<A,B>()
+  H: FiniteAbGroup<B>
 ): {
-  GH: FiniteAbGroup<O>,
-  i1: GroupHom<A,O>, i2: GroupHom<B,O>,
-  p1: GroupHom<O,A>, p2: GroupHom<O,B>
+  GH: FiniteAbGroup<{a:A,b:B}>,
+  i1: GroupHom<A,{a:A,b:B}>, i2: GroupHom<B,{a:A,b:B}>,
+  p1: GroupHom<{a:A,b:B},A>, p2: GroupHom<{a:A,b:B},B>
 } {
-  const GH = productGroup(G as unknown as FiniteGroup<A>, H as unknown as FiniteGroup<B>, S) as FiniteAbGroup<O>;
-  const i1: GroupHom<A,O> = { source:G, target:GH, f:(a:A)=> S.pair(a, H.id) };
-  const i2: GroupHom<B,O> = { source:H, target:GH, f:(b:B)=> S.pair(G.id, b) };
-  const p1: GroupHom<O,A> = { source:GH, target:G, f:(o:O)=> S.left(o) };
-  const p2: GroupHom<O,B> = { source:GH, target:H, f:(o:O)=> S.right(o) };
+  const S = tupleScheme<A,B>();
+  const GH = productGroup(G as unknown as FiniteGroup<A>, H as unknown as FiniteGroup<B>, S) as FiniteAbGroup<{a:A,b:B}>;
+  const i1: GroupHom<A,{a:A,b:B}> = { source:G, target:GH, f:(a:A)=> S.pair(a, H.id) };
+  const i2: GroupHom<B,{a:A,b:B}> = { source:H, target:GH, f:(b:B)=> S.pair(G.id, b) };
+  const p1: GroupHom<{a:A,b:B},A> = { source:GH, target:G, f:(o:{a:A,b:B})=> S.left(o) };
+  const p2: GroupHom<{a:A,b:B},B> = { source:GH, target:H, f:(o:{a:A,b:B})=> S.right(o) };
   return { GH, i1, i2, p1, p2 };
 }
 
 /** Universal property builders */
 
 // Product U.P.: for p:X→G and q:X→H, ⟨p,q⟩: X→G⊕H with p1∘⟨p,q⟩=p, p2∘⟨p,q⟩=q
-export function productLift<X,A,B,O>(
+export function productLift<X,A,B>(
   X: FiniteAbGroup<X>,
   G: FiniteAbGroup<A>,
   H: FiniteAbGroup<B>,
   p: GroupHom<X,A>,
-  q: GroupHom<X,B>,
-  S: PairingScheme<A,B,O> = tupleScheme<A,B>()
-): { GH: FiniteAbGroup<O>, pair: GroupHom<X,O> } {
-  const { GH, p1, p2 } = biproduct(G,H,S);
-  const pair: GroupHom<X,O> = { source:X, target:GH, f: (x:X)=> S.pair(p.f(x), q.f(x)) };
+  q: GroupHom<X,B>
+): { GH: FiniteAbGroup<{a:A,b:B}>, pair: GroupHom<X,{a:A,b:B}> } {
+  const { GH, p1, p2 } = biproduct(G,H);
+  const S = tupleScheme<A,B>();
+  const pair: GroupHom<X,{a:A,b:B}> = { source:X, target:GH, f: (x:X)=> S.pair(p.f(x), q.f(x)) };
   return { GH, pair };
 }
 
 // Coproduct U.P.: for f:G→Y and g:H→Y, [f,g]: G⊕H→Y with [f,g]∘i1=f, [f,g]∘i2=g
-export function coproductLift<A,B,O,Y>(
+export function coproductLift<A,B,Y>(
   G: FiniteAbGroup<A>,
   H: FiniteAbGroup<B>,
   Y: FiniteAbGroup<Y>,
   f: GroupHom<A,Y>,
-  g: GroupHom<B,Y>,
-  S: PairingScheme<A,B,O> = tupleScheme<A,B>()
-): { GH: FiniteAbGroup<O>, copair: GroupHom<O,Y> } {
-  const { GH, i1, i2 } = biproduct(G,H,S);
-  const copair: GroupHom<O,Y> = {
+  g: GroupHom<B,Y>
+): { GH: FiniteAbGroup<{a:A,b:B}>, copair: GroupHom<{a:A,b:B},Y> } {
+  const { GH, i1, i2 } = biproduct(G,H);
+  const S = tupleScheme<A,B>();
+  const copair: GroupHom<{a:A,b:B},Y> = {
     source: GH, target: Y,
-    f: (o:O)=> Y.op(f.f(S.left(o)), g.f(S.right(o)))
+    f: (o:{a:A,b:B})=> Y.op(f.f(S.left(o)), g.f(S.right(o)))
   };
   return { GH, copair };
 }

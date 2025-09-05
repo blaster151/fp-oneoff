@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-CORE",
+  "source": { "text": "Finite rings: ℤ/n and M₂(ℤ/n) with ring law verification, distributivity, associativity, commutativity checks." },
+  "code": ["structures/ring/Ring.ts"],
+  "tests": ["structures/ring/__tests__/ring_laws.test.ts"],
+  "relatesTo": ["REL-AB-CORE"]
+}

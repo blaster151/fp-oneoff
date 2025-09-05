@@ -1,0 +1,7 @@
+{
+  "id": "REL-RING-IDEAL",
+  "source": { "text": "Ideals: generation from sets, closure properties, quotient rings, prime/maximal ideals, field detection." },
+  "code": ["structures/ring/Ideal.ts"],
+  "tests": ["structures/ring/__tests__/ideal.test.ts"],
+  "relatesTo": ["REL-RING-CORE", "REL-RING-HOM"]
+}
