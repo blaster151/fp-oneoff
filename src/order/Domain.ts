@@ -10,7 +10,7 @@ export type CPO<A> = Poset<A> & {
 };
 
 export function isChain<A>(P: Poset<A>, xs: A[]): boolean {
-  for (let i=0;i+1<xs.length;i++) if (!P.leq(xs[i], xs[i+1])) return false;
+  for (let i=0;i+1<xs.length;i++) if (!P.leq(xs[i]!, xs[i+1]!)) return false;
   return xs.length > 0;
 }
 
@@ -53,8 +53,8 @@ export function isScottContinuous<A>(M: Mono<A>): boolean {
     if (prefix.length) chains.push(prefix.slice());
     if (prefix.length >= maxLen) return;
     for (let i=lastIx;i<E.length;i++) {
-      const a = E[i];
-      if (prefix.length === 0 || X.leq(prefix[prefix.length-1], a)) {
+      const a = E[i]!;
+      if (prefix.length === 0 || X.leq(prefix[prefix.length-1]!, a)) {
         prefix.push(a);
         collectChains(prefix, i, maxLen);
         prefix.pop();

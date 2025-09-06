@@ -67,3 +67,6 @@ export function Product<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>): FiniteGroup<
     name: `(${G.name ?? 'G'})×(${H.name ?? 'H'})`
   };
 }
+
+// Re-export shims used in tests from Hom.ts for convenience
+export { groupHom as hom, composeHom as composeHomomorphisms, idHom } from "./Hom";

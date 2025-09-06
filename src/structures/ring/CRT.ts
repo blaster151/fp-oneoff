@@ -38,16 +38,16 @@ export function crtIsomorphism(ns:number[]){
   const n = ns.reduce((a,b)=>a*b,1);
   // sanity: pairwise coprime
   for(let i=0;i<ns.length;i++) for(let j=i+1;j<ns.length;j++)
-    if(gcd(ns[i],ns[j])!==1) throw new Error("crtIsomorphism: ns must be pairwise coprime");
+    if(gcd(ns[i]!,ns[j]!)!==1) throw new Error("crtIsomorphism: ns must be pairwise coprime");
   const e = crtIdempotents(ns);
   const Zn = ZnRing(n);
   const cod: Array<FiniteRing<number>> = ns.map(ZnRing);
   // φ: Z_n → Π Z_{n_i}
-  const phi = (x:number)=> ns.map(ni => x % ni);
+  const phi = (x:number)=> ns.map(ni => x % ni!);
   // ψ: Π Z_{n_i} → Z_n  via sum_i x_i * e_i  (mod n)
   const psi = (xs:number[])=>{
     let s = 0;
-    for(let i=0;i<ns.length;i++) s = (s + (xs[i]*e[i])) % n;
+    for(let i=0;i<ns.length;i++) s = (s + ((xs[i]!)*(e[i]!))) % n;
     return ((s % n)+n)%n;
   };
   return { n, factors:ns, e, phi, psi, Zn, cod };

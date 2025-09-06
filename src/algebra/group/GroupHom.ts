@@ -11,7 +11,7 @@ export class GroupHom<G, H> {
     readonly map: (g: G) => H
   ) {}
 
-  /** Law: f(x ◦ y) = f(x) ⋄ f(y) and f(e_G) = e_H, f(x^{-1}) = f(x)^{-1}. */
+  /** Law: f(x ◦ y) = f(x) ⋄ f(y) and f(e_G) = e_H, f(x)^{-1} = f(x)^{-1}. */
   respectsOp(x: G, y: G): boolean {
     const { G, H, map: f } = this;
     return H.eq(f(G.op(x, y)), H.op(f(x), f(y)));
@@ -58,4 +58,7 @@ export class GroupHom<G, H> {
 
     return { quotient, pi, iota, law_compose_equals_f };
   }
+
+  /** Optional compatibility method for tests that expect `verify()` on homs. */
+  verify?(): boolean;
 }

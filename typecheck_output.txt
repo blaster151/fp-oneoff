@@ -1,168 +1,134 @@
-
-> fp-oneoff@1.0.0 typecheck
-> tsc --noEmit
-
-src/algebra/semiringlike/free/FreeMonoid.ts(9,57): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/category/__tests__/category-foundations.test.ts(51,11): error TS2322: Type '(eq: (x: any, y: number) => boolean) => any' is not assignable to type 'Lan<any, any, number>'.
-  Types of parameters 'eq' and 'eq' are incompatible.
-    Type 'Eq<any, number>' is not assignable to type '(x: any, y: number) => boolean'.
-      Type 'Eq<any, number>' provides no match for the signature '(x: any, y: number): boolean'.
-src/category/__tests__/hcomp.lan.test.ts(14,23): error TS2314: Generic type 'Wrap' requires 2 type argument(s).
-src/category/__tests__/hcomp.lan.test.ts(23,19): error TS2314: Generic type 'Id' requires 1 type argument(s).
-src/category/__tests__/hcomp.lan.test.ts(23,23): error TS2314: Generic type 'Box' requires 1 type argument(s).
-src/category/__tests__/hfunctor.shim.test.ts(11,30): error TS2314: Generic type 'Wrap<G>' requires 1 type argument(s).
-src/category/__tests__/lan-gadt-bridge.test.ts(8,32): error TS2345: Argument of type 'Eq<any>' is not assignable to parameter of type 'Eq<any, number>'.
-src/category/__tests__/lan-gadt-bridge.test.ts(14,35): error TS2345: Argument of type 'Eq<any>' is not assignable to parameter of type 'Eq<any, number>'.
-src/category/examples/LanGadtBridge.ts(20,14): error TS2322: Type '(eq: Eq<any>) => any' is not assignable to type 'LanIdId<number>'.
-  Types of parameters 'eq' and 'eq' are incompatible.
-    Type 'Eq<any, number>' is not assignable to type 'Eq<any>'.
-      Type 'Eq<any, number>' provides no match for the signature '(x: any, y: any): boolean'.
-src/category/examples/LanGadtBridge.ts(31,14): error TS2322: Type '(eq: Eq<any>) => any' is not assignable to type 'LanIdMaybe<number>'.
-  Types of parameters 'eq' and 'eq' are incompatible.
-    Type 'Eq<any, number>' is not assignable to type 'Eq<any>'.
-      Type 'Eq<any, number>' provides no match for the signature '(x: any, y: any): boolean'.
-src/category/examples/LanGadtBridge.ts(41,14): error TS2345: Argument of type 'Eq<any>' is not assignable to parameter of type 'Eq<h, c>'.
-src/higher/__tests__/hcata.compose.demo.test.ts(20,60): error TS2314: Generic type 'Id' requires 1 type argument(s).
-src/higher/__tests__/hcata.compose.demo.test.ts(30,35): error TS2314: Generic type 'Id' requires 1 type argument(s).
-src/higher/__tests__/hcata.compose.demo.test.ts(34,24): error TS2314: Generic type 'Id' requires 1 type argument(s).
-src/higher/__tests__/hcata.compose.demo.test.ts(35,28): error TS2314: Generic type 'Id' requires 1 type argument(s).
-src/higher/__tests__/hcata.compose.demo.test.ts(50,24): error TS2314: Generic type 'Id' requires 1 type argument(s).
-src/higher/__tests__/hcata.compose.demo.test.ts(51,28): error TS2314: Generic type 'Id' requires 1 type argument(s).
+src/cat/set/SetCat.ts(80,3): error TS2375: Type '{ isTotal: true; injective: boolean; surjective: boolean; bijective: boolean; isMono: boolean; isEpi: boolean; inverse: SetHom<B, A> | undefined; }' is not assignable to type 'SetWitnesses<A, B>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
+  Types of property 'inverse' are incompatible.
+    Type 'SetHom<B, A> | undefined' is not assignable to type 'SetHom<B, A>'.
+      Type 'undefined' is not assignable to type 'SetHom<B, A>'.
 src/higher/__tests__/hcata.compose.demo.test.ts(59,24): error TS2347: Untyped function calls may not accept type arguments.
-src/structures/ab/examples/AbelianGroups.ts(17,3): error TS2322: Type 'PairingScheme<A, B, { a: A; b: B; }>' is not assignable to type 'PairingScheme<A, B, O>'.
-  The types returned by 'pair(...)' are incompatible between these types.
-    Type '{ a: A; b: B; }' is not assignable to type 'O'.
-      'O' could be instantiated with an arbitrary type which could be unrelated to '{ a: A; b: B; }'.
-src/structures/ab/hom/Enumerate.ts(20,31): error TS2538: Type 'undefined' cannot be used as an index type.
-src/structures/group/Isomorphism.ts(91,20): error TS2349: This expression is not callable.
-  Type 'number[]' has no call signatures.
-src/structures/group/Isomorphism.ts(92,20): error TS2349: This expression is not callable.
-  Type 'number[]' has no call signatures.
-src/structures/group/Isomorphism.ts(104,23): error TS2349: This expression is not callable.
-  Type 'number[]' has no call signatures.
-src/structures/group/Isomorphism.ts(105,14): error TS2349: This expression is not callable.
-  Type 'number[]' has no call signatures.
+src/laws/__tests__/iso_laws.test.ts(45,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(20,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(24,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(55,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(59,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(91,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(92,12): error TS2532: Object is possibly 'undefined'.
+src/laws/__tests__/registry_extensions.test.ts(93,12): error TS2532: Object is possibly 'undefined'.
+src/laws/examples/CodensityNat.ts(11,25): error TS2314: Generic type 'GA' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(11,29): error TS2314: Generic type 'G' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(12,18): error TS2314: Generic type 'GA' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(12,22): error TS2314: Generic type 'G' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(14,16): error TS2314: Generic type 'GA' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(14,19): error TS2314: Generic type 'G' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(16,16): error TS2314: Generic type 'GA' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(16,19): error TS2314: Generic type 'G' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(21,33): error TS2314: Generic type 'GA' requires 1 type argument(s).
+src/laws/examples/CodensityNat.ts(21,36): error TS2314: Generic type 'G' requires 1 type argument(s).
+src/laws/examples/ConcreteCodensity.ts(30,33): error TS2314: Generic type 'List' requires 1 type argument(s).
+src/laws/examples/ConcreteCodensity.ts(30,57): error TS2314: Generic type 'List' requires 1 type argument(s).
+src/laws/examples/ConcreteCodensity.ts(37,37): error TS2314: Generic type 'List' requires 1 type argument(s).
+src/laws/examples/ConcreteCodensity.ts(45,32): error TS2314: Generic type 'List' requires 1 type argument(s).
+src/laws/examples/ConcreteCodensity.ts(60,29): error TS2314: Generic type 'List' requires 1 type argument(s).
+src/laws/examples/ConcreteCodensity.ts(63,63): error TS2365: Operator '+' cannot be applied to types 'X' and 'number'.
+src/laws/examples/ConcreteCodensity.ts(68,3): error TS2322: Type '(tga: TGA) => Nat<GA<any>, List>' is not assignable to type '(tga: unknown) => Nat<any, any>'.
+  Types of parameters 'tga' and 'tga' are incompatible.
+    Type 'unknown' is not assignable to type 'TGA'.
+src/laws/examples/ConcreteCodensity.ts(70,3): error TS2322: Type '(f: TGA, g: TGA) => boolean' is not assignable to type 'Eq<unknown>'.
+  Types of parameters 'f' and 'x' are incompatible.
+    Type 'unknown' is not assignable to type 'TGA'.
+src/laws/packs.ts(17,9): error TS2339: Property 'run' does not exist on type 'Lawful<number, Monoid<number>>'.
+src/laws/packs.ts(22,10): error TS2339: Property 'run' does not exist on type 'Lawful<number, { of<A>(x: A): Dist<A>; chain<A, B>(ma: Dist<A>, f: (a: A) => Dist<B>): Dist<B>; map<A, B>(ma: Dist<A>, f: (a: A) => B): Dist<...>; ap<A, B>(mf: Dist<...>, ma: Dist<...>): Dist<...>; }>'.
+src/laws/packs.ts(27,13): error TS2339: Property 'run' does not exist on type 'Lawful<any, { kid: Function; kcomp: Function; kmap: Function; }>'.
+src/laws/packs.ts(32,18): error TS2339: Property 'run' does not exist on type 'Lawful<any, { to: any; from: any; }>'.
+src/laws/packs.ts(37,9): error TS2339: Property 'run' does not exist on type 'Lawful<any, { tag: "Top/ProductUP"; }>'.
+src/laws/packs.ts(42,16): error TS2339: Property 'run' does not exist on type 'Lawful<any, { tag: "Top/Continuity"; }>'.
+src/laws/packs.ts(49,12): error TS2339: Property 'run' does not exist on type 'Lawful<string, Monoid<string>>'.
+src/laws/packs.ts(64,3): error TS2353: Object literal may only specify known properties, and 'run' does not exist in type 'AnyLawful'.
+src/laws/packs.ts(76,3): error TS2353: Object literal may only specify known properties, and 'run' does not exist in type 'AnyLawful'.
+src/laws/packs.ts(93,8): error TS2339: Property 'run' does not exist on type 'Lawful<number, Monoid<number>>'.
+src/laws/packs.ts(104,10): error TS2339: Property 'run' does not exist on type 'Lawful<Poly, Monoid<Poly>>'.
+src/laws/packs.ts(116,3): error TS2353: Object literal may only specify known properties, and 'run' does not exist in type 'AnyLawful'.
+src/order/Domain.ts(27,5): error TS2322: Type 'A | undefined' is not assignable to type 'A'.
+  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
+src/order/Lattice.ts(24,53): error TS2345: Argument of type 'U | undefined' is not assignable to parameter of type 'U'.
+  'U' could be instantiated with an arbitrary type which could be unrelated to 'U | undefined'.
+src/order/__tests__/domain_cpo.test.ts(40,61): error TS7023: 'step' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+src/order/dsl.ts(55,5): error TS2322: Type 'A | undefined' is not assignable to type 'A'.
+  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
+src/order/dsl.ts(62,5): error TS2322: Type 'A | undefined' is not assignable to type 'A'.
+  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
+src/order/dsl.ts(65,18): error TS2322: Type 'A | undefined' is not assignable to type 'A'.
+  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
+src/order/dsl.ts(65,23): error TS2322: Type 'A | undefined' is not assignable to type 'A'.
+  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
+src/prob/Markov.ts(19,5): error TS2532: Object is possibly 'undefined'.
+src/prob/Markov.ts(19,5): error TS2532: Object is possibly 'undefined'.
+src/prob/Markov.ts(23,27): error TS2532: Object is possibly 'undefined'.
+src/prob/Markov.ts(23,27): error TS2532: Object is possibly 'undefined'.
+src/prob/MarkovKernelIso.ts(17,19): error TS2532: Object is possibly 'undefined'.
+src/prob/MarkovKernelIso.ts(72,5): error TS2322: Type '(_: A) => { x: B | undefined; p: number; }[]' is not assignable to type 'Kernel<A, B>'.
+  Type '{ x: B | undefined; p: number; }[]' is not assignable to type 'Dist<B>'.
+    Type '{ x: B | undefined; p: number; }' is not assignable to type '{ x: B; p: number; }'.
+      Types of property 'x' are incompatible.
+        Type 'B | undefined' is not assignable to type 'B'.
+          'B' could be instantiated with an arbitrary type which could be unrelated to 'B | undefined'.
+src/prob/__tests__/markov_laws.test.ts(34,21): error TS2532: Object is possibly 'undefined'.
+src/prob/__tests__/markov_laws.test.ts(34,30): error TS2532: Object is possibly 'undefined'.
+src/prob/__tests__/markov_laws.test.ts(34,45): error TS2532: Object is possibly 'undefined'.
+src/prob/__tests__/markov_laws.test.ts(34,54): error TS2532: Object is possibly 'undefined'.
+src/prob/__tests__/markov_laws.test.ts(35,21): error TS2532: Object is possibly 'undefined'.
+src/prob/__tests__/markov_laws.test.ts(35,28): error TS2532: Object is possibly 'undefined'.
+src/prob/kernel_matrix_demo.ts(87,30): error TS2558: Expected 3 type arguments, but got 2.
+src/structures/ab/__tests__/ab_biproduct_up.test.ts(22,48): error TS2554: Expected 5 arguments, but got 6.
+src/structures/ab/__tests__/ab_biproduct_up.test.ts(23,38): error TS2554: Expected 2 arguments, but got 3.
+src/structures/ab/__tests__/ab_biproduct_up.test.ts(39,52): error TS2554: Expected 5 arguments, but got 6.
+src/structures/ab/__tests__/ab_biproduct_up.test.ts(40,38): error TS2554: Expected 2 arguments, but got 3.
 src/structures/group/Units.ts(17,7): error TS7023: 'gcd' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
-src/structures/group/__tests__/theorem2_and_examples.test.ts(80,28): error TS2532: Object is possibly 'undefined'.
-src/structures/group/__tests__/theorem2_and_examples.test.ts(80,52): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+src/structures/ring/Ideal.ts(56,74): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
   Type 'undefined' is not assignable to type 'number'.
-src/structures/group/automorphisms/Aut.ts(4,27): error TS2307: Cannot find module '../../util/guards' or its corresponding type declarations.
-src/structures/group/automorphisms/Aut.ts(17,36): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
-  Type 'undefined' is not assignable to type 'number'.
-src/structures/group/automorphisms/Aut.ts(17,42): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
-  Type 'undefined' is not assignable to type 'number'.
-src/structures/group/automorphisms/Aut.ts(17,84): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
-  Type 'undefined' is not assignable to type 'number'.
-src/structures/group/automorphisms/Aut.ts(17,90): error TS2322: Type 'number | undefined' is not assignable to type 'number'.
-  Type 'undefined' is not assignable to type 'number'.
-src/structures/group/endo/End.ts(3,27): error TS2307: Cannot find module '../../util/guards' or its corresponding type declarations.
-src/structures/group/pairing/PairingScheme.ts(1,27): error TS2307: Cannot find module '../../util/guards' or its corresponding type declarations.
-src/universal/FreeAlgebra.ts(42,37): error TS2370: A rest parameter must be of an array type.
-src/universal/FreeAlgebra.ts(42,63): error TS2345: Argument of type 'Term' is not assignable to parameter of type 'Term[]'.
-  Type 'Var' is missing the following properties from type 'Term[]': length, pop, push, concat, and 29 more.
-src/universal/FreeAlgebra.ts(49,47): error TS2322: Type '(op: OpSym) => (...args: Term) => App' is not assignable to type '(op: OpSym) => (...args: Term[]) => Term'.
-  Type '(...args: Term) => App' is not assignable to type '(...args: Term[]) => Term'.
-    Types of parameters 'args' and 'args' are incompatible.
-      Type 'Term[]' is not assignable to type 'Term'.
-src/universal/__tests__/ua_equation_satisfaction.test.ts(28,9): error TS7034: Variable 'envs' implicitly has type 'any[]' in some locations where its type cannot be determined.
-src/universal/__tests__/ua_equation_satisfaction.test.ts(34,32): error TS7005: Variable 'envs' implicitly has an 'any[]' type.
-src/universal/__tests__/ua_equation_satisfaction.test.ts(38,35): error TS7005: Variable 'envs' implicitly has an 'any[]' type.
-src/universal/__tests__/ua_equation_satisfaction.test.ts(39,36): error TS7005: Variable 'envs' implicitly has an 'any[]' type.
-src/universal/rewrite/Oriented.ts(9,59): error TS2322: Type 'Term | undefined' is not assignable to type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Oriented.ts(9,66): error TS2322: Type 'Term | undefined' is not assignable to type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Oriented.ts(10,3): error TS2322: Type 'Term | undefined' is not assignable to type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Oriented.ts(60,30): error TS2322: Type 'Term | undefined' is not assignable to type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Rules.ts(18,3): error TS2375: Type '{ lhs: Term; rhs: Term; ac: { name: string; assoc: boolean; comm: boolean; idem: boolean; } | undefined; }' is not assignable to type 'RewriteRule' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'ac' are incompatible.
-    Type '{ name: string; assoc: boolean; comm: boolean; idem: boolean; } | undefined' is not assignable to type '{ name: string; assoc: boolean; comm: boolean; idem: boolean; }'.
-      Type 'undefined' is not assignable to type '{ name: string; assoc: boolean; comm: boolean; idem: boolean; }'.
-src/universal/rewrite/Rules.ts(45,18): error TS2345: Argument of type 'Term | undefined' is not assignable to parameter of type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Rules.ts(84,13): error TS2345: Argument of type 'Term | undefined' is not assignable to parameter of type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Rules.ts(84,31): error TS2345: Argument of type 'Term | undefined' is not assignable to parameter of type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Rules.ts(88,3): error TS2322: Type '(Term | undefined)[]' is not assignable to type 'Term[]'.
-  Type 'Term | undefined' is not assignable to type 'Term'.
-    Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/Rules.ts(109,5): error TS2322: Type 'Term | undefined' is not assignable to type 'Term'.
-  Type 'undefined' is not assignable to type 'Term'.
-src/universal/rewrite/SetMonad.ts(55,7): error TS2322: Type 'A | undefined' is not assignable to type 'A | null'.
-  Type 'undefined' is not assignable to type 'A | null'.
-src/universal/rewrite/SetMonad.ts(73,28): error TS2488: Type 'Term' must have a '[Symbol.iterator]()' method that returns an iterator.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(17,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(17,32): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(17,45): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(20,24): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(20,37): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(25,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(25,32): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(31,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(37,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(37,29): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(37,47): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(40,24): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(40,37): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(52,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(52,33): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(54,24): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(59,20): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(60,20): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(66,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(68,24): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(73,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(73,33): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(75,24): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(80,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(80,35): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(86,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(92,19): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(92,30): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(92,49): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(95,24): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(118,20): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(118,48): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(123,20): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/__tests__/oriented_nfs.test.ts(123,49): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
+src/structures/ring/Poly.ts(54,27): error TS2532: Object is possibly 'undefined'.
+src/types/__tests__/ultrafilter-naturality.test.ts(246,36): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
+src/types/__tests__/ultrafilter-naturality.test.ts(247,35): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
+src/types/category-to-nerve-sset.ts(50,16): error TS2353: Object literal may only specify known properties, and 'comp' does not exist in type 'SmallCategory<O, PathMor<O>> & { ofEdge: (e: Edge<O>) => PathMor<O>; }'.
+src/types/category-to-nerve-sset.ts(795,26): error TS2353: Object literal may only specify known properties, and 'comp' does not exist in type 'SmallCategory<SetObj<any>, Rel>'.
+src/types/category-to-nerve-sset.ts(806,26): error TS2353: Object literal may only specify known properties, and 'comp' does not exist in type 'SmallCategory<SetObj<any>, FnM>'.
+src/types/catkit-adjunction.ts(204,19): error TS2353: Object literal may only specify known properties, and 'comp' does not exist in type 'SmallCategory<X, Id<X>> & { objects: X[]; morphisms: Id<X>[]; hom: (x: X, y: X) => Id<X>[]; }'.
+src/types/mini-finset.ts(331,21): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
+src/types/mini-finset.ts(347,21): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
+src/types/mini-finset.ts(366,21): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
+src/types/ran-set.ts(201,28): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M>'.
+src/types/ran-set.ts(291,32): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M> & { objects: readonly D_O[]; }'.
+src/types/ran-set.ts(343,44): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M>'.
+src/universal/em/Equivalence.ts(91,21): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
+  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
+src/universal/monad/Diagram.ts(36,46): error TS2345: Argument of type 'FiniteSet<C>' is not assignable to parameter of type 'FiniteSet<unknown>'.
+  Types of property 'eq' are incompatible.
+    Type 'Eq<C>' is not assignable to type 'Eq<unknown>'.
+      Type 'unknown' is not assignable to type 'C'.
+        'C' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
+src/universal/monad/Diagram.ts(56,55): error TS2345: Argument of type 'FiniteSet<D>' is not assignable to parameter of type 'FiniteSet<unknown>'.
+  Types of property 'eq' are incompatible.
+    Type 'Eq<D>' is not assignable to type 'Eq<unknown>'.
+      Type 'unknown' is not assignable to type 'D'.
+        'D' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
+src/universal/monad/Diagram.ts(57,57): error TS2345: Argument of type 'FiniteSet<D>' is not assignable to parameter of type 'FiniteSet<unknown>'.
+  Types of property 'eq' are incompatible.
+    Type 'Eq<D>' is not assignable to type 'Eq<unknown>'.
+      Type 'unknown' is not assignable to type 'D'.
+        'D' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
+src/universal/monad/__tests__/kleisli_laws.test.ts(37,46): error TS2345: Argument of type '{ elems: number[]; eq: (x: number, y: number) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
+  Types of property 'eq' are incompatible.
+    Type '(x: number, y: number) => boolean' is not assignable to type 'Eq<unknown>'.
+      Types of parameters 'x' and 'x' are incompatible.
+        Type 'unknown' is not assignable to type 'number'.
+src/universal/monad/__tests__/kleisli_laws.test.ts(44,46): error TS2345: Argument of type '{ elems: string[]; eq: (x: string, y: string) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
+  Types of property 'eq' are incompatible.
+    Type '(x: string, y: string) => boolean' is not assignable to type 'Eq<unknown>'.
+      Types of parameters 'x' and 'x' are incompatible.
+        Type 'unknown' is not assignable to type 'string'.
+src/universal/monad/__tests__/kleisli_laws.test.ts(53,37): error TS2345: Argument of type '{ elems: string[]; eq: (x: string, y: string) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
+  Types of property 'eq' are incompatible.
+    Type '(x: string, y: string) => boolean' is not assignable to type 'Eq<unknown>'.
+      Types of parameters 'x' and 'x' are incompatible.
+        Type 'unknown' is not assignable to type 'string'.
+src/universal/rewrite/SetMonad.ts(72,28): error TS2488: Type 'Term' must have a '[Symbol.iterator]()' method that returns an iterator.
 src/universal/rewrite/__tests__/set_monad.test.ts(37,14): error TS2532: Object is possibly 'undefined'.
 src/universal/rewrite/__tests__/set_monad.test.ts(49,32): error TS2345: Argument of type '(x: string) => string' is not assignable to parameter of type '(a: unknown) => string'.
   Types of parameters 'x' and 'a' are incompatible.
@@ -176,45 +142,15 @@ src/universal/rewrite/__tests__/set_monad.test.ts(79,37): error TS2345: Argument
 src/universal/rewrite/__tests__/set_monad.test.ts(108,14): error TS2532: Object is possibly 'undefined'.
 src/universal/rewrite/__tests__/set_monad.test.ts(113,37): error TS2345: Argument of type 'Var[][]' is not assignable to parameter of type 'FreeAlgebra<FreeAlgebra<number>>'.
   Type 'Var[]' is not assignable to type 'Term'.
+src/universal/rewrite/__tests__/set_monad.test.ts(162,13): error TS2322: Type 'FiniteSet<never>' is not assignable to type 'FiniteSet<string>'.
+  Types of property 'eq' are incompatible.
+    Type 'Eq<never>' is not assignable to type 'Eq<string>'.
+      Type 'string' is not assignable to type 'never'.
 src/universal/rewrite/__tests__/set_monad.test.ts(182,41): error TS2345: Argument of type 'FiniteSet<number>' is not assignable to parameter of type 'FiniteSet<string>'.
-  Type 'number' is not assignable to type 'string'.
-src/universal/rewrite/demo.ts(43,15): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(47,17): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(54,16): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(54,29): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(54,42): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(61,16): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(61,29): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(68,16): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(68,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(68,44): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(78,16): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(78,30): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(85,17): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(86,17): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(96,16): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(103,16): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(103,30): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/rewrite/demo.ts(118,70): error TS2322: Type '[Var]' is not assignable to type 'Term'.
-src/universal/rewrite/demo.ts(118,80): error TS2322: Type '[Var]' is not assignable to type 'Term'.
-src/universal/rewrite/demo.ts(122,75): error TS2322: Type '[Var]' is not assignable to type 'Term'.
-src/universal/rewrite/demo.ts(122,85): error TS2322: Type '[Var]' is not assignable to type 'Term'.
-src/util/guards.ts(9,3): error TS2322: Type 'T | undefined' is not assignable to type 'T'.
-  'T' could be instantiated with an arbitrary type which could be unrelated to 'T | undefined'.
+  Types of property 'elems' are incompatible.
+    Type 'number[]' is not assignable to type 'string[]'.
+      Type 'number' is not assignable to type 'string'.
+src/universal/rewrite/demo.ts(120,70): error TS2322: Type '[Var]' is not assignable to type 'Term'.
+src/universal/rewrite/demo.ts(120,80): error TS2322: Type '[Var]' is not assignable to type 'Term'.
+src/universal/rewrite/demo.ts(124,75): error TS2322: Type '[Var]' is not assignable to type 'Term'.
+src/universal/rewrite/demo.ts(124,85): error TS2322: Type '[Var]' is not assignable to type 'Term'.

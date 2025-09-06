@@ -30,7 +30,7 @@ export function makeKleisliDiagramTools(
     g: KleisliHom<B,C>,
     h: KleisliHom<A,C>
   ): TriangleResult<A,B,C> {
-    const eqTC = T.Tcarrier(Cset).eq;
+    const eqTC = (T.Tcarrier(Cset as any).eq as unknown) as (x:any,y:any)=>boolean;
     const bad: A[] = [];
     for (const a of Aset.elems) {
       const lhs = composeK(f, g)(Aset, Bset, Cset)(a);
@@ -50,7 +50,7 @@ export function makeKleisliDiagramTools(
     h: KleisliHom<A,C>,
     k: KleisliHom<C,D>
   ): SquareResult<A,B,C,D> {
-    const eqTD = T.Tcarrier(Dset).eq;
+    const eqTD = (T.Tcarrier(Dset as any).eq as unknown) as (x:any,y:any)=>boolean;
     const bad: A[] = [];
     for (const a of Aset.elems) {
       const topThenRight = composeK(f, g)(Aset, Bset, Dset)(a);

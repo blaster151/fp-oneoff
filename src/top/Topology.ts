@@ -14,7 +14,7 @@ export function discrete<X>(carrier: X[]): Top<X> {
     const subset: X[] = [];
     for (let i = 0; i < n; i++) {
       if (mask & (1 << i)) {
-        subset.push(carrier[i]);
+        subset.push(carrier[i]!);
       }
     }
     opens.push(subset);
@@ -41,7 +41,7 @@ export function product<X, Y>(
   const carrier: {x: X, y: Y}[] = [];
   for (const x of TX.carrier) {
     for (const y of TY.carrier) {
-      carrier.push({x, y});
+      carrier.push({x: x as X, y: y as Y});
     }
   }
   
@@ -51,7 +51,7 @@ export function product<X, Y>(
       const UV: {x: X, y: Y}[] = [];
       for (const x of U) {
         for (const y of V) {
-          UV.push({x, y});
+          UV.push({x: x as X, y: y as Y});
         }
       }
       opens.push(UV);
@@ -72,8 +72,8 @@ export function continuous<X, Y>(
   for (const V of TY.opens) {
     const preimage: X[] = [];
     for (const x of TX.carrier) {
-      if (V.some(v => eqY(f(x), v))) {
-        preimage.push(x);
+      if (V.some(v => eqY(f(x as X), v))) {
+        preimage.push(x as X);
       }
     }
     

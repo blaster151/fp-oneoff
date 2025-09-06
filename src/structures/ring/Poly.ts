@@ -24,7 +24,7 @@ export function PolyRing(n:number, d:number): FiniteRing<Poly> {
   const one  = { coeffs: [1, ...new Array(d).fill(0)], n, d };
 
   const add = (p:Poly,q:Poly): Poly => {
-    const r = new Array(d+1).fill(0).map((_,i)=> modn(n, p.coeffs[i]+q.coeffs[i]));
+    const r = new Array(d+1).fill(0).map((_,i)=> modn(n, p.coeffs[i]! + q.coeffs[i]!));
     return { coeffs: r, n, d };
   };
   const neg = (p:Poly): Poly => ({ coeffs: p.coeffs.map(c=>modn(n,-c)), n, d });
@@ -33,7 +33,7 @@ export function PolyRing(n:number, d:number): FiniteRing<Poly> {
     const r = new Array(d+1).fill(0);
     for (let i=0;i<=d;i++) for (let j=0;j<=d;j++){
       const k = i+j;
-      if (k<=d) r[k] = modn(n, r[k] + p.coeffs[i]*q.coeffs[j]);
+      if (k<=d) r[k] = modn(n, r[k]! + p.coeffs[i]! * q.coeffs[j]!);
     }
     return { coeffs: r, n, d };
   };

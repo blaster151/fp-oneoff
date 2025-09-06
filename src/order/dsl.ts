@@ -10,11 +10,16 @@ export function posetFromPairs<A>(
   const n = elems.length;
   const leqMat: boolean[][] = Array.from({length:n},()=>Array(n).fill(false));
   const idx = (a:A) => elems.findIndex(x=>eqA(x,a));
-  for (let i=0;i<n;i++) leqMat[i][i]=true;
-  for (const [a,b] of leqPairs){ const i=idx(a), j=idx(b); if(i<0||j<0) throw new Error("pair element not in elems"); leqMat[i][j]=true; }
+  for (let i=0;i<n;i++) leqMat[i]![i] = true;
+  for (const [a,b] of leqPairs){ const i=idx(a), j=idx(b); if(i<0||j<0) throw new Error("pair element not in elems"); leqMat[i]![j!] = true; }
   // transitive closure (Floyd–Warshall)
-  for (let k=0;k<n;k++) for (let i=0;i<n;i++) if (leqMat[i][k]) for (let j=0;j<n;j++) if (leqMat[k][j]) leqMat[i][j]=true;
-  const leq = (a:A,b:A)=> leqMat[idx(a)][idx(b)];
+  for (let k=0;k<n;k++) for (let i=0;i<n;i++) if (leqMat[i]?.[k]) for (let j=0;j<n;j++) if (leqMat[k]?.[j]) (leqMat[i]![j] = true);
+  const leq = (a:A,b:A)=> {
+    const i = idx(a);
+    const j = idx(b);
+    if (i < 0 || j < 0) return false;
+    return !!leqMat[i]?.[j];
+  };
   const eq  = (a:A,b:A)=> leq(a,b) && leq(b,a);
   return { elems, leq, eq, show: (a)=>String(a) };
 }
@@ -25,7 +30,7 @@ export function subsetPoset<U>(univ: U[], eqU: (x:U,y:U)=>boolean) {
   const n = univ.length;
   const subsets: U[][] = [];
   for (let mask=0; mask<(1<<n); mask++){
-    const s: U[] = []; for (let i=0;i<n;i++) if (mask&(1<<i)) s.push(univ[i]);
+    const s: U[] = []; for (let i=0;i<n;i++) if (mask&(1<<i)) s.push(univ[i]!);
     subsets.push(s);
   }
   const leq = (A:U[],B:U[]) => A.every(x => B.some(y=>eqU(x,y)));

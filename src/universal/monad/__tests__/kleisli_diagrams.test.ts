@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { Signature } from "../../Signature";
+import { Signature, opOf } from "../../Signature";
 import { Var, App } from "../../Term";
 import { makeKleisliDiagramTools } from "../Diagram";
 
 const MonSig: Signature = { ops: [{ name:"e", arity:0 }, { name:"mul", arity:2 }] };
-const e = MonSig.ops[0], mul = MonSig.ops[1];
+const e = opOf(MonSig, "e"), mul = opOf(MonSig, "mul");
 const assoc = { lhs: App(mul,[App(mul,[Var(0),Var(1)]), Var(2)]), rhs: App(mul,[Var(0), App(mul,[Var(1),Var(2)])]) };
 const leftU = { lhs: App(mul,[App(e,[]), Var(0)]), rhs: Var(0) };
 const rightU= { lhs: App(mul,[Var(0), App(e,[])]), rhs: Var(0) };

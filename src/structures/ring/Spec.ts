@@ -24,7 +24,7 @@ export function enumerateIdeals<A>(R: FiniteRing<A>, maxGens = 2): Ideal<A>[] {
   if (maxGens>=2){
     // pairs of generators (tiny)
     for (let i=0;i<xs.length;i++) for (let j=i+1;j<xs.length;j++){
-      const I = idealGeneratedBy(R, [xs[i], xs[j]]);
+      const I = idealGeneratedBy(R, [xs[i]!, xs[j]!]);
       if (!seen.some(J=>eqI(I,J))) seen.push(I);
     }
   }

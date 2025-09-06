@@ -8,10 +8,11 @@ import { uaModelToTAlgebra, tAlgebraToUA, checkHomCoincides } from "../Equivalen
 /** EM ↔ Lawvere models bridge for the monoid (assoc+unit) theory, executed on Z5. */
 describe("Eilenberg–Moore vs UA models (monoid theory)", () => {
   const MonSig: Signature = { ops: [{ name:"e", arity:0 }, { name:"mul", arity:2 }] };
-  const assoc = { lhs: App(MonSig.ops[1], [App(MonSig.ops[1], [Var(0),Var(1)]), Var(2)]),
-                  rhs: App(MonSig.ops[1], [Var(0), App(MonSig.ops[1], [Var(1),Var(2)])]) };
-  const leftU = { lhs: App(MonSig.ops[1], [App(MonSig.ops[0], []), Var(0)]), rhs: Var(0) };
-  const rightU= { lhs: App(MonSig.ops[1], [Var(0), App(MonSig.ops[0], [])]), rhs: Var(0) };
+  const mul = MonSig.ops[1]!; const e = MonSig.ops[0]!;
+  const assoc = { lhs: App(mul, [App(mul, [Var(0),Var(1)]), Var(2)]),
+                  rhs: App(mul, [Var(0), App(mul, [Var(1),Var(2)])]) };
+  const leftU = { lhs: App(mul, [App(e, []), Var(0)]), rhs: Var(0) };
+  const rightU= { lhs: App(mul, [Var(0), App(e, [])]), rhs: Var(0) };
   const E = [assoc,leftU,rightU];
 
   const A: UAAlgebra<number> = ZmodAsMonoid(5);
