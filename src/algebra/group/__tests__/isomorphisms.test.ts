@@ -17,7 +17,14 @@ import {
   createIsomorphismLawChecker,
   checkIsInverse,
   tryBuildInverse,
-  createProofWorkflow
+  createProofWorkflow,
+  isMonomorphismCategorical,
+  isEpimorphismCategorical,
+  isMonomorphismElementBased,
+  isEpimorphismElementBased,
+  composeHomomorphisms,
+  homomorphismsEqual,
+  createCategoricalBridge
 } from "../Group";
 import { hom, iso } from "../iso/Constructors";
 import { Zplus, autoZ_id, autoZ_neg, Qplus } from "../NumberGroups";
@@ -417,5 +424,140 @@ describe("Group Isomorphisms and Automorphisms", () => {
     console.log("2. Preserves operation:", preservesOp);
     console.log("3. Proof valid:", proofValid);
     console.log("4. Is isomorphism:", workflow.isIsomorphism);
+  });
+
+  // --- Categorical Bridge: From Elements to Arrows ---
+
+  it("Categorical bridge: monomorphism as left-cancellable", () => {
+    // Test identity homomorphism (should be monomorphism)
+    const idHom = hom(Z2, Z2, x => x);
+    
+    // Create test homomorphisms that could potentially be cancelled
+    const g1 = hom(Z2, Z2, x => x); // identity
+    const g2 = hom(Z2, Z2, x => x); // same as g1
+    const h1 = hom(Z2, Z2, x => x); // identity
+    const h2 = hom(Z2, Z2, _ => "e"); // constant map
+    
+    // Test categorical monomorphism: f ∘ g = f ∘ h implies g = h
+    const testPairs = [
+      { g: g1, h: h1 }, // g1 = h1, so f ∘ g1 = f ∘ h1 should imply g1 = h1 ✓
+      { g: g2, h: h2 }  // g2 ≠ h2, so f ∘ g2 = f ∘ h2 should be false
+    ];
+    
+    const isMono = isMonomorphismCategorical(idHom, Z2, testPairs);
+    expect(isMono).toBe(true);
+    
+    // Compare with element-based approach
+    const elementBasedMono = isMonomorphismElementBased(idHom);
+    expect(isMono).toBe(elementBasedMono); // Should agree for groups
+  });
+
+  it("Categorical bridge: epimorphism as right-cancellable", () => {
+    // Test identity homomorphism (should be epimorphism)
+    const idHom = hom(Z2, Z2, x => x);
+    
+    // Create test homomorphisms that could potentially be cancelled
+    const g1 = hom(Z2, Z2, x => x); // identity
+    const g2 = hom(Z2, Z2, x => x); // same as g1
+    const h1 = hom(Z2, Z2, x => x); // identity
+    const h2 = hom(Z2, Z2, _ => "e"); // constant map
+    
+    // Test categorical epimorphism: g ∘ f = h ∘ f implies g = h
+    const testPairs = [
+      { g: g1, h: h1 }, // g1 = h1, so g1 ∘ f = h1 ∘ f should imply g1 = h1 ✓
+      { g: g2, h: h2 }  // g2 ≠ h2, so g2 ∘ f = h2 ∘ f should be false
+    ];
+    
+    const isEpi = isEpimorphismCategorical(idHom, Z2, testPairs);
+    expect(isEpi).toBe(true);
+    
+    // Compare with element-based approach
+    const elementBasedEpi = isEpimorphismElementBased(idHom);
+    expect(isEpi).toBe(elementBasedEpi); // Should agree for groups
+  });
+
+  it("Categorical bridge: composition utilities work", () => {
+    // Test composition of homomorphisms
+    const idHom = hom(Z2, Z2, x => x);
+    const composed = composeHomomorphisms(idHom, idHom);
+    
+    // Should be equivalent to identity
+    expect(homomorphismsEqual(composed, idHom)).toBe(true);
+    
+    // Test with different homomorphisms
+    const constantHom = hom(Z2, Z2, _ => "e");
+    const composed2 = composeHomomorphisms(idHom, constantHom);
+    
+    // Should be equivalent to constant homomorphism
+    expect(homomorphismsEqual(composed2, constantHom)).toBe(true);
+  });
+
+  it("Categorical bridge: demonstrates the big move from elements to arrows", () => {
+    // This test demonstrates the crucial bridge from group theory to category theory
+    
+    const idHom = hom(Z2, Z2, x => x);
+    
+    // Create test data for categorical properties
+    const testDomain = Z2;
+    const testCodomain = Z2;
+    const testPairs = {
+      mono: [
+        { g: hom(Z2, Z2, x => x), h: hom(Z2, Z2, x => x) }, // same maps
+        { g: hom(Z2, Z2, x => x), h: hom(Z2, Z2, _ => "e") } // different maps
+      ],
+      epi: [
+        { g: hom(Z2, Z2, x => x), h: hom(Z2, Z2, x => x) }, // same maps
+        { g: hom(Z2, Z2, x => x), h: hom(Z2, Z2, _ => "e") } // different maps
+      ]
+    };
+    
+    // Create the categorical bridge
+    const bridge = createCategoricalBridge(idHom, testDomain, testCodomain, testPairs);
+    
+    // The bridge should be valid: element-based === arrow-based for groups
+    expect(bridge.bridgeValid).toBe(true);
+    
+    // Both approaches should agree
+    expect(bridge.elementBased.isMono).toBe(bridge.arrowBased.isMono);
+    expect(bridge.elementBased.isEpi).toBe(bridge.arrowBased.isEpi);
+    expect(bridge.elementBased.isIso).toBe(bridge.arrowBased.isIso);
+    
+    console.log("Categorical bridge demonstration:");
+    console.log("Element-based:", bridge.elementBased);
+    console.log("Arrow-based:", bridge.arrowBased);
+    console.log("Bridge valid:", bridge.bridgeValid);
+    console.log("This demonstrates the shift from elements to arrows!");
+  });
+
+  it("Categorical bridge: shows the generalization beyond groups", () => {
+    // This test shows how the categorical approach generalizes
+    
+    const idHom = hom(Z2, Z2, x => x);
+    
+    // Element-based approach: talks about individual elements
+    const elementBased = {
+      isMono: isMonomorphismElementBased(idHom),
+      isEpi: isEpimorphismElementBased(idHom)
+    };
+    
+    // Arrow-based approach: talks only about composition of morphisms
+    const testPairs = {
+      mono: [{ g: hom(Z2, Z2, x => x), h: hom(Z2, Z2, x => x) }],
+      epi: [{ g: hom(Z2, Z2, x => x), h: hom(Z2, Z2, x => x) }]
+    };
+    
+    const arrowBased = {
+      isMono: isMonomorphismCategorical(idHom, Z2, testPairs.mono),
+      isEpi: isEpimorphismCategorical(idHom, Z2, testPairs.epi)
+    };
+    
+    // Both should agree for groups, but arrow-based generalizes to any category
+    expect(elementBased.isMono).toBe(arrowBased.isMono);
+    expect(elementBased.isEpi).toBe(arrowBased.isEpi);
+    
+    console.log("Generalization demonstration:");
+    console.log("Element-based (group-specific):", elementBased);
+    console.log("Arrow-based (category-general):", arrowBased);
+    console.log("The arrow-based approach works in ANY category!");
   });
 });

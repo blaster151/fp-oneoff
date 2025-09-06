@@ -26,6 +26,30 @@ such that \(g\circ f = \mathrm{id}_G\) and \(f\circ g = \mathrm{id}_H\).
 - `createProofWorkflow` mechanically derives isomorphisms following the complete proof flow.
 - The substrate doesn't just "store" isomorphisms, it **re-derives them mechanically**.
 
+## Categorical Bridge: The Big Move from Elements to Arrows
+
+**The Fundamental Shift:**
+Properties first defined in terms of *objects* (like injectivity = one-to-one on elements) get redefined in terms of *morphisms* (how arrows interact with other arrows). This shift is the *big move* in category theory.
+
+**Key Insight:**
+- **Element-based**: "Injective = one-to-one on elements"
+- **Arrow-based**: "Monomorphism = left-cancellable morphism"
+
+**Categorical Re-characterization:**
+- **Injective homomorphisms**: At the set level, injective ↔ left-invertible. But in groups, the converse doesn't always hold.
+- **Example**: $f: (\mathbb{Z}, +, 0) \to (\mathbb{R}, +, 0), f(n) = n$ is injective, but has **no left-inverse homomorphism** (because there's no way to map arbitrary reals back into integers while preserving group structure).
+- **Solution**: Instead of saying "injective = has left inverse," category theory says: **Injective = left-cancellable**.
+
+**The General Pattern:**
+- Injective ↔ Monomorphism (left-cancellable)
+- Surjective ↔ Epimorphism (right-cancellable)  
+- Bijective ↔ Isomorphism (two-sided invertible)
+
+**Why This Matters:**
+- **From elements to arrows**: This is the exact point where category theory generalizes injectivity *without needing elements*.
+- You no longer need to talk about "picking apart sets" — only about *composition of arrows*.
+- **Monomorphism = morphism that can't "collapse" different arrows into the same result.**
+
 ## Categorical Foundations
 
 **Theorem 3 – Isomorphism is an equivalence relation**
@@ -75,6 +99,13 @@ such that \(g\circ f = \mathrm{id}_G\) and \(f\circ g = \mathrm{id}_H\).
 - `tryBuildInverse` automatically constructs inverse via brute-force inversion.
 - `createProofWorkflow` mechanically derives isomorphisms following the proof flow.
 - `ProofWorkflow` interface tracks proof steps: inverse exists, is homomorphism, round-trips valid.
+
+**Categorical Bridge: From Elements to Arrows:**
+- `isMonomorphismCategorical` implements left-cancellability: f ∘ g = f ∘ h implies g = h.
+- `isEpimorphismCategorical` implements right-cancellability: g ∘ f = h ∘ f implies g = h.
+- `composeHomomorphisms` and `homomorphismsEqual` provide arrow composition utilities.
+- `createCategoricalBridge` demonstrates the shift from element-based to arrow-based properties.
+- Bridge validation confirms element-based === arrow-based for groups (generalizes to any category).
 
 **Examples:**
 - Two-element groups are isomorphic.

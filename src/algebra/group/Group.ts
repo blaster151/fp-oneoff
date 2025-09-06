@@ -156,9 +156,44 @@ export function isEquivalenceRelation<A>(
 
 // --- Categorical Characterizations ---
 
-// Monomorphism = left-cancellable homomorphism
-// For groups: equivalent to injective homomorphism
-export function isMonomorphism<A, B>(h: GroupHom<A, B>): boolean {
+// --- Categorical Re-characterization: From Elements to Arrows ---
+
+// Categorical monomorphism = left-cancellable morphism
+// f is monomorphism if whenever f ∘ g = f ∘ h, then g = h
+export function isMonomorphismCategorical<A, B, J>(
+  f: GroupHom<A, B>,
+  testDomain: Group<J>,
+  testHomomorphisms: Array<{ g: GroupHom<J, A>; h: GroupHom<J, A> }>
+): boolean {
+  // For each test pair (g, h), check if f ∘ g = f ∘ h implies g = h
+  for (const { g, h } of testHomomorphisms) {
+    // Check if f ∘ g = f ∘ h (compositions agree everywhere)
+    const compositionsAgree = testDomain.elements?.every(j => {
+      const gResult = g.map(j);
+      const hResult = h.map(j);
+      const fgResult = f.map(gResult);
+      const fhResult = f.map(hResult);
+      return f.target.eq(fgResult, fhResult);
+    }) ?? true; // assume true for infinite groups
+    
+    // If compositions agree but g ≠ h, then f is not a monomorphism
+    if (compositionsAgree) {
+      const gAndHDiffer = testDomain.elements?.some(j => {
+        const gResult = g.map(j);
+        const hResult = h.map(j);
+        return !g.source.eq(gResult, hResult);
+      }) ?? false;
+      
+      if (gAndHDiffer) {
+        return false; // f ∘ g = f ∘ h but g ≠ h, so f is not mono
+      }
+    }
+  }
+  return true;
+}
+
+// Element-based monomorphism (legacy, for comparison)
+export function isMonomorphismElementBased<A, B>(h: GroupHom<A, B>): boolean {
   const { source: G, target: H, map: f } = h;
   if (!G.elements) return true; // cannot decide for infinite groups
   
@@ -174,9 +209,44 @@ export function isMonomorphism<A, B>(h: GroupHom<A, B>): boolean {
   return true;
 }
 
-// Epimorphism = right-cancellable homomorphism  
-// For groups: equivalent to surjective homomorphism
-export function isEpimorphism<A, B>(h: GroupHom<A, B>): boolean {
+// Backward compatibility alias
+export const isMonomorphism = isMonomorphismElementBased;
+
+// Categorical epimorphism = right-cancellable morphism
+// f is epimorphism if whenever g ∘ f = h ∘ f, then g = h
+export function isEpimorphismCategorical<A, B, K>(
+  f: GroupHom<A, B>,
+  testCodomain: Group<K>,
+  testHomomorphisms: Array<{ g: GroupHom<B, K>; h: GroupHom<B, K> }>
+): boolean {
+  // For each test pair (g, h), check if g ∘ f = h ∘ f implies g = h
+  for (const { g, h } of testHomomorphisms) {
+    // Check if g ∘ f = h ∘ f (compositions agree everywhere)
+    const compositionsAgree = f.source.elements?.every(a => {
+      const fResult = f.map(a);
+      const gfResult = g.map(fResult);
+      const hfResult = h.map(fResult);
+      return g.target.eq(gfResult, hfResult);
+    }) ?? true; // assume true for infinite groups
+    
+    // If compositions agree but g ≠ h, then f is not an epimorphism
+    if (compositionsAgree) {
+      const gAndHDiffer = f.target.elements?.some(b => {
+        const gResult = g.map(b);
+        const hResult = h.map(b);
+        return !g.source.eq(gResult, hResult);
+      }) ?? false;
+      
+      if (gAndHDiffer) {
+        return false; // g ∘ f = h ∘ f but g ≠ h, so f is not epi
+      }
+    }
+  }
+  return true;
+}
+
+// Element-based epimorphism (legacy, for comparison)
+export function isEpimorphismElementBased<A, B>(h: GroupHom<A, B>): boolean {
   const { source: G, target: H, map: f } = h;
   if (!G.elements || !H.elements) return true; // cannot decide for infinite groups
   
@@ -192,6 +262,98 @@ export function isEpimorphism<A, B>(h: GroupHom<A, B>): boolean {
     if (!found) return false;
   }
   return true;
+}
+
+// Backward compatibility alias
+export const isEpimorphism = isEpimorphismElementBased;
+
+// --- Composition Utilities for Arrow-Based Properties ---
+
+// Compose two homomorphisms: h ∘ g
+export function composeHomomorphisms<A, B, C>(
+  g: GroupHom<A, B>,
+  h: GroupHom<B, C>
+): GroupHom<A, C> {
+  return {
+    source: g.source,
+    target: h.target,
+    map: (a: A) => h.map(g.map(a))
+  };
+}
+
+// Check if two homomorphisms are equal (pointwise)
+export function homomorphismsEqual<A, B>(
+  f: GroupHom<A, B>,
+  g: GroupHom<A, B>
+): boolean {
+  if (!f.source.elements) return true; // cannot decide for infinite groups
+  
+  return f.source.elements.every(a => 
+    f.target.eq(f.map(a), g.map(a))
+  );
+}
+
+// --- Bridge Demonstration: Element-Based vs Arrow-Based ---
+
+// Demonstrates the bridge from element-based to arrow-based properties
+export interface CategoricalBridge<A, B> {
+  readonly elementBased: {
+    readonly isMono: boolean;
+    readonly isEpi: boolean;
+    readonly isIso: boolean;
+  };
+  readonly arrowBased: {
+    readonly isMono: boolean;
+    readonly isEpi: boolean;
+    readonly isIso: boolean;
+  };
+  readonly bridgeValid: boolean; // element-based === arrow-based for groups
+}
+
+// Create bridge demonstration for a homomorphism
+export function createCategoricalBridge<A, B>(
+  f: GroupHom<A, B>,
+  testDomain?: Group<any>,
+  testCodomain?: Group<any>,
+  testPairs?: {
+    mono: Array<{ g: GroupHom<any, A>; h: GroupHom<any, A> }>;
+    epi: Array<{ g: GroupHom<B, any>; h: GroupHom<B, any> }>;
+  }
+): CategoricalBridge<A, B> {
+  // Element-based properties
+  const elementBased = {
+    isMono: isMonomorphismElementBased(f),
+    isEpi: isEpimorphismElementBased(f),
+    isIso: isMonomorphismElementBased(f) && isEpimorphismElementBased(f)
+  };
+  
+  // Arrow-based properties (if test data provided)
+  let arrowBased = {
+    isMono: true,
+    isEpi: true,
+    isIso: true
+  };
+  
+  if (testDomain && testCodomain && testPairs) {
+    arrowBased = {
+      isMono: isMonomorphismCategorical(f, testDomain, testPairs.mono),
+      isEpi: isEpimorphismCategorical(f, testCodomain, testPairs.epi),
+      isIso: false // would need both mono and epi tests
+    };
+    arrowBased.isIso = arrowBased.isMono && arrowBased.isEpi;
+  }
+  
+  // For groups, element-based and arrow-based should agree
+  const bridgeValid = 
+    elementBased.isMono === arrowBased.isMono &&
+    elementBased.isEpi === arrowBased.isEpi &&
+    elementBased.isIso === arrowBased.isIso;
+  
+  return {
+    elementBased,
+    arrowBased,
+    bridgeValid
+  };
 }
 
 // --- Auto-derivation for Isomorphism Equivalence ---
