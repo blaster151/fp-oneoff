@@ -49,13 +49,7 @@ src/laws/packs.ts(76,3): error TS2353: Object literal may only specify known pro
 src/laws/packs.ts(93,8): error TS2339: Property 'run' does not exist on type 'Lawful<number, Monoid<number>>'.
 src/laws/packs.ts(104,10): error TS2339: Property 'run' does not exist on type 'Lawful<Poly, Monoid<Poly>>'.
 src/laws/packs.ts(116,3): error TS2353: Object literal may only specify known properties, and 'run' does not exist in type 'AnyLawful'.
-src/order/Domain.ts(13,46): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
 src/order/Domain.ts(27,5): error TS2322: Type 'A | undefined' is not assignable to type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/order/Domain.ts(57,40): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/order/Domain.ts(58,21): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
   'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
 src/order/Lattice.ts(24,53): error TS2345: Argument of type 'U | undefined' is not assignable to parameter of type 'U'.
   'U' could be instantiated with an arbitrary type which could be unrelated to 'U | undefined'.
