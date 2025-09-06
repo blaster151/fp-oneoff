@@ -1,0 +1,7 @@
+import type { GroupHom, HomWitnesses } from "./Hom";
+
+export type WithWitnesses<F> =
+  F extends GroupHom<infer A, infer B> ? GroupHom<A,B> & { witnesses: HomWitnesses<A,B> } : never;
+
+// usage example in files where you require analysis has been called:
+// const fAnalyzed: WithWitnesses<typeof f> = analyzeHom(f);
