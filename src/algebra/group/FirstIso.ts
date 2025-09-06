@@ -101,7 +101,7 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
 // New functionality for Theorem 9: Congruences and quotients
 import { congruenceFromHom } from "./Congruence";
 import { QuotientGroup, Coset } from "./QuotientGroup";
-import { GroupHom as NewGroupHom } from "./GroupHom";
+import { GroupHom as NewGroupHom } from "../../structures/group/Hom.js";
 
 /**
  * Given a hom f: G→H, build:
@@ -113,7 +113,7 @@ import { GroupHom as NewGroupHom } from "./GroupHom";
 export function firstIsomorphismData<G, H>(
   F: NewGroupHom<G, H>
 ) {
-  const { G, H, f } = F;
+  const { source: G, target: H, f } = F;
 
   // 1) congruence
   const cong = congruenceFromHom(G, H, f);
@@ -147,7 +147,7 @@ export function firstIsomorphismData<G, H>(
 export function factorThroughQuotient<G,H>(
   hom: NewGroupHom<G,H>
 ) {
-  const { G, H, f: map } = hom;
+  const { source: G, target: H, f: map } = hom;
 
   // Congruence from hom
   const cong = congruenceFromHom(G,H,map);

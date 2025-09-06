@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { GroupHom } from "../GroupHom";
+import { hom } from "../../../structures/group/Hom.js";
 import { isCongruence, congruenceFromHom } from "../Congruence";
 import { factorThroughQuotient } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
@@ -7,7 +7,7 @@ import { modHom, Zmod } from "../examples/cyclic";
 describe("Theorem 9 Proof Machinery: Congruences and Factorization", () => {
   it("kernel-pair congruence from homomorphism satisfies all congruence properties", () => {
     const { Z, Zn, qn } = modHom(6);
-    const f = new GroupHom(Z, Zn, qn);
+    const f = hom(Z, Zn, qn);
     
     // Build congruence from homomorphism
     const cong = congruenceFromHom(Z, Zn, qn);
@@ -27,7 +27,7 @@ describe("Theorem 9 Proof Machinery: Congruences and Factorization", () => {
 
   it("factorization: f = ι ∘ π where π is surjective and ι is injective", () => {
     const { Z, Zn, qn } = modHom(4);
-    const f = new GroupHom(Z, Zn, qn);
+    const f = hom(Z, Zn, qn);
     
     const { quotient, pi, iota } = factorThroughQuotient(f);
     
