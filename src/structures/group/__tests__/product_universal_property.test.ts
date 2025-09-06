@@ -4,7 +4,7 @@ import { tupleScheme } from "../pairing/PairingScheme";
 import { productGroup } from "../builders/Product";
 import { projections, pairHom } from "../builders/ProductUP";
 import { homEqByPoints } from "../cat/GroupCat";
-import { GroupHom } from "../GrpCat";
+import { GroupHom } from "../Hom";
 import { isHom } from "../Isomorphism";
 
 // Helper to check if a GroupHom object is a valid homomorphism

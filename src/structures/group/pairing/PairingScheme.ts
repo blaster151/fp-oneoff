@@ -25,6 +25,15 @@ export function tupleScheme<A, B>(): PairingScheme<A, B, { a: A; b: B }> {
   };
 }
 
+/** Array tuple scheme for [A, B] pairs. */
+export function arrayTupleScheme<A, B>(): PairingScheme<A, B, [A, B]> {
+  return {
+    pair: (a, b) => [a, b],
+    left: (o) => o[0],
+    right: (o) => o[1]
+  };
+}
+
 /** Index-based numeric scheme for finite carriers (shows "representation independence"). */
 export function indexScheme<A, B>(
   Aelems: A[],

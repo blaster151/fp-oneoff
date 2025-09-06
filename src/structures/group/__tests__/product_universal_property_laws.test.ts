@@ -3,7 +3,7 @@ import { Z2, Z3, Zn } from "../util/FiniteGroups";
 import { tupleScheme } from "../pairing/PairingScheme";
 import { productGroup } from "../builders/Product";
 import { projections, pairHom } from "../builders/ProductUP";
-import { verifyProductUP, comp, homEqByPoints } from "../cat/GroupCat";
+import { verifyProductUP, compose, homEqByPoints } from "../cat/GroupCat";
 
 describe("Categorical product laws: π, ⟨f,g⟩, uniqueness", () => {
   const G = Z2, H = Z3;
@@ -25,7 +25,7 @@ describe("Categorical product laws: π, ⟨f,g⟩, uniqueness", () => {
     expect(homEqByPoints(h, mediating)).toBe(true);
 
     // sanity: composing with projections recovers f and g
-    expect(homEqByPoints(comp(mediating, pi1), f)).toBe(true);
-    expect(homEqByPoints(comp(mediating, pi2), g)).toBe(true);
+    expect(homEqByPoints(compose(mediating, pi1), f)).toBe(true);
+    expect(homEqByPoints(compose(mediating, pi2), g)).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 import type { FiniteGroup } from "./Group";
 import {
-  GroupHom, hom, idHom, comp,
+  GroupHom, hom, idHom, compose,
   productGroup, proj1, proj2, pairIntoProduct
 } from "./GrpCat";
 
@@ -11,7 +11,7 @@ export type Mor<A,B> = GroupHom<A,B>;
 /** Category structure (just enough for tests) */
 export const Grp = {
   id: idHom,
-  comp,
+  comp: compose,
 
   /** Categorical product data */
   product<A,B>(G: Obj<A>, H: Obj<B>) {

@@ -1,5 +1,5 @@
 import { FiniteGroup } from "./Group";
-import { GroupHom } from "./GrpCat";
+import { GroupHom } from "./Hom";
 import { must, idx } from "../../util/guards";
 
 /** Subgroup inclusion ι : H ↪ G (carriers share the same A; H.elems ⊆ G.elems). */
@@ -14,8 +14,8 @@ export function inclusion<A>(H: FiniteGroup<A>, G: FiniteGroup<A>): GroupHom<A,A
     f: (h: A) => h,               // identity on the underlying carrier
     verify: () => {
       for (const x of H.elems) for (const y of H.elems) {
-        const left  = inclusion(H,G).f(H.op(x,y));
-        const right = G.op(inclusion(H,G).f(x), inclusion(H,G).f(y));
+        const left  = H.op(x,y);   // because f is identity on the carrier
+        const right = G.op(x,y);
         if (!G.eq(left, right)) return false;
       }
       return true;

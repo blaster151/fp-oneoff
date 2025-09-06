@@ -6,9 +6,12 @@ export function id<A>(Obj: GroupHom<A, A>["source"]): GroupHom<A, A> {
 }
 
 /** Composition g ∘ f. Types ensure target/source match. */
-export function comp<A, B, C>(f: GroupHom<A, B>, g: GroupHom<B, C>): GroupHom<A, C> {
+export function compose<A, B, C>(f: GroupHom<A, B>, g: GroupHom<B, C>): GroupHom<A, C> {
   return hom(f.source, g.target, (a: A) => g.f(f.f(a)), () => true);
 }
+
+// Back-compat alias (TODO deprecate and remove after callers are migrated)
+export const comp = compose;
 
 /** Extensional equality of homs on a finite source. */
 export function homEqByPoints<A, B>(h1: GroupHom<A, B>, h2: GroupHom<A, B>): boolean {

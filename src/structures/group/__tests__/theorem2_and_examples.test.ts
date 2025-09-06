@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Zn } from "../Group";
-import { hom, idHom, comp } from "../GrpCat";
+import { hom, idHom, compose } from "../GrpCat";
 import { injectiveOn, surjectiveTo, approxEq } from "../HomHelpers";
 import { parityHom, Z_to_Q, R_to_Cstar_expix } from "../homs/Examples24";
 import { FiniteGroup } from "../Group";
@@ -16,18 +16,18 @@ describe("Theorem 2 (Grp homs form a category)", () => {
     const h = hom(Z2, Z2, x => x); // id
 
     // (1) closure under composition
-    const g_of_f = comp(f,g);
+    const g_of_f = compose(f,g);
     for (const x of Z6.elems) expect(Z2.eq(g_of_f.f(x), (x%3)%2)).toBe(true);
 
     // (2) associativity
-    const left  = comp(g_of_f, h);     // h ∘ (g ∘ f)
-    const right = comp(f, comp(g,h));  // (h ∘ g) ∘ f
+    const left  = compose(g_of_f, h);     // h ∘ (g ∘ f)
+    const right = compose(f, compose(g,h));  // (h ∘ g) ∘ f
     for (const x of Z6.elems) expect(Z2.eq(left.f(x), right.f(x))).toBe(true);
 
     // (3) identities
     const idZ6 = idHom(Z6), idZ3 = idHom(Z3);
-    const f1 = comp(idZ6, f);
-    const f2 = comp(f, idZ3);
+    const f1 = compose(idZ6, f);
+    const f2 = compose(f, idZ3);
     for (const x of Z6.elems) expect(Z3.eq(f1.f(x), f.f(x))).toBe(true);
     for (const x of Z6.elems) expect(Z3.eq(f2.f(x), f.f(x))).toBe(true);
   });

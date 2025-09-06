@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Zn } from "../Group";
-import { hom, idHom, comp } from "../GrpCat";
+import { hom, idHom, compose } from "../GrpCat";
 
 describe("Grp: hom composition laws", () => {
   it("composition, identity, associativity", () => {
@@ -11,16 +11,16 @@ describe("Grp: hom composition laws", () => {
     const h = hom(Z2, Z2, x => x);
 
     // (2) associativity
-    const hComposeG = comp(g,h);        // Z3→Z2
-    const gComposeF = comp(f,g);        // Z6→Z2
-    const lhs = comp(gComposeF, h);     // h ∘ (g ∘ f)
-    const rhs = comp(f, hComposeG);     // (h ∘ g) ∘ f
+    const hComposeG = compose(g,h);        // Z3→Z2
+    const gComposeF = compose(f,g);        // Z6→Z2
+    const lhs = compose(gComposeF, h);     // h ∘ (g ∘ f)
+    const rhs = compose(f, hComposeG);     // (h ∘ g) ∘ f
     for (const x of Z6.elems) expect(Z2.eq(lhs.f(x), rhs.f(x))).toBe(true);
 
     // (3) identities
     const idZ6 = idHom(Z6), idZ3 = idHom(Z3);
-    const f1 = comp(idZ6, f);
-    const f2 = comp(f, idZ3);
+    const f1 = compose(idZ6, f);
+    const f2 = compose(f, idZ3);
     for (const x of Z6.elems) expect(Z3.eq(f1.f(x), f.f(x))).toBe(true);
     for (const x of Z6.elems) expect(Z3.eq(f2.f(x), f.f(x))).toBe(true);
   });
