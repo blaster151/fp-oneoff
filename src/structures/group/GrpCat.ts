@@ -1,26 +1,13 @@
 import type { FiniteGroup } from "./Group";
+import { GroupHom, hom } from "./Hom";
+import { productGroupTuples as productGroup, proj1 as _proj1, proj2 as _proj2, pairIntoProduct as _pairIntoProduct } from "./builders/Product";
 
-/** Group homomorphism */
-export interface GroupHom<A, B> {
-  source: FiniteGroup<A>;
-  target: FiniteGroup<B>;
-  f: (a: A) => B;
-  verify?(): boolean;
-}
+// Re-export the homomorphism types and functions for backward compatibility
+export { GroupHom, hom, productGroup };
 
-// Factory to build a well-typed homomorphism object.
-export function hom<A, B>(
-  source: FiniteGroup<A>,
-  target: FiniteGroup<B>,
-  f: (a: A) => B,
-  verify?: () => boolean
-): GroupHom<A, B> {
-  const result: GroupHom<A, B> = { source, target, f };
-  if (verify !== undefined) {
-    result.verify = verify;
-  }
-  return result;
-}
+export const proj1 = _proj1;
+export const proj2 = _proj2;
+export const pairIntoProduct = _pairIntoProduct;
 
 /** Identity homomorphism */
 export function idHom<A>(G: FiniteGroup<A>): GroupHom<A, A> {
@@ -40,52 +27,7 @@ export function comp<A, B, C>(
   );
 }
 
-/** Product group G × H */
-export function productGroup<A, B>(
-  G: FiniteGroup<A>, 
-  H: FiniteGroup<B>
-): FiniteGroup<[A, B]> {
-  const elems: [A, B][] = [];
-  for (const a of G.elems) {
-    for (const b of H.elems) {
-      elems.push([a, b]);
-    }
-  }
-  
-  return {
-    elems,
-    eq: ([a1, b1], [a2, b2]) => G.eq(a1, a2) && H.eq(b1, b2),
-    op: ([a1, b1], [a2, b2]) => [G.op(a1, a2), H.op(b1, b2)],
-    id: [G.id, H.id],
-    inv: ([a, b]) => [G.inv(a), H.inv(b)]
-  };
-}
 
-/** Projection π1: G × H → G */
-export function proj1<A, B>(G: FiniteGroup<A>, H: FiniteGroup<B>): GroupHom<[A, B], A> {
-  return hom(productGroup(G, H), G, ([a, b]) => a, () => true);
-}
-
-/** Projection π2: G × H → H */
-export function proj2<A, B>(G: FiniteGroup<A>, H: FiniteGroup<B>): GroupHom<[A, B], B> {
-  return hom(productGroup(G, H), H, ([a, b]) => b, () => true);
-}
-
-/** Pair into product: K → G × H given K → G and K → H */
-export function pairIntoProduct<K, A, B>(
-  K: FiniteGroup<K>,
-  G: FiniteGroup<A>,
-  H: FiniteGroup<B>,
-  u: GroupHom<K, A>,
-  v: GroupHom<K, B>
-): GroupHom<K, [A, B]> {
-  return hom(
-    K,
-    productGroup(G, H),
-    (k) => [u.f(k), v.f(k)],
-    () => (u.verify?.() ?? true) && (v.verify?.() ?? true)
-  );
-}
 
 import { trivial } from "./Group";
 

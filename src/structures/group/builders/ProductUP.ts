@@ -1,5 +1,5 @@
 import { FiniteGroup } from "../Group";
-import { GroupHom, hom } from "../GrpCat";
+import { GroupHom, hom } from "../Hom";
 import { PairingScheme } from "../pairing/PairingScheme";
 
 /** Projections π1, π2 : G×H → G,H for a chosen pairing scheme. */

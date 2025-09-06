@@ -1,5 +1,5 @@
 import { FiniteGroup } from "./Group";
-import { GroupHom } from "./GrpCat";
+import { GroupHom } from "./Hom";
 import { must, idx } from "../../util/guards";
 
 /** Subgroup inclusion ι : H ↪ G (carriers share the same A; H.elems ⊆ G.elems). */
