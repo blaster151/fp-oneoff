@@ -1,6 +1,5 @@
 import { Group } from "./Group";
-
-export type Eq<G> = (x: G, y: G) => boolean;
+import { Eq } from "../../types/eq.js";
 
 /** A congruence ≈ on a group G: an equivalence relation compatible with op. */
 export interface Congruence<G> {

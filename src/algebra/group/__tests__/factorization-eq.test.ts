@@ -1,6 +1,6 @@
 import { strict as A } from "assert";
 import { GroupHom } from "../GroupHom";
-import { Eq } from "../../core/Eq";
+import { Eq } from "../../../types/eq.js";
 import { modHom, Zmod } from "../examples/cyclic";
 
 const eqZ4: Eq<number> = { eq: (a,b)=> (a%4)===(b%4) };

@@ -1,5 +1,5 @@
 import { strict as A } from "assert";
-import { Eq } from "../../core/Eq";
+import { Eq } from "../../../types/eq.js";
 import { groupHom } from "../Hom";
 import { analyzeGroupHom } from "../analyzeHom";
 import { ZmodAdd } from "../examples";
