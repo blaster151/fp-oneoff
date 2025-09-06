@@ -1,14 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { Signature } from "../../Signature";
+import { Signature, opOf } from "../../Signature";
 import { Var, App } from "../../Term";
 import { KleisliFromTheory } from "../Kleisli";
 
 /** Use the monoid theory (assoc+unit) to instantiate the Kleisli category. */
 const MonSig: Signature = { ops: [{ name:"e", arity:0 }, { name:"mul", arity:2 }] };
-const assoc = { lhs: App(MonSig.ops[1], [App(MonSig.ops[1], [Var(0),Var(1)]), Var(2)]),
-                rhs: App(MonSig.ops[1], [Var(0), App(MonSig.ops[1], [Var(1),Var(2)])]) };
-const leftU = { lhs: App(MonSig.ops[1], [App(MonSig.ops[0], []), Var(0)]), rhs: Var(0) };
-const rightU= { lhs: App(MonSig.ops[1], [Var(0), App(MonSig.ops[0], [])]), rhs: Var(0) };
+const e = opOf(MonSig, "e"), mul = opOf(MonSig, "mul");
+const assoc = { lhs: App(mul, [App(mul, [Var(0),Var(1)]), Var(2)]),
+                rhs: App(mul, [Var(0), App(mul, [Var(1),Var(2)])]) };
+const leftU = { lhs: App(mul, [App(e, []), Var(0)]), rhs: Var(0) };
+const rightU= { lhs: App(mul, [Var(0), App(e, [])]), rhs: Var(0) };
 
 const Fin = <A>(xs: A[]) => ({ elems: xs, eq: (x:A,y:A)=>x===y });
 

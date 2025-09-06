@@ -182,57 +182,17 @@ src/universal/monad/Diagram.ts(57,57): error TS2345: Argument of type 'FiniteSet
     Type 'Eq<D>' is not assignable to type 'Eq<unknown>'.
       Type 'unknown' is not assignable to type 'D'.
         'D' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(8,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(8,35): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(8,76): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(8,93): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(9,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(9,35): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(10,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(10,43): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(23,49): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(23,66): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(24,38): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_diagrams.test.ts(25,40): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(8,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(8,46): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(9,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(9,54): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(10,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(10,46): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(11,26): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(11,54): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(36,46): error TS2345: Argument of type '{ elems: number[]; eq: (x: number, y: number) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
+src/universal/monad/__tests__/kleisli_laws.test.ts(37,46): error TS2345: Argument of type '{ elems: number[]; eq: (x: number, y: number) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
   Types of property 'eq' are incompatible.
     Type '(x: number, y: number) => boolean' is not assignable to type 'Eq<unknown>'.
       Types of parameters 'x' and 'x' are incompatible.
         Type 'unknown' is not assignable to type 'number'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(43,46): error TS2345: Argument of type '{ elems: string[]; eq: (x: string, y: string) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
+src/universal/monad/__tests__/kleisli_laws.test.ts(44,46): error TS2345: Argument of type '{ elems: string[]; eq: (x: string, y: string) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
   Types of property 'eq' are incompatible.
     Type '(x: string, y: string) => boolean' is not assignable to type 'Eq<unknown>'.
       Types of parameters 'x' and 'x' are incompatible.
         Type 'unknown' is not assignable to type 'string'.
-src/universal/monad/__tests__/kleisli_laws.test.ts(52,37): error TS2345: Argument of type '{ elems: string[]; eq: (x: string, y: string) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
+src/universal/monad/__tests__/kleisli_laws.test.ts(53,37): error TS2345: Argument of type '{ elems: string[]; eq: (x: string, y: string) => boolean; }' is not assignable to parameter of type 'FiniteSet<unknown>'.
   Types of property 'eq' are incompatible.
     Type '(x: string, y: string) => boolean' is not assignable to type 'Eq<unknown>'.
       Types of parameters 'x' and 'x' are incompatible.
