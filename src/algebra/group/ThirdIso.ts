@@ -1,88 +1,50 @@
 import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
 import { canonicalProjection, firstIsomorphism } from "./FirstIso";
 import { analyzeGroupHom } from "./analyzeHom";
-import { composeHom, groupHom } from "./Hom";
-import { quotientGroup } from "./Quotient";
+import { quotientGroup, Coset, leftCoset } from "./Quotient";
 
-/** Result bundle for Third Isomorphism Theorem */
+function eqDefault<T>(a:T,b:T){ return Object.is(a,b); }
+
 export interface ThirdIsoResult<A> {
-  GmodN: Group<any>;           // G/N
-  KmodN: Subgroup<any>;        // K/N ≤ G/N
-  GmodK: Group<any>;           // G/K
-  quotient_GmodN_mod_KmodN: Group<any>; // (G/N)/(K/N)
-  iso: GroupIso<any, any>;     // (G/N)/(K/N) ≅ G/K
+  Q_GmodK: Group<Coset<A>>;          // G/K
+  NmodK_in_Q: Subgroup<Coset<A>>;    // N/K ≤ G/K
+  Q_over_NmodK: Group<any>;          // (G/K)/(N/K)
+  GmodN: Group<Coset<A>>;            // G/N
+  iso: GroupIso<any, any>;
 }
 
-/**
- * Third Isomorphism Theorem:
- * If N ⊴ G and K ⊴ G with N ≤ K, then K/N ⊴ G/N and (G/N)/(K/N) ≅ G/K
- * 
- * Construction: Use canonical projection π: G → G/N, then apply First Iso to
- * the induced map π': G → G/N with kernel K.
- */
-export function thirdIsomorphism<A>(
-  G: Group<A>, 
-  N: Subgroup<A>, 
-  K: Subgroup<A>
-): ThirdIsoResult<A> {
-  // Build G/N
-  const GmodN = quotientGroup(G, N);
-  
-  // Build K/N (K is a subgroup of G containing N)
-  // K/N consists of cosets kN where k ∈ K
-  const KmodN_elems = K.elems.map(k => {
-    // Find the coset kN in G/N
-    return GmodN.elems.find(coset => 
-      coset.set.some(x => (G.eq ?? Object.is)(x, k))
-    )!;
-  });
-  
-  // Make K/N a subgroup of G/N
-  const KmodN: Subgroup<any> = {
-    name: `${K.name ?? "K"}/${N.name ?? "N"}`,
-    elems: KmodN_elems,
-    op: GmodN.op,
-    e: GmodN.e,
-    inv: GmodN.inv,
-    eq: GmodN.eq
+/** Third Isomorphism via θ : G/K → G/N, θ([g]_K) = [g]_N and First Iso */
+export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Subgroup<A>): ThirdIsoResult<A> {
+  // π_K : G → G/K
+  const piK = canonicalProjection(G, K_norm);
+  const Q = piK.target; // G/K
+
+  // N/K as a subgroup of G/K: elements are {[n]_K | n∈N}
+  const eqQ = Q.eq ?? ((x:Coset<A>,y:Coset<A>) => x.set.length===y.set.length && x.set.every(u => y.set.includes(u)));
+  const NK_elems: Coset<A>[] = N_norm.elems.map(n => leftCoset(G, K_norm, n));
+  // de-dupe
+  const NK_unique: Coset<A>[] = [];
+  for (const c of NK_elems) if (!NK_unique.some(d => eqQ(c,d))) NK_unique.push(c);
+  const NmodK: Subgroup<Coset<A>> = { name: `${N_norm.name ?? "N"}/${K_norm.name ?? "K"}`, elems: NK_unique, op: Q.op, e: Q.e, inv: Q.inv, eq: Q.eq };
+
+  // π_N : G → G/N
+  const piN = canonicalProjection(G, N_norm);
+  const GmodN = piN.target;
+
+  // θ : G/K → G/N, θ([g]_K) = [g]_N. Implement by picking a representative.
+  const theta: GroupHom<Coset<A>, Coset<A>> = {
+    name: "theta",
+    source: Q,
+    target: GmodN,
+    map: (c: Coset<A>) => piN.map(c.rep)
   };
-  
-  // Build G/K
-  const GmodK = quotientGroup(G, K);
-  
-  // Build (G/N)/(K/N)
-  const quotient_GmodN_mod_KmodN = quotientGroup(GmodN, KmodN);
-  
-  // The isomorphism (G/N)/(K/N) ≅ G/K is given by the map
-  // [gN]K/N ↦ gK
-  // We construct this using the First Isomorphism Theorem
-  
-  // Define the map f: G/N → G/K by f(gN) = gK
-  const f: GroupHom<any, any> = {
-    name: "f",
-    source: GmodN,
-    target: GmodK,
-    map: (gN_coset: any) => {
-      // Find the representative g of the coset gN
-      const g = gN_coset.rep;
-      // Find the coset gK in G/K
-      return GmodK.elems.find(coset => 
-        coset.set.some(x => (G.eq ?? Object.is)(x, g))
-      )!;
-    }
-  };
-  
-  // Analyze the homomorphism
-  const analyzed_f = analyzeGroupHom(f);
-  
-  // Apply First Isomorphism Theorem
-  const iso = firstIsomorphism(analyzed_f as any);
-  
-  return {
-    GmodN,
-    KmodN,
-    GmodK,
-    quotient_GmodN_mod_KmodN,
-    iso
-  };
+
+  // Analyze θ, then First Iso ⇒ (G/K)/(N/K) ≅ G/N
+  const thetaAnalyzed = analyzeGroupHom(theta);
+  const iso = firstIsomorphism(thetaAnalyzed as any);
+
+  // Also expose (G/K)/(N/K) explicitly to compare sizes
+  const Q_over_NmodK = quotientGroup(Q, NmodK);
+
+  return { Q_GmodK: Q, NmodK_in_Q: NmodK, Q_over_NmodK, GmodN, iso };
 }
