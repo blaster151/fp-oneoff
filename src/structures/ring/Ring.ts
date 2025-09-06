@@ -1,9 +1,9 @@
 // Finite rings (possibly noncommutative). Morphisms live in RingHom.ts.
-export type Eq<A> = (x:A,y:A)=>boolean;
+export type RingEq<A> = (x:A,y:A)=>boolean;
 
 export type FiniteRing<A> = {
   elems: A[];
-  eq: Eq<A>;
+  eq: RingEq<A>;
 
   // additive abelian group
   add: (a:A,b:A)=>A;
