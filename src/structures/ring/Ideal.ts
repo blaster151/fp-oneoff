@@ -59,12 +59,10 @@ export function quotientRing<A>(R: FiniteRing<A>, I: Ideal<A>) {
   const inI = (x:A)=> I.elems.some(y=>R.eq(x,y));
   // union i ~ j if (ei - ej) ∈ I
   for (let i=0;i<R.elems.length;i++) for (let j=0;j<R.elems.length;j++) {
-    const ei = R.elems[i];
-    const ej = R.elems[j];
-    if (ei !== undefined && ej !== undefined) {
-      const diff = R.add(ei, R.neg(ej));
-      if (inI(diff)) uni(i,j);
-    }
+    const ei = R.elems[i]!;
+    const ej = R.elems[j]!;
+    const diff = R.add(ei, R.neg(ej));
+    if (inI(diff)) uni(i,j);
   }
 
   // classes & representatives
@@ -79,11 +77,7 @@ export function quotientRing<A>(R: FiniteRing<A>, I: Ideal<A>) {
   const classes: Cls[] = Array.from(repOfId.values()).map(repIndex => ({ repIndex }));
   const eq = (x:Cls,y:Cls)=> clsId(x.repIndex)===clsId(y.repIndex);
 
-  const lift = (x:Cls): A => {
-    const elem = R.elems[x.repIndex];
-    if (elem === undefined) throw new Error("Invalid representative index");
-    return elem;
-  };
+  const lift = (x:Cls): A => R.elems[x.repIndex]!;
 
   const add = (x:Cls,y:Cls): Cls => {
     const s = R.add(lift(x), lift(y));

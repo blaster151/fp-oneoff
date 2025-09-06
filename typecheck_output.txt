@@ -111,8 +111,6 @@ src/structures/ab/__tests__/ab_biproduct_up.test.ts(23,38): error TS2554: Expect
 src/structures/ab/__tests__/ab_biproduct_up.test.ts(39,52): error TS2554: Expected 5 arguments, but got 6.
 src/structures/ab/__tests__/ab_biproduct_up.test.ts(40,38): error TS2554: Expected 2 arguments, but got 3.
 src/structures/group/Units.ts(17,7): error TS7023: 'gcd' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
-src/structures/ring/CRT.ts(41,12): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
-  Type 'undefined' is not assignable to type 'number'.
 src/structures/ring/CRT.ts(50,44): error TS2532: Object is possibly 'undefined'.
 src/structures/ring/CRT.ts(50,50): error TS2532: Object is possibly 'undefined'.
 src/structures/ring/Ideal.ts(56,74): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
