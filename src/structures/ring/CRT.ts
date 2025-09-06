@@ -47,7 +47,7 @@ export function crtIsomorphism(ns:number[]){
   // ψ: Π Z_{n_i} → Z_n  via sum_i x_i * e_i  (mod n)
   const psi = (xs:number[])=>{
     let s = 0;
-    for(let i=0;i<ns.length;i++) s = (s + (xs[i]*e[i])) % n;
+    for(let i=0;i<ns.length;i++) s = (s + ((xs[i]!)*(e[i]!))) % n;
     return ((s % n)+n)%n;
   };
   return { n, factors:ns, e, phi, psi, Zn, cod };
