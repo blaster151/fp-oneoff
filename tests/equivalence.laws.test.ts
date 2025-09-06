@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 // import the actual functions/types under test:
 import * as Eqv from '../src/types/catkit-equivalence.js'; // adjust if filename differs
+import { SmallCategory } from '../src/types/category-to-nerve-sset.js';
 
 describe('Equivalence: triangle identities (smoke)', () => {
   it('eta;epsilon ≈ id and epsilon;eta ≈ id on sample morphisms', () => {
@@ -8,7 +9,7 @@ describe('Equivalence: triangle identities (smoke)', () => {
     const objects = ['A', 'B'] as const;
     const morphisms = ['idA', 'idB', 'f', 'g'] as const;
     
-    const tinyCategory: Eqv.SmallCategory<string, string> & Eqv.Finite<string, string> = {
+    const tinyCategory: SmallCategory<string, string> & Eqv.Finite<string, string> = {
       objects,
       morphisms,
       id: (o: string) => o === 'A' ? 'idA' : 'idB',
@@ -60,7 +61,7 @@ describe('Equivalence: triangle identities (smoke)', () => {
     const objects = ['A'] as const;
     const morphisms = ['idA', 'broken'] as const;
     
-    const brokenCategory: Eqv.SmallCategory<string, string> & Eqv.Finite<string, string> = {
+    const brokenCategory: SmallCategory<string, string> & Eqv.Finite<string, string> = {
       objects,
       morphisms,
       id: (o: string) => 'idA',
