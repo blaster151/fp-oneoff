@@ -10,11 +10,13 @@ export function isRowStochastic(P: Stoch): boolean {
 }
 
 export function compose(P: Stoch, Q: Stoch): Stoch {
-  const n = P.length, m = Q[0].length, k = Q.length;
-  if (P[0].length !== k) throw new Error("compose: inner dims mismatch");
+  const n = P.length;
+  const k = Q.length;
+  const m = Q[0]?.length ?? 0;
+  if ((P[0]?.length ?? 0) !== k) throw new Error("compose: inner dims mismatch");
   const R: Stoch = Array.from({length:n},()=>Array(m).fill(0));
   for (let i=0;i<n;i++) for (let j=0;j<m;j++) for (let t=0;t<k;t++)
-    R[i][j] += P[i][t] * Q[t][j];
+    R[i][j] += (P[i]?.[t] ?? 0) * (Q[t]?.[j] ?? 0);
   // normalize tiny drift
   for (let i=0;i<n;i++){
     const s = R[i].reduce((a,b)=>a+b,0);
@@ -30,9 +32,10 @@ export function idStoch(n:number): Stoch {
 
 /** Act on distributions viewed as row vectors: d * P. */
 export function push(d: number[], P: Stoch): number[] {
-  const n = d.length, m = P[0].length;
+  const n = d.length;
+  const m = P[0]?.length ?? 0;
   const out = Array(m).fill(0);
-  for (let j=0;j<m;j++) for (let i=0;i<n;i++) out[j] += d[i]*P[i][j];
+  for (let j=0;j<m;j++) for (let i=0;i<n;i++) out[j] += (d[i] ?? 0) * (P[i]?.[j] ?? 0);
   const s = out.reduce((a,b)=>a+b,0);
   return out.map(x=> x/(s||1));
 }

@@ -14,7 +14,12 @@ export function posetFromPairs<A>(
   for (const [a,b] of leqPairs){ const i=idx(a), j=idx(b); if(i<0||j<0) throw new Error("pair element not in elems"); leqMat[i][j]=true; }
   // transitive closure (Floyd–Warshall)
   for (let k=0;k<n;k++) for (let i=0;i<n;i++) if (leqMat[i][k]) for (let j=0;j<n;j++) if (leqMat[k][j]) leqMat[i][j]=true;
-  const leq = (a:A,b:A)=> leqMat[idx(a)][idx(b)];
+  const leq = (a:A,b:A)=> {
+    const i = idx(a);
+    const j = idx(b);
+    if (i < 0 || j < 0) return false;
+    return !!leqMat[i]?.[j];
+  };
   const eq  = (a:A,b:A)=> leq(a,b) && leq(b,a);
   return { elems, leq, eq, show: (a)=>String(a) };
 }

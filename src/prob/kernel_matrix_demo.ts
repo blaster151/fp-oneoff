@@ -84,7 +84,7 @@ const tempKernel = (temp: number) => {
   else return [{x: "cool", p: 0.2}, {x: "warm", p: 0.8}];
 };
 
-const composedKernel = kcomp(weatherKernel, tempKernel);
+const composedKernel = kcomp<number,string>(weatherKernel, tempKernel);
 console.log("Composed kernel (weather -> temp -> description):");
 for (const a of A) {
   console.log(`  ${a} -> ${JSON.stringify(composedKernel(a))}`);

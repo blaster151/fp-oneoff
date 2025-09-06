@@ -2,8 +2,8 @@
 
 export interface FiniteSet<A> {
   readonly elems: ReadonlyArray<A>;
-  readonly eq?: (x: A, y: A) => boolean;
-  readonly name?: string;
+  readonly eq: (x: A, y: A) => boolean;
+  readonly name: string;
 }
 
 export const eqOf = <A>(S: FiniteSet<A>) => S.eq ?? ((x, y) => Object.is(x, y));
@@ -14,8 +14,9 @@ export function SetObj<A>(
 ): FiniteSet<A> {
   // ensure uniqueness to keep reasoning simple
   const uniq: A[] = [];
-  for (const a of elems) if (!uniq.some(b => (opts?.eq ?? Object.is)(a, b))) uniq.push(a);
-  return { elems: uniq, eq: opts?.eq, name: opts?.name };
+  const eq = opts?.eq ?? ((x: A, y: A) => Object.is(x, y));
+  for (const a of elems) if (!uniq.some(b => eq(a, b))) uniq.push(a);
+  return { elems: uniq, eq, name: opts?.name ?? "Set" };
 }
 
 // ---------- morphisms + witnesses ----------
@@ -24,7 +25,7 @@ export interface SetHom<A,B> {
   readonly source: FiniteSet<A>;
   readonly target: FiniteSet<B>;
   readonly map: (a: A) => B;
-  readonly name?: string;
+  readonly name: string;
   witnesses?: SetWitnesses<A,B>;
 }
 
@@ -39,7 +40,7 @@ export interface SetWitnesses<A,B> {
 }
 
 export function setHom<A,B>(A: FiniteSet<A>, B: FiniteSet<B>, map: (a:A)=>B, name?: string): SetHom<A,B> {
-  const f: SetHom<A,B> = { source: A, target: B, map, name };
+  const f: SetHom<A,B> = { source: A, target: B, map, name: name ?? "f" };
   return analyzeSetHom(f);
 }
 

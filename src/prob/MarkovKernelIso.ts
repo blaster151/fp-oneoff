@@ -35,16 +35,21 @@ export function matrixToKernel<A,B>(
   };
   return (a:A) => {
     const i = idxA(a);
-    const dist = Bs.map((b, j) => ({ x: b, p: P[i][j] })) as Dist<B>;
+    const row = P[i] ?? [];
+    const dist = Bs.map((b, j) => ({ x: b, p: row[j] ?? 0 })) as Dist<B>;
     // Filter out zero probabilities to match original kernel format
     return dist.filter(({p}) => p > 0);
   };
 }
 
 export function approxEqMatrix(P: Stoch, Q: Stoch, eps = 1e-7): boolean {
-  if (P.length !== Q.length || P[0].length !== Q[0].length) return false;
-  for (let i=0;i<P.length;i++) for (let j=0;j<P[0].length;j++) {
-    if (Math.abs(P[i][j] - Q[i][j]) > eps) return false;
+  if (P.length !== Q.length) return false;
+  const cols = P[0]?.length ?? 0;
+  if ((Q[0]?.length ?? 0) !== cols) return false;
+  for (let i=0;i<P.length;i++) for (let j=0;j<cols;j++) {
+    const pij = P[i]?.[j] ?? 0;
+    const qij = Q[i]?.[j] ?? 0;
+    if (Math.abs(pij - qij) > eps) return false;
   }
   return true;
 }

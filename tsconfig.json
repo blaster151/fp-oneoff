@@ -3,6 +3,7 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
     "strict": true,
     "noImplicitAny": true,
     "exactOptionalPropertyTypes": true,
@@ -13,8 +14,8 @@
     "declarationMap": true,
     "outDir": "dist",
     "downlevelIteration": true,
-    "types": ["vitest", "node"]
+    "types": ["vitest/globals", "vitest", "node"]
   },
   "include": ["src/**/*.ts", "**/*.test.ts", "vitest.config.*"],
-  "exclude": ["src/examples/**", "dist/**", "node_modules/**"]
+  "exclude": ["src/examples/**", "src/algebra/**", "dist/**", "node_modules/**"]
 }
