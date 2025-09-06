@@ -6,7 +6,7 @@ import { NilF, ConsF } from "../../types/adt-list";
 /** Church round-trip and fusion on a small Expr */
 describe("GADT Church & fusion", () => {
   it("toChurch ∘ fromChurch is identity (up to eval)", () => {
-    // Use the existing ADT types that are known to work
+    // Use the existing ADT types that are known to work  
     const e = Add(Num(20), Num(22));
     
     const builder = toChurchFix(e);

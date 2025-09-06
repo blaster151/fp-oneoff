@@ -18,6 +18,20 @@ export function hom<A, B>(
   const result: GroupHom<A, B> = { source, target, f };
   if (verify !== undefined) {
     result.verify = verify;
+  } else {
+    // Default verify function - check homomorphism property
+    result.verify = () => {
+      if (!source.elems || !target.elems) return true;
+      const eq = target.eq ?? ((x: B, y: B) => x === y);
+      for (const x of source.elems) {
+        for (const y of source.elems) {
+          const lhs = f(source.op(x, y));
+          const rhs = target.op(f(x), f(y));
+          if (!eq(lhs, rhs)) return false;
+        }
+      }
+      return true;
+    };
   }
   return result;
 }
