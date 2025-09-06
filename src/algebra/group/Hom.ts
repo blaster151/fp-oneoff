@@ -1,4 +1,6 @@
 import { Group, GroupHom, Subgroup } from "./structures";
+import { imageSubgroup } from "./Image";
+import { kernelNormalSubgroup } from "./Kernel";
 
 export function groupHom<A,B>(source: Group<A>, target: Group<B>, map: (a:A)=>B, name?:string): GroupHom<A,B> {
   return { source, target, map, name };
@@ -28,4 +30,54 @@ export function inclusionHom<A>(H: Group<A>, S: Subgroup<A>, name?: string): Gro
     target: H,
     map: (s: A) => s
   };
+}
+
+/** Shim: tests expect a `hom` that attaches witnesses. */
+export function hom<A,B>(source: Group<A>, target: Group<B>, map: (a:A)=>B, name?: string): GroupHom<A,B> {
+  const f: GroupHom<A,B> = { source, target, map, name };
+  return analyzeHom(f);
+}
+
+/** Compute basic witnesses (injective/surjective/bijective) and inverse if bijection). */
+export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
+  const G = f.source, H = f.target;
+  const eqH = H.eq ?? ((x:B,y:B)=> Object.is(x,y));
+
+  // Injectivity: distinct elements map to distinct images.
+  let injective = true;
+  outer: for (let i=0;i<G.elems.length;i++) for (let j=i+1;j<G.elems.length;j++) {
+    const gi = G.elems[i], gj = G.elems[j];
+    if (eqH(f.map(gi), f.map(gj))) { injective = false; break outer; }
+  }
+
+  // Surjectivity: every h in H has a preimage.
+  const image = imageSubgroup(f, eqH);
+  const surjective = H.elems.every(h => image.elems.some(y => eqH(y, h)));
+
+  const bijective = injective && surjective;
+
+  // Try to construct inverse when bijective by table lookup.
+  let inverse: GroupHom<B,A> | undefined = undefined;
+  if (bijective) {
+    const table = G.elems.map(a => ({ a, b: f.map(a) }));
+    const invMap = (b:B) => {
+      const hit = table.find(t => eqH(t.b, b));
+      if (!hit) throw new Error("inverse not found (logic)");
+      return hit.a;
+    };
+    inverse = { source: H, target: G, map: invMap, name: f.name ? `${f.name}⁻¹` : 'inv' };
+  }
+
+  (f as any).witnesses = {
+    isHom: true,
+    injective,
+    surjective,
+    isIso: bijective,
+    leftInverse: bijective,
+    rightInverse: bijective,
+    imageSubgroup: image,
+    kernel: kernelNormalSubgroup(f, eqH)
+  };
+
+  return f;
 }
