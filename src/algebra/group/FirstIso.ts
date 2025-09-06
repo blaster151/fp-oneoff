@@ -97,3 +97,40 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
 
   return { source: Q, target: Im, to, from, leftInverse, rightInverse };
 }
+
+// New functionality for Theorem 9: Congruences and quotients
+import { congruenceFromHom } from "./Congruence";
+import { QuotientGroup, Coset } from "./QuotientGroup";
+import { GroupHom as NewGroupHom } from "./GroupHom";
+
+/**
+ * Given a hom f: G→H, build:
+ *  - the congruence ≈_f (x≈y ⇔ f(x)=f(y))
+ *  - the quotient group Q = G/≈_f
+ *  - the canonical hom Φ: Q → im(f) (as a subgroup predicate of H)
+ * For finite examples we verify Φ is an isomorphism by exhaustive check.
+ */
+export function firstIsomorphismData<G, H>(
+  F: NewGroupHom<G, H>
+) {
+  const { G, H, map: f } = F;
+
+  // 1) congruence
+  const cong = congruenceFromHom(G, H, f);
+
+  // 2) quotient
+  const Q = QuotientGroup(cong);
+
+  // 3) image predicate (extensible; for tests we pass finite carrier)
+  const inImage = (h: H, support: G[]): boolean =>
+    support.some(g => H.eq(f(g), h));
+
+  // 4) canonical hom Φ([g]) = f(g)
+  const phi = (c: Coset<G>) => f(c.rep);
+
+  // homomorphism laws hold by definition; we can provide a checker
+  const respectsOp = (a: Coset<G>, b: Coset<G>) =>
+    H.eq(phi(Q.Group.op(a, b)), H.op(phi(a), phi(b)));
+
+  return { cong, quotient: Q, phi, respectsOp, inImage };
+}
