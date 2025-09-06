@@ -30,7 +30,7 @@ export function subsetPoset<U>(univ: U[], eqU: (x:U,y:U)=>boolean) {
   const n = univ.length;
   const subsets: U[][] = [];
   for (let mask=0; mask<(1<<n); mask++){
-    const s: U[] = []; for (let i=0;i<n;i++) if (mask&(1<<i)) s.push(univ[i]);
+    const s: U[] = []; for (let i=0;i<n;i++) if (mask&(1<<i)) s.push(univ[i]!);
     subsets.push(s);
   }
   const leq = (A:U[],B:U[]) => A.every(x => B.some(y=>eqU(x,y)));
