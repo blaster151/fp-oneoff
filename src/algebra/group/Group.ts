@@ -68,5 +68,6 @@ export function Product<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>): FiniteGroup<
   };
 }
 
-// Re-export shims used in tests from Hom.ts for convenience
-export { groupHom as hom, composeHom as composeHomomorphisms, idHom } from "./Hom";
+// Re-export shims used in tests from canonical sources for convenience
+export { hom } from "../../structures/group/Hom.js";
+export { idHom, compose as composeHomomorphisms } from "../../structures/group/GrpCat.js";

@@ -1,24 +1,8 @@
 import type { Group, GroupHom, GroupIso } from "../Group";
+import { hom } from "../../../structures/group/Hom.js";
 
-// Build a GroupHom, caller promises it's a homomorphism (tests can verify)
-export function hom<A, B>(source: Group<A>, target: Group<B>, f: (a: A) => B): GroupHom<A, B> {
-  const result = { source, target, map: f };
-  // Add verify method for compatibility
-  (result as any).verify = () => {
-    // Simple verification - check if it's a homomorphism
-    if (!source.elems || !target.elems) return true;
-    for (const x of source.elems) {
-      for (const y of source.elems) {
-        const lhs = f(source.op(x, y));
-        const rhs = target.op(f(x), f(y));
-        const eq = target.eq ?? ((a: B, b: B) => a === b);
-        if (!eq(lhs, rhs)) return false;
-      }
-    }
-    return true;
-  };
-  return result;
-}
+// Re-export the canonical hom function
+export { hom };
 
 // Build a GroupIso with witness predicates.
 // For finite groups, witnesses can systematically check the laws by enumeration.
