@@ -15,7 +15,7 @@ export function idHom<A>(G: FiniteGroup<A>): GroupHom<A, A> {
 }
 
 /** Composition of homomorphisms */
-export function comp<A, B, C>(
+export function compose<A, B, C>(
   f: GroupHom<A, B>, 
   g: GroupHom<B, C>
 ): GroupHom<A, C> {
@@ -26,6 +26,9 @@ export function comp<A, B, C>(
     () => (f.verify?.() ?? true) && (g.verify?.() ?? true)
   );
 }
+
+// Back-compat alias (TODO deprecate and remove after callers are migrated)
+export const comp = compose;
 
 
 

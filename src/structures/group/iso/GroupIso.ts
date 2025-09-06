@@ -2,7 +2,7 @@
 // We store BOTH directions so composition and inverses are trivial.
 
 import { GroupHom } from "../GrpCat";
-import { homEqByPoints, comp, id } from "../cat/GroupCat";
+import { homEqByPoints, compose, id } from "../cat/GroupCat";
 import { FiniteGroup } from "../Group";
 
 export type GroupIso<A, B> = {
@@ -19,8 +19,8 @@ export function isoId<A>(G: FiniteGroup<A>): GroupIso<A, A> {
 // Compose B⟶C with A⟶B to get A⟶C
 export function isoComp<A, B, C>(ab: GroupIso<A, B>, bc: GroupIso<B, C>): GroupIso<A, C> {
   return {
-    forward: comp(ab.forward, bc.forward),
-    backward: comp(bc.backward, ab.backward),
+    forward: compose(ab.forward, bc.forward),
+    backward: compose(bc.backward, ab.backward),
   };
 }
 
