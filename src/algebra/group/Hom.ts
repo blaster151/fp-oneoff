@@ -21,7 +21,8 @@ export interface HomWitnesses<A,B> {
   // structure-level data
   leftInverse?: GroupHom<any, any>;
   rightInverse?: GroupHom<any, any>;
-  imageSubgroup?: FiniteGroup<B>;   // <- new: Theorem 6
+  imageSubgroup?: FiniteGroup<B>;   // <- Theorem 6
+  kernelSubgroup?: FiniteGroup<A>;  // <- new: kernel construction
   // optional diagnostics
   // counterexamples for cancellability, when they exist
   monoCounterexample?: { j: any; g: GroupHom<any,any>; h: GroupHom<any,any> };
@@ -177,6 +178,21 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
     name: f.name ? `im(${f.name})` : "im(f)"
   };
 
+  // Construct kernel subgroup
+  const kernelElems: A[] = [];
+  for (const g of G.elems) {
+    if (eqH(f.map(g), H.id)) kernelElems.push(g);
+  }
+
+  const kernelSubgroup: FiniteGroup<A> = {
+    elems: kernelElems,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: f.name ? `ker(${f.name})` : "ker(f)"
+  };
+
   const witnesses: HomWitnesses<A,B> = {
     isHom: hom,
     isMono,
@@ -185,6 +201,7 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
     leftInverse: leftInv,
     rightInverse: rightInv,
     imageSubgroup,
+    kernelSubgroup,
     monoCounterexample,
     epiCounterexample,
   };
