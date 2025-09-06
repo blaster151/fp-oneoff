@@ -1,11 +1,13 @@
-import { Group } from "./Group";
+import { FiniteGroup } from "./Group";
 import { Subgroup, NormalSubgroup, isNormal } from "./NormalSubgroup";
+import { Eq } from "../core/Eq";
+import { quotientGroup } from "./Quotient";
 
 /** Group homomorphism witness with law checker. */
 export class GroupHom<G, H> {
   constructor(
-    readonly G: Group<G>,
-    readonly H: Group<H>,
+    readonly G: FiniteGroup<G>,
+    readonly H: FiniteGroup<H>,
     readonly map: (g: G) => H
   ) {}
 
@@ -14,7 +16,7 @@ export class GroupHom<G, H> {
     const { G, H, map: f } = this;
     return H.eq(f(G.op(x, y)), H.op(f(x), f(y)));
   }
-  preservesId(): boolean { return this.H.eq(this.map(this.G.e), this.H.e); }
+  preservesId(): boolean { return this.H.eq(this.map(this.G.id), this.H.id); }
   preservesInv(x: G): boolean {
     const { G, H, map: f } = this;
     return H.eq(f(G.inv(x)), H.inv(f(x)));
@@ -23,7 +25,7 @@ export class GroupHom<G, H> {
   /** Kernel: { g ∈ G | f(g) = e_H } as a NormalSubgroup witness. */
   kernel(): NormalSubgroup<G> {
     const { G, H, map: f } = this;
-    const carrier = (g: G) => H.eq(f(g), H.e);
+    const carrier = (g: G) => H.eq(f(g), H.id);
 
     // Subgroup axioms (constructive checks):
     // 1) e ∈ ker f
@@ -41,5 +43,19 @@ export class GroupHom<G, H> {
     const { H } = this;
     // Default: equality-only oracle; callers can override with finite search helpers.
     return (_h: H) => { throw new Error("imagePredicate requires a search strategy for G"); };
+  }
+
+  /** Canonical factorization through the kernel-pair quotient using Eq abstraction. */
+  factorization(eqH: Eq<H>) {
+    const { G, H, map } = this;
+    const cong = { eq: (x:G,y:G) => eqH.eq(map(x), map(y)) };
+    const Q = quotientGroup(G, cong);
+    const quotient = Q.Group;
+    const pi = (g:G) => Q.norm(g);
+    const iota = (q:{rep:G}) => map(q.rep);
+
+    const law_compose_equals_f = (g:G) => eqH.eq(iota(pi(g)), map(g));
+
+    return { quotient, pi, iota, law_compose_equals_f };
   }
 }
