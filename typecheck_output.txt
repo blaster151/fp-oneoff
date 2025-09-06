@@ -84,8 +84,6 @@ src/structures/group/Units.ts(17,7): error TS7023: 'gcd' implicitly has return t
 src/structures/ring/Ideal.ts(56,74): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
   Type 'undefined' is not assignable to type 'number'.
 src/structures/ring/Poly.ts(54,27): error TS2532: Object is possibly 'undefined'.
-src/top/Topology.ts(17,21): error TS2345: Argument of type 'X | undefined' is not assignable to parameter of type 'X'.
-  'X' could be instantiated with an arbitrary type which could be unrelated to 'X | undefined'.
 src/types/__tests__/ultrafilter-naturality.test.ts(246,36): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
 src/types/__tests__/ultrafilter-naturality.test.ts(247,35): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
 src/types/category-to-nerve-sset.ts(50,16): error TS2353: Object literal may only specify known properties, and 'comp' does not exist in type 'SmallCategory<O, PathMor<O>> & { ofEdge: (e: Edge<O>) => PathMor<O>; }'.

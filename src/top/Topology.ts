@@ -14,7 +14,7 @@ export function discrete<X>(carrier: X[]): Top<X> {
     const subset: X[] = [];
     for (let i = 0; i < n; i++) {
       if (mask & (1 << i)) {
-        subset.push(carrier[i]);
+        subset.push(carrier[i]!);
       }
     }
     opens.push(subset);
