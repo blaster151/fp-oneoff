@@ -1,4 +1,4 @@
-export type Eq<A> = (x:A,y:A)=>boolean;
+import { Eq } from '../types/eq.js';
 
 export type Poset<A> = {
   elems: A[];             // finite carrier (we stay finite for executability)

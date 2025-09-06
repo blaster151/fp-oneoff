@@ -36,7 +36,7 @@ export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Su
     name: "theta",
     source: Q,
     target: GmodN,
-    map: (c: Coset<A>) => piN.map(c.rep)
+    f: (c: Coset<A>) => piN.f(c.rep)
   };
 
   // Analyze θ, then First Iso ⇒ (G/K)/(N/K) ≅ G/N

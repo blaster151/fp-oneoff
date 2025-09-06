@@ -1,5 +1,5 @@
 // Finite rings (possibly noncommutative). Morphisms live in RingHom.ts.
-import type { Eq } from '../../algebra/core/Eq';
+import type { Eq } from '../../types/eq.js';
 export type RingEq<A> = Eq<A>;
 
 export type FiniteRing<A> = {

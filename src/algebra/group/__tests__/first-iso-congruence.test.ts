@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { GroupHom } from "../GroupHom";
+import { hom } from "../../../structures/group/Hom.js";
 import { firstIsomorphismData } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
 
@@ -7,7 +7,7 @@ describe("First Isomorphism Theorem (finite sanity: Z→Z_n)", () => {
   it("Z/≈_qn  ≅  im(qn) = Z_n", () => {
     const n = 6;
     const { Z, Zn, qn } = modHom(n);
-    const f = new GroupHom(Z, Zn, qn);
+    const f = hom(Z, Zn, qn);
 
     const { quotient: Q, phi, respectsOp } = firstIsomorphismData(f);
 

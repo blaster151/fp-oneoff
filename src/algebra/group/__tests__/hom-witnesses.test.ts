@@ -1,5 +1,6 @@
 import { Cyclic, Product } from "../Group";
-import { hom, analyzeHom } from "../Hom";
+import { hom } from "../../../structures/group/Hom.js";
+import { analyzeGroupHom as analyzeHom } from "../analyzeHom";
 
 describe("Group homomorphism witnesses (mono/epi/iso)", () => {
   const C2 = Cyclic(2);

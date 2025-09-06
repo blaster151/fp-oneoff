@@ -1,5 +1,5 @@
 import { strict as A } from "assert";
-import { GroupHom } from "../GroupHom";
+import { hom } from "../../../structures/group/Hom.js";
 import { imageSubgroup } from "../Image";
 import { kernelNormalSubgroup } from "../Kernel";
 import { modHom, Zmod } from "../examples/cyclic";
@@ -7,7 +7,7 @@ import { modHom, Zmod } from "../examples/cyclic";
 describe("Image and Kernel Helpers", () => {
   it("image subgroup contains all images", () => {
     const { Z, Zn, qn } = modHom(4);
-    const f = new GroupHom(Z, Zn, qn);
+    const f = hom(Z, Zn, qn);
     
     const eqH = (a: number, b: number) => (a % 4) === (b % 4);
     const im = imageSubgroup(f, eqH);
@@ -23,7 +23,7 @@ describe("Image and Kernel Helpers", () => {
 
   it("kernel normal subgroup contains multiples of 4", () => {
     const { Z, Zn, qn } = modHom(4);
-    const f = new GroupHom(Z, Zn, qn);
+    const f = hom(Z, Zn, qn);
     
     const eqH = (a: number, b: number) => (a % 4) === (b % 4);
     const ker = kernelNormalSubgroup(f, eqH);

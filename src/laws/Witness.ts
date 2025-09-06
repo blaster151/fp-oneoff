@@ -1,6 +1,9 @@
 /** A canonical shape for "witness packs" and law checkers. */
 
-export type Eq<A> = (x:A, y:A)=> boolean;
+import { Eq } from '../types/eq.js';
+
+// Re-export for backward compatibility
+export { Eq };
 
 /** A law is a named predicate over some environment E (params) producing boolean. */
 export type Law<E> = {

@@ -27,9 +27,7 @@ export interface Monoid<A> extends Semigroup<A> {
   empty: A 
 }
 
-export interface Group<A> extends Monoid<A> { 
-  invert: (a: A) => A 
-}
+// Group interface removed - use canonical FiniteGroup from structures/group/Group.ts
 
 export interface Semiring<A> { 
   add: (x: A, y: A) => A; 

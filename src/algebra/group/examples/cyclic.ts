@@ -6,7 +6,7 @@ export function Zmod(n: number): Group<number> {
   return {
     name: `Z${n}`,
     elems,
-    e: 0,
+    id: 0,
     op: (a, b) => norm(a + b),
     inv: (a) => norm(-a),
     eq: (a, b) => norm(a) === norm(b),
@@ -19,7 +19,7 @@ export function modHom(n: number) {
   const Z: Group<number> = {
     name: "Z",
     elems: Array.from({ length: 2*n+1 }, (_, i) => i - n), // finite window for tests
-    e: 0,
+    id: 0,
     op: (a, b) => a + b,
     inv: (a) => -a,
     eq: (a, b) => a === b,

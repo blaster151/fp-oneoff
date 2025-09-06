@@ -1,7 +1,8 @@
 import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
 import { canonicalProjection, firstIsomorphism } from "./FirstIso";
 import { analyzeGroupHom } from "./analyzeHom";
-import { composeHom, groupHom } from "./Hom";
+import { hom as groupHom } from "../../structures/group/Hom.js";
+import { compose as composeHom } from "../../structures/group/GrpCat.js";
 import { productSet, intersectionSubgroup, makeSubgroup } from "./SubgroupOps";
 import { quotientGroup } from "./Quotient";
 

@@ -10,7 +10,7 @@ export function canonicalProjection<A>(G: Group<A>, N: Subgroup<A>) : GroupHom<A
     name: "π",
     source: G,
     target: Q,
-    map: (g: A) => leftCoset(G, N, g)
+    f: (g: A) => leftCoset(G, N, g)
   };
 }
 
@@ -55,7 +55,7 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
     name: "φ",
     source: Q,
     target: Im,
-    map: (c: Coset<A>) => f.map(c.rep) // well-defined because c.rep differs by n∈K ⇒ f(c.rep n)=f(c.rep)
+    f: (c: Coset<A>) => f.f(c.rep) // well-defined because c.rep differs by n∈K ⇒ f(c.rep n)=f(c.rep)
   };
 
   // ψ: Im → G/K is the inverse on the nose: pick any g with f(g)=h and send to [g].
@@ -64,7 +64,7 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
   const eqH = H.eq ?? eqDefault<B>;
   const chooseRep = new Map<B, A>();
   for (const g of G.elems) {
-    const h = f.map(g);
+    const h = f.f(g);
     if (Im.elems.some(x => eqH(x,h)) && ![...chooseRep.keys()].some(x => eqH(x,h))) {
       chooseRep.set(h, g);
     }
@@ -73,13 +73,13 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
     name: "ψ",
     source: Im,
     target: Q,
-    map: (h: B) => {
+    f: (h: B) => {
       // find chosen preimage; Im elements are guaranteed to be in the map's range
       for (const [k,v] of chooseRep.entries()) {
         if (eqH(k,h)) return leftCoset(G, K, v);
       }
       // Fallback (shouldn't happen): search
-      const g = G.elems.find(x => eqH(f.map(x), h));
+      const g = G.elems.find(x => eqH(f.f(x), h));
       if (!g) throw new Error("ψ: element not in image?");
       return leftCoset(G, K, g);
     }
@@ -90,10 +90,10 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
   const eqIm = Im.eq ?? eqDefault;
 
   const leftInverse =
-    Q.elems.every(q => eqQ(from.map(to.map(q)), q));
+    Q.elems.every(q => eqQ(from.f(to.f(q)), q));
 
   const rightInverse =
-    Im.elems.every(h => eqIm(to.map(from.map(h)), h));
+    Im.elems.every(h => eqIm(to.f(from.f(h)), h));
 
   return { source: Q, target: Im, to, from, leftInverse, rightInverse };
 }
@@ -101,7 +101,7 @@ export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B
 // New functionality for Theorem 9: Congruences and quotients
 import { congruenceFromHom } from "./Congruence";
 import { QuotientGroup, Coset } from "./QuotientGroup";
-import { GroupHom as NewGroupHom } from "./GroupHom";
+import { GroupHom as NewGroupHom } from "../../structures/group/Hom.js";
 
 /**
  * Given a hom f: G→H, build:
@@ -113,7 +113,7 @@ import { GroupHom as NewGroupHom } from "./GroupHom";
 export function firstIsomorphismData<G, H>(
   F: NewGroupHom<G, H>
 ) {
-  const { G, H, map: f } = F;
+  const { source: G, target: H, f } = F;
 
   // 1) congruence
   const cong = congruenceFromHom(G, H, f);
@@ -147,7 +147,7 @@ export function firstIsomorphismData<G, H>(
 export function factorThroughQuotient<G,H>(
   hom: NewGroupHom<G,H>
 ) {
-  const { G, H, map } = hom;
+  const { source: G, target: H, f: map } = hom;
 
   // Congruence from hom
   const cong = congruenceFromHom(G,H,map);
