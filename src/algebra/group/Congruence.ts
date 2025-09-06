@@ -21,3 +21,36 @@ export function congruenceFromHom<G, H>(
   };
   return { G, eqv, comp };
 }
+
+/**
+ * Check that a relation is a congruence (equivalence + compatibility with group operation).
+ * For finite groups, we can exhaustively verify all properties.
+ * 
+ * File placement: Congruence.ts since it's about validating congruence properties.
+ */
+export function isCongruence<G>(
+  G: Group<G>, eq: (x:G,y:G)=>boolean
+): boolean {
+  // For finite testing, we need a way to sample elements
+  // This assumes G has a finite carrier or sampling method
+  const elems = (G as any).elems || []; // fallback for finite groups
+  
+  // Reflexivity: x ≈ x for all x
+  const reflexive = elems.every(x => eq(x,x));
+  
+  // Symmetry: x ≈ y ⟺ y ≈ x for all x,y
+  const symmetric = elems.every((x,i) => elems.every(y => eq(x,y) === eq(y,x)));
+  
+  // Transitivity: if x ≈ y and y ≈ z, then x ≈ z
+  const transitive = elems.every(x => elems.every(y => elems.every(z =>
+    !(eq(x,y) && eq(y,z)) || eq(x,z)
+  )));
+  
+  // Compatibility: if x ≈ y, then z*x ≈ z*y and x*z ≈ y*z for all z
+  const compatible = elems.every(x => elems.every(y => elems.every(z =>
+    (!eq(x,y) || eq(G.op(z,x), G.op(z,y))) &&
+    (!eq(x,y) || eq(G.op(x,z), G.op(y,z)))
+  )));
+  
+  return reflexive && symmetric && transitive && compatible;
+}

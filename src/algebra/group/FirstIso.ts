@@ -134,3 +134,30 @@ export function firstIsomorphismData<G, H>(
 
   return { cong, quotient: Q, phi, respectsOp, inImage };
 }
+
+/**
+ * Factor a homomorphism through its quotient: f = ι ∘ π where
+ * π: G → G/≈_f (surjection) and ι: G/≈_f → H (injection into im(f))
+ * 
+ * This encodes the First Isomorphism Theorem constructively.
+ * 
+ * File placement: FirstIso.ts since it's about factoring homomorphisms
+ * and relates directly to the First Isomorphism Theorem.
+ */
+export function factorThroughQuotient<G,H>(
+  hom: NewGroupHom<G,H>
+) {
+  const { G, H, map } = hom;
+
+  // Congruence from hom
+  const cong = congruenceFromHom(G,H,map);
+  const Q = QuotientGroup(cong);
+
+  // Surjection π: G→Q
+  const pi = (g:G) => Q.norm(g);
+
+  // Injection ι: Q→H (really into im(f))
+  const iota = (c: {rep:G}) => map(c.rep);
+
+  return { quotient: Q.Group, pi, iota };
+}
