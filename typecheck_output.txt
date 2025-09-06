@@ -84,21 +84,6 @@ src/structures/group/Units.ts(17,7): error TS7023: 'gcd' implicitly has return t
 src/structures/ring/Ideal.ts(56,74): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
   Type 'undefined' is not assignable to type 'number'.
 src/structures/ring/Poly.ts(54,27): error TS2532: Object is possibly 'undefined'.
-src/structures/ring/Spec.ts(27,34): error TS2379: Argument of type 'FiniteRing<A>' is not assignable to parameter of type 'FiniteRing<A | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
-  Types of property 'eq' are incompatible.
-    Type 'RingEq<A>' is not assignable to type 'RingEq<A | undefined>'.
-      Type 'A | undefined' is not assignable to type 'A'.
-        'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/structures/ring/Spec.ts(28,29): error TS2345: Argument of type 'Ideal<A | undefined>' is not assignable to parameter of type 'Ideal<A>'.
-  The types of 'ring.elems' are incompatible between these types.
-    Type '(A | undefined)[]' is not assignable to type 'A[]'.
-      Type 'A | undefined' is not assignable to type 'A'.
-        'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/structures/ring/Spec.ts(28,46): error TS2345: Argument of type 'Ideal<A | undefined>' is not assignable to parameter of type 'Ideal<A>'.
-  The types of 'ring.elems' are incompatible between these types.
-    Type '(A | undefined)[]' is not assignable to type 'A[]'.
-      Type 'A | undefined' is not assignable to type 'A'.
-        'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
 src/top/Topology.ts(17,21): error TS2345: Argument of type 'X | undefined' is not assignable to parameter of type 'X'.
   'X' could be instantiated with an arbitrary type which could be unrelated to 'X | undefined'.
 src/types/__tests__/ultrafilter-naturality.test.ts(246,36): error TS2339: Property 'comp' does not exist on type 'SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: Mor[]; } & HasHom<Obj, Mor>'.
