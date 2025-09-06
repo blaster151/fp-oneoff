@@ -51,7 +51,7 @@ export function product<X, Y>(
       const UV: {x: X, y: Y}[] = [];
       for (const x of U) {
         for (const y of V) {
-          UV.push({x, y});
+          UV.push({x: x as X, y: y as Y});
         }
       }
       opens.push(UV);

@@ -151,21 +151,8 @@ src/types/mini-finset.ts(366,21): error TS2339: Property 'comp' does not exist o
 src/types/ran-set.ts(201,28): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M>'.
 src/types/ran-set.ts(291,32): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M> & { objects: readonly D_O[]; }'.
 src/types/ran-set.ts(343,44): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M>'.
-src/universal/em/Equivalence.ts(19,21): error TS2345: Argument of type 'UAAlgebra<A>' is not assignable to parameter of type 'UAAlgebra<A | undefined>'.
-  Types of property 'eq' are incompatible.
-    Type 'Eq<A>' is not assignable to type 'Eq<A | undefined>'.
-      Type 'A | undefined' is not assignable to type 'A'.
-        'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/universal/em/Equivalence.ts(69,56): error TS2345: Argument of type '(a: A) => B' is not assignable to parameter of type '(value: A | undefined, index: number, array: (A | undefined)[]) => B'.
-  Types of parameters 'a' and 'value' are incompatible.
-    Type 'A | undefined' is not assignable to type 'A'.
-      'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/universal/em/Equivalence.ts(84,20): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
 src/universal/em/Equivalence.ts(91,21): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
   'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/universal/em/Equivalence.ts(101,21): error TS2345: Argument of type 'B | undefined' is not assignable to parameter of type 'B'.
-  'B' could be instantiated with an arbitrary type which could be unrelated to 'B | undefined'.
 src/universal/em/__tests__/em_lawvere_equiv.test.ts(11,28): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
   Type 'undefined' is not assignable to type 'OpSym'.
 src/universal/em/__tests__/em_lawvere_equiv.test.ts(11,48): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
@@ -182,11 +169,6 @@ src/universal/em/__tests__/em_lawvere_equiv.test.ts(14,28): error TS2345: Argume
   Type 'undefined' is not assignable to type 'OpSym'.
 src/universal/em/__tests__/em_lawvere_equiv.test.ts(14,56): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
   Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(22,43): error TS2345: Argument of type 'FiniteSet<number>' is not assignable to parameter of type 'FiniteSet<number | undefined>'.
-  Types of property 'eq' are incompatible.
-    Type 'Eq<number>' is not assignable to type 'Eq<number | undefined>'.
-      Type 'number | undefined' is not assignable to type 'number'.
-        Type 'undefined' is not assignable to type 'number'.
 src/universal/monad/Diagram.ts(36,46): error TS2345: Argument of type 'FiniteSet<C>' is not assignable to parameter of type 'FiniteSet<unknown>'.
   Types of property 'eq' are incompatible.
     Type 'Eq<C>' is not assignable to type 'Eq<unknown>'.

@@ -15,7 +15,7 @@ export function uaModelToTAlgebra<A>(
 
   const alpha = (t: Term) => {
     // interpret Var(i) as the i-th element of |A| (by index in A.elems)
-    const env = (ix:number)=> A.elems[ix];
+    const env = (ix:number)=> A.elems[ix]!;
     return evalTerm(A, env, t);
   };
 
@@ -64,7 +64,7 @@ export function checkHomCoincides<A,B>(
     const tuple: number[] = Array(ar).fill(0);
     const next = (i:number): boolean => {
       if (i===ar) {
-        const xs = tuple.map(ix=>A.elems[ix]);
+        const xs = tuple.map(ix=>A.elems[ix]!);
         const lhs = h((A.interpret(op) as any)(...xs));
         const rhs = (B.interpret(op) as any)(...xs.map(h));
         if (!B.eq(lhs, rhs)) return false;

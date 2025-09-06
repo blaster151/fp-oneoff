@@ -58,7 +58,7 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
   // surjective
   const image: B[] = [];
   for (const a of A.elems) {
-    const y = f.map(a);
+    const y = f.map(a as A);
     if (!image.some(z => eqB(z, y))) image.push(y);
   }
   const surjective = B.elems.every(b => image.some(y => eqB(y, b)));
