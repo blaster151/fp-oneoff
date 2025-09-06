@@ -13,7 +13,6 @@ export interface SmallCategory<O, M> {
   src: (m: M) => O;                 // domain of m
   dst: (m: M) => O;                 // codomain of m
   compose:(g: M, f: M) => M;           // g ∘ f, requires dst(f) = src(g)
-  comp?:(g: M, f: M) => M;             // alias for compose
 }
 
 /** Simple arrow for building quivers / free categories. */
@@ -48,7 +47,7 @@ export function makeFreeCategory<O>(_Q: Quiver<O>): SmallCategory<O, PathMor<O>>
   const src = (m: PathMor<O>) => m.src;
   const dst = (m: PathMor<O>) => m.dst;
 
-  return { id, compose, src, dst, ofEdge, comp: compose };
+  return { id, compose, src, dst, ofEdge };
 }
 
 // 3) Functors and natural transformations ---------------------------------------------
@@ -793,7 +792,7 @@ export function RelCat(): SmallCategory<SetObj<any>, Rel> {
     };
   };
 
-  return { id, src, dst, compose, comp: compose };
+  return { id, src, dst, compose };
 }
 
 export function FuncCat(): SmallCategory<SetObj<any>, FnM> {
@@ -804,7 +803,7 @@ export function FuncCat(): SmallCategory<SetObj<any>, FnM> {
     if (f.dst !== g.src) throw new Error("Fn ∘ Fn: cod/domain mismatch");
     return { src: f.src, dst: g.dst, f: (a:any) => g.f(f.f(a)) };
   };
-  return { id, src, dst, compose, comp: compose };
+  return { id, src, dst, compose };
 }
 
 // Diagonal relation on A (identity wrt relational composition)
