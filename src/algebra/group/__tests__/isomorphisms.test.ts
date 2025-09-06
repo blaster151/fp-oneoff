@@ -9,7 +9,12 @@ import {
   isomorphismEquivalenceWitness,
   isEquivalenceRelation,
   deriveHomomorphismWitness,
-  deriveGroupWitness
+  deriveGroupWitness,
+  InverseWitness,
+  makeInverseWitness,
+  isIsomorphismByInverse,
+  hasInverse,
+  createIsomorphismLawChecker
 } from "../Group";
 import { hom, iso } from "../iso/Constructors";
 import { Zplus, autoZ_id, autoZ_neg, Qplus } from "../NumberGroups";
@@ -194,5 +199,97 @@ describe("Group Isomorphisms and Automorphisms", () => {
     // to provide complete categorical analysis
     console.log("Group witness:", groupWitness);
     console.log("Homomorphism witness:", homWitness);
+  });
+
+  // --- Theorem 4: Two-sided Inverse Characterization ---
+
+  it("Theorem 4: Inverse witness system", () => {
+    // Identity isomorphism with explicit inverse witness
+    const idHom = hom(Z2, Z2, x => x);
+    const idInv = hom(Z2, Z2, x => x);
+    
+    const inverseWitness = makeInverseWitness(idHom, idInv, Z2.elements, Z2.elements);
+    expect(inverseWitness.leftIdentity).toBe(true);
+    expect(inverseWitness.rightIdentity).toBe(true);
+    expect(isIsomorphismByInverse(inverseWitness)).toBe(true);
+  });
+
+  it("Theorem 4: Non-inverse witness fails", () => {
+    // Try to use identity as inverse of swap - should fail
+    const swapHom = hom(Z2, Z2, x => x === "e" ? "j" : "e");
+    const idHom = hom(Z2, Z2, x => x); // wrong inverse
+    
+    const inverseWitness = makeInverseWitness(swapHom, idHom, Z2.elements, Z2.elements);
+    expect(inverseWitness.leftIdentity).toBe(false); // g(f(e)) = id(swap(e)) = id(j) = j ≠ e
+    expect(inverseWitness.rightIdentity).toBe(false);
+    expect(isIsomorphismByInverse(inverseWitness)).toBe(false);
+  });
+
+  it("Theorem 4: Correct inverse witness succeeds", () => {
+    // Use identity isomorphism (which is definitely a homomorphism)
+    const idHom = hom(Z2, Z2, x => x);
+    const idInv = hom(Z2, Z2, x => x); // same map
+    
+    // First check that the homomorphisms are valid
+    expect(isHomomorphism(idHom)).toBe(true);
+    expect(isHomomorphism(idInv)).toBe(true);
+    
+    const inverseWitness = makeInverseWitness(idHom, idInv, Z2.elements, Z2.elements);
+    expect(inverseWitness.leftIdentity).toBe(true);
+    expect(inverseWitness.rightIdentity).toBe(true);
+    expect(isIsomorphismByInverse(inverseWitness)).toBe(true);
+  });
+
+  it("Generic hasInverse function works", () => {
+    // Test the generic categorical inverse checker
+    const f = (x: TwoElt) => x === "e" ? "j" : "e";
+    const g = (x: TwoElt) => x === "e" ? "j" : "e"; // same function (self-inverse)
+    
+    const result = hasInverse(f, g, Z2.elements, Z2.elements, Z2.eq, Z2.eq);
+    expect(result).toBe(true);
+    
+    // Test with wrong inverse
+    const id = (x: TwoElt) => x;
+    const wrongResult = hasInverse(f, id, Z2.elements, Z2.elements, Z2.eq, Z2.eq);
+    expect(wrongResult).toBe(false);
+  });
+
+  it("Law checker system works", () => {
+    // Create law checker for Z2
+    const lawChecker = createIsomorphismLawChecker(Z2.elements, Z2.elements);
+    
+    // Test with correct inverse (identity)
+    const idHom = hom(Z2, Z2, x => x);
+    const idInv = hom(Z2, Z2, x => x);
+    
+    const witness = lawChecker.checkInverse(idHom, idInv);
+    expect(lawChecker.validateIsomorphism(witness)).toBe(true);
+    
+    // Test with wrong inverse (using a non-homomorphism)
+    const swapHom = hom(Z2, Z2, x => x === "e" ? "j" : "e");
+    const wrongWitness = lawChecker.checkInverse(swapHom, idHom);
+    expect(lawChecker.validateIsomorphism(wrongWitness)).toBe(false);
+  });
+
+  it("Theorem 4: Pivot point to categorical isomorphism", () => {
+    // This test demonstrates how Theorem 4 bridges Grp and general Cat
+    // by focusing on invertibility rather than bijectivity
+    
+    const idHom = hom(Z2, Z2, x => x);
+    const idInv = hom(Z2, Z2, x => x);
+    
+    // The key insight: we don't check injectivity/surjectivity directly
+    // Instead, we check the round-trip laws: g(f(a)) = a and f(g(b)) = b
+    const witness = makeInverseWitness(idHom, idInv, Z2.elements, Z2.elements);
+    
+    // This characterization generalizes to any category
+    expect(witness.leftIdentity).toBe(true);  // g ∘ f = id_A
+    expect(witness.rightIdentity).toBe(true); // f ∘ g = id_B
+    
+    // The isomorphism property follows from the inverse property
+    expect(isIsomorphismByInverse(witness)).toBe(true);
+    
+    console.log("Theorem 4 witness:", witness);
+    console.log("This witness structure generalizes to any category!");
   });
 });

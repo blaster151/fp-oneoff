@@ -67,9 +67,40 @@ export function isBijectionFinite<A, B>(h: GroupHom<A, B>): boolean {
   return true;
 }
 
-// Check the "redefined" characterization (Theorem 4):
-// A homomorphism is an iso iff there exists a homomorphic two-sided inverse.
-export function isIsomorphismByInverse<A, B>(iso: GroupIso<A, B>): boolean {
+// --- Theorem 4: Two-sided Inverse Characterization ---
+
+// Witness that f and g are inverses
+export interface InverseWitness<A, B> {
+  readonly f: GroupHom<A, B>;
+  readonly g: GroupHom<B, A>;
+  readonly leftIdentity: boolean;  // g ∘ f = id_A
+  readonly rightIdentity: boolean; // f ∘ g = id_B
+}
+
+// Create inverse witness by checking round-trip laws
+export function makeInverseWitness<A, B>(
+  f: GroupHom<A, B>,
+  g: GroupHom<B, A>,
+  elemsA?: readonly A[],
+  elemsB?: readonly B[]
+): InverseWitness<A, B> {
+  // For finite groups, check all elements; for infinite, assume responsibility to caller
+  const leftIdentity = elemsA ? 
+    elemsA.every(a => f.source.eq(g.map(f.map(a)), a)) : true;
+  const rightIdentity = elemsB ? 
+    elemsB.every(b => f.target.eq(f.map(g.map(b)), b)) : true;
+  
+  return { f, g, leftIdentity, rightIdentity };
+}
+
+// Theorem 4: f is an isomorphism iff there exists g such that round-trips equal identity
+export function isIsomorphismByInverse<A, B>(witness: InverseWitness<A, B>): boolean {
+  return witness.leftIdentity && witness.rightIdentity && 
+         isHomomorphism(witness.f) && isHomomorphism(witness.g);
+}
+
+// Legacy function for backward compatibility
+export function isIsomorphismByInverseLegacy<A, B>(iso: GroupIso<A, B>): boolean {
   const { to, from, leftInverse, rightInverse } = iso;
   if (!isHomomorphism(to)) return false;
   if (!isHomomorphism(from)) return false;
@@ -99,7 +130,7 @@ export function isIsomorphismByInverse<A, B>(iso: GroupIso<A, B>): boolean {
 // For finite groups, decide isomorphism by explicit inverse + hom laws + bijectivity.
 export function isIsomorphismFinite<A, B>(iso: GroupIso<A, B>): boolean {
   const bij = isBijectionFinite(iso.to);
-  return bij && isIsomorphismByInverse(iso);
+  return bij && isIsomorphismByInverseLegacy(iso);
 }
 
 // --- Equivalence Relation Infrastructure ---
@@ -290,5 +321,60 @@ export function deriveGroupWitness<A>(G: Group<A>): GroupWitness<A> {
     isGroup,
     isAbelian,
     order: G.elements.length
+  };
+}
+
+// --- General Categorical Interface (Generalization Hook) ---
+
+// General categorical interface: morphism with inverse
+export interface Category<A> {
+  readonly id: (a: A) => A;
+  readonly compose: <X, Y, Z>(
+    f: (y: Y) => Z,
+    g: (x: X) => Y
+  ) => (x: X) => Z;
+}
+
+// Generic function to check if two morphisms are inverses
+export function hasInverse<A, B>(
+  f: (a: A) => B,
+  g: (b: B) => A,
+  elemsA?: readonly A[],
+  elemsB?: readonly B[],
+  eqA?: (a1: A, a2: A) => boolean,
+  eqB?: (b1: B, b2: B) => boolean
+): boolean {
+  // Use provided equality or default to reference equality
+  const eqA_fn = eqA || ((a1: A, a2: A) => a1 === a2);
+  const eqB_fn = eqB || ((b1: B, b2: B) => b1 === b2);
+  
+  // For finite sets, check all elements; for infinite, assume responsibility to caller
+  const left = elemsA ? 
+    elemsA.every(a => eqA_fn(g(f(a)), a)) : true;
+  const right = elemsB ? 
+    elemsB.every(b => eqB_fn(f(g(b)), b)) : true;
+  
+  return left && right;
+}
+
+// Law-checker: requires proper inverse witnesses
+export interface IsomorphismLawChecker<A, B> {
+  readonly checkInverse: (f: GroupHom<A, B>, g: GroupHom<B, A>) => InverseWitness<A, B>;
+  readonly validateIsomorphism: (witness: InverseWitness<A, B>) => boolean;
+}
+
+// Create law checker for a specific group pair
+export function createIsomorphismLawChecker<A, B>(
+  sourceElems?: readonly A[],
+  targetElems?: readonly B[]
+): IsomorphismLawChecker<A, B> {
+  return {
+    checkInverse: (f: GroupHom<A, B>, g: GroupHom<B, A>) => {
+      return makeInverseWitness(f, g, sourceElems, targetElems);
+    },
+    
+    validateIsomorphism: (witness: InverseWitness<A, B>) => {
+      return isIsomorphismByInverse(witness);
+    }
   };
 }
