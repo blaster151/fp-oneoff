@@ -89,7 +89,7 @@ export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
     return findCoset(gh);
   };
 
-  const e = findCoset(G.e);
+  const e = findCoset((G as any).e ?? (G as any).id);
   const inv = (c: Coset<A>) => findCoset(G.inv(c.rep));
 
   return {

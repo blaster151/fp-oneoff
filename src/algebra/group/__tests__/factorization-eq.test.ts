@@ -23,7 +23,7 @@ describe("Factorization with Eq", () => {
     const f = new GroupHom(Z, Zn, qn);
     const { quotient } = f.factorization(eqZ4);
     
-    // The quotient should have 6 elements (one for each element of Z6)
-    A.equal(quotient.elems.length, 6);
+    // The quotient should have 4 elements (one for each equivalence class mod 4)
+    A.equal(quotient.elems.length, 4);
   });
 });

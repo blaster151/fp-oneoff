@@ -16,7 +16,7 @@ export function imageSubgroup<G,H>(
   return {
     elems,
     op: HH.op,
-    id: HH.e,
+    e: (HH as any).e ?? (HH as any).id,
     inv: HH.inv,
     name: `im(${hom.name || 'f'})`
   };

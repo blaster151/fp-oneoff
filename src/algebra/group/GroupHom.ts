@@ -1,7 +1,7 @@
 import { FiniteGroup } from "./Group";
 import { Subgroup, NormalSubgroup, isNormal } from "./NormalSubgroup";
 import { Eq } from "../core/Eq";
-import { quotientGroup } from "./Quotient";
+import { QuotientGroup } from "./QuotientGroup";
 
 /** Group homomorphism witness with law checker. */
 export class GroupHom<G, H> {
@@ -10,6 +10,10 @@ export class GroupHom<G, H> {
     readonly H: FiniteGroup<H>,
     readonly map: (g: G) => H
   ) {}
+
+  // Interface compatibility
+  get source() { return this.G; }
+  get target() { return this.H; }
 
   /** Law: f(x ◦ y) = f(x) ⋄ f(y) and f(e_G) = e_H, f(x)^{-1} = f(x)^{-1}. */
   respectsOp(x: G, y: G): boolean {
@@ -56,8 +60,8 @@ export class GroupHom<G, H> {
   /** Canonical factorization through the kernel-pair quotient using Eq abstraction. */
   factorization(eqH: Eq<H>) {
     const { G, H, map } = this;
-    const cong = { eq: (x:G,y:G) => eqH.eq(map(x), map(y)) };
-    const Q = quotientGroup(G, cong);
+    const cong = { G, eqv: (x:G,y:G) => eqH.eq(map(x), map(y)) };
+    const Q = QuotientGroup(cong);
     const quotient = Q.Group;
     const pi = (g:G) => Q.norm(g);
     const iota = (q:{rep:G}) => map(q.rep);
