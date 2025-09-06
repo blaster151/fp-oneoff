@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { Z2, TwoElt } from "../FiniteGroups";
+import { GroupHom } from "../structures";
 import { 
-  GroupHom, 
   isHomomorphism, 
   isMonomorphism,
   isEpimorphism,
   homomorphismsEqual
-} from "../Hom";
-import { isHom, isIsomorphism as isIsomorphismFinite } from "../../structures/group/Isomorphism";
+} from "../analyzeHom";
+// import { isHom, isIsomorphism as isIsomorphismFinite } from "../../structures/group/Isomorphism.js";
 import { hom, iso } from "../iso/Constructors";
 import { Zplus, autoZ_id, autoZ_neg, Qplus } from "../NumberGroups";
 import { Rational, one, fromBigInt, make, eq as qEq, mul as qMul, zero as qZero } from "../../../number/Rational";
