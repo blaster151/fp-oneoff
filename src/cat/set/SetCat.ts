@@ -51,7 +51,7 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
   // injective
   let injective = true;
   outer: for (let i=0;i<A.elems.length;i++) for (let j=i+1;j<A.elems.length;j++) {
-    const xi = A.elems[i], xj = A.elems[j];
+    const xi = A.elems[i]! , xj = A.elems[j]!;
     if (eqB(f.map(xi), f.map(xj))) { injective = false; break outer; }
   }
 

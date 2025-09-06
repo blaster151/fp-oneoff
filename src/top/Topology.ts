@@ -41,7 +41,7 @@ export function product<X, Y>(
   const carrier: {x: X, y: Y}[] = [];
   for (const x of TX.carrier) {
     for (const y of TY.carrier) {
-      carrier.push({x, y});
+      carrier.push({x: x as X, y: y as Y});
     }
   }
   
@@ -72,8 +72,8 @@ export function continuous<X, Y>(
   for (const V of TY.opens) {
     const preimage: X[] = [];
     for (const x of TX.carrier) {
-      if (V.some(v => eqY(f(x), v))) {
-        preimage.push(x);
+      if (V.some(v => eqY(f(x as X), v))) {
+        preimage.push(x as X);
       }
     }
     

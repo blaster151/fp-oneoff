@@ -1,7 +1,3 @@
-src/cat/set/SetCat.ts(55,19): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/cat/set/SetCat.ts(55,30): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
-  'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
 src/cat/set/SetCat.ts(80,3): error TS2375: Type '{ isTotal: true; injective: boolean; surjective: boolean; bijective: boolean; isMono: boolean; isEpi: boolean; inverse: SetHom<B, A> | undefined; }' is not assignable to type 'SetWitnesses<A, B>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'inverse' are incompatible.
     Type 'SetHom<B, A> | undefined' is not assignable to type 'SetHom<B, A>'.
@@ -119,22 +115,6 @@ src/types/ran-set.ts(291,32): error TS2339: Property 'comp' does not exist on ty
 src/types/ran-set.ts(343,44): error TS2339: Property 'comp' does not exist on type 'SmallCategory<D_O, D_M> & HasHom<D_O, D_M>'.
 src/universal/em/Equivalence.ts(91,21): error TS2345: Argument of type 'A | undefined' is not assignable to parameter of type 'A'.
   'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(11,28): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(11,48): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(12,28): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(12,56): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(13,28): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(13,48): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(14,28): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
-src/universal/em/__tests__/em_lawvere_equiv.test.ts(14,56): error TS2345: Argument of type 'OpSym | undefined' is not assignable to parameter of type 'OpSym'.
-  Type 'undefined' is not assignable to type 'OpSym'.
 src/universal/monad/Diagram.ts(36,46): error TS2345: Argument of type 'FiniteSet<C>' is not assignable to parameter of type 'FiniteSet<unknown>'.
   Types of property 'eq' are incompatible.
     Type 'Eq<C>' is not assignable to type 'Eq<unknown>'.
