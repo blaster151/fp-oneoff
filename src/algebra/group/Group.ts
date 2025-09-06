@@ -58,7 +58,12 @@ export function Product<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>): FiniteGroup<
     op: ([a1,b1], [a2,b2]) => [G.op(a1,a2), H.op(b1,b2)],
     id: [G.id, H.id],
     inv: ([a,b]) => [G.inv(a), H.inv(b)],
-    eq: ([x1,y1],[x2,y2]) => eqG(x1,x2) && eqH(y1,y2),
+    eq: (pair1, pair2) => {
+      if (!pair1 || !pair2) return false;
+      const [x1,y1] = pair1;
+      const [x2,y2] = pair2;
+      return eqG(x1,x2) && eqH(y1,y2);
+    },
     name: `(${G.name ?? 'G'})×(${H.name ?? 'H'})`
   };
 }
