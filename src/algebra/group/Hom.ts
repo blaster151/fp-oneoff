@@ -1,4 +1,4 @@
-import { FiniteGroup, eqOf } from "./Group";
+import { FiniteGroup, eqOf, Cyclic } from "./Group";
 
 /** A group homomorphism f: G -> H on finite carriers. */
 export interface GroupHom<G,H, A=unknown, B=unknown> {
@@ -21,6 +21,7 @@ export interface HomWitnesses<A,B> {
   // structure-level data
   leftInverse?: GroupHom<any, any>;
   rightInverse?: GroupHom<any, any>;
+  imageSubgroup?: FiniteGroup<B>;   // <- new: Theorem 6
   // optional diagnostics
   // counterexamples for cancellability, when they exist
   monoCounterexample?: { j: any; g: GroupHom<any,any>; h: GroupHom<any,any> };
@@ -123,7 +124,7 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
 
   outerMono:
   for (const n of probeSizes) {
-    const J = require("./Group").Cyclic(n) as FiniteGroup<number>;
+    const J = Cyclic(n) as FiniteGroup<number>;
     const homsJG = allGroupHoms(J, G);
     // compare all pairs
     for (let i=0;i<homsJG.length;i++) for (let j=i+1;j<homsJG.length;j++) {
@@ -146,7 +147,7 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
 
   outerEpi:
   for (const n of probeSizes) {
-    const K = require("./Group").Cyclic(n) as FiniteGroup<number>;
+    const K = Cyclic(n) as FiniteGroup<number>;
     const homsHK = allGroupHoms(H, K);
     for (let i=0;i<homsHK.length;i++) for (let j=i+1;j<homsHK.length;j++) {
       const g = homsHK[i], h = homsHK[j];
@@ -160,6 +161,22 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
     }
   }
 
+  // Construct image subgroup (Theorem 6)
+  const imageElems: B[] = [];
+  for (const g of G.elems) {
+    const h = f.map(g);
+    if (!imageElems.some(x => eqH(x, h))) imageElems.push(h);
+  }
+
+  const imageSubgroup: FiniteGroup<B> = {
+    elems: imageElems,
+    op: H.op,
+    id: H.id,
+    inv: H.inv,
+    eq: H.eq,
+    name: f.name ? `im(${f.name})` : "im(f)"
+  };
+
   const witnesses: HomWitnesses<A,B> = {
     isHom: hom,
     isMono,
@@ -167,6 +184,7 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
     isIso,
     leftInverse: leftInv,
     rightInverse: rightInv,
+    imageSubgroup,
     monoCounterexample,
     epiCounterexample,
   };
