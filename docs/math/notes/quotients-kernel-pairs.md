@@ -1,24 +1,22 @@
-# Quotients from Congruences; Images from Homomorphisms (Smith §2.7, Thm 9)
+# Quotients, kernel pairs, and factorization (Smith §2.7, Thm 6–9)
 
-**Theorem.** For a homomorphism \(f:G→H\), the relation \(x≈y \iff f(x)=f(y)\) is a group **congruence**.
-The image of \(f\) is (isomorphic to) the quotient \(G/≈\).
-Conversely, every quotient \(G/≈\) arises as the image of some hom \(f\) from \(G\).
+**Thm 6 (Image subgroup).** For a homomorphism \(f:G\to H\), the set \(f[G]\) with the
+restricted operation is a subgroup of \(H\).
+
+**Thm 8 (Kernel).** The kernel \(K=\{x\in G \mid f(x)=e_H\}\) is a normal subgroup of \(G\).
+
+**Thm 9 (Image ≅ Quotient).**
+Define \(x \sim y \iff f(x)=f(y)\). This is a **congruence** on \(G\).
+Hence the quotient group \(G/{\sim}\) exists and \(f\) factors as
+\[
+  G \xrightarrow{\pi} G/{\sim} \xrightarrow{\iota} H
+\]
+with \(\iota\!\circ\!\pi=f\) and \(G/{\sim} \cong \mathrm{im}(f)\).
+Conversely, every quotient \(G/{\sim}\) arises as the image of the canonical
+projection \(f_\sim(g)=[g]\).
 
 **Operationalization.**
-- `congruenceFromHom(G,H,f)` builds the kernel-pair congruence.
-- `QuotientGroup(cong)` constructs \(G/≈\) with coset reps.
-- `firstIsomorphismData(F)` returns the canonical \(\Phi: G/≈_f → im(f)\) and law checks.
+- `Congruence`, `quotientGroup`, and `GroupHom.factorization()`.
+- Test: `iota ∘ pi = f`, `|G/≈| = |im(f)|`, homomorphism laws for `iota`.
 
-**Proof sketch (Smith §2.7).**
-- Kernel-pair relation ≈ from f is an equivalence.
-- Compatibility with group operation ⇒ ≈ is a congruence.
-- Hence G/≈ is a group; im(f) ≅ G/≈.
-- Conversely, any quotient G/≈ arises as im(f_≈).
-Thus every hom f factors: G → G/≈ → H.
-
-**Proof Machinery.**
-- `isCongruence(G, eq)` validates that a relation is a congruence (equivalence + compatibility).
-- `factorThroughQuotient(hom)` factors f = ι ∘ π where π: G → G/≈_f (surjection) and ι: G/≈_f → H (injection).
-- This encodes the First Isomorphism Theorem constructively.
-
-**Next unlock:** First Isomorphism Theorem as an explicit `GroupIso`.
+*Source:* Peter Smith, *Introduction to Category Theory*, §2.7.
