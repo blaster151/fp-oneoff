@@ -6,6 +6,7 @@ export interface GroupHom<A, B> {
   target: FiniteGroup<B>;
   f: (a: A) => B;
   verify?(): boolean;
+  name?: string;
 }
 
 // Factory to build a well-typed homomorphism object.
@@ -13,9 +14,13 @@ export function hom<A, B>(
   source: FiniteGroup<A>,
   target: FiniteGroup<B>,
   f: (a: A) => B,
+  name?: string,
   verify?: () => boolean
 ): GroupHom<A, B> {
   const result: GroupHom<A, B> = { source, target, f };
+  if (name !== undefined) {
+    result.name = name;
+  }
   if (verify !== undefined) {
     result.verify = verify;
   } else {

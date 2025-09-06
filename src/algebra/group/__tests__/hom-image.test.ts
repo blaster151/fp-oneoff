@@ -1,5 +1,5 @@
 import { Cyclic } from "../Group";
-import { groupHom } from "../Hom";
+import { hom as groupHom } from "../../../structures/group/Hom.js";
 import { analyzeGroupHom } from "../analyzeHom";
 
 describe("image subgroup from group hom", () => {
