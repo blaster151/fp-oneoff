@@ -1,30 +1,31 @@
-import { Cyclic } from "../Group";
-import { hom, analyzeHom } from "../Hom";
+import { ZmodAdd } from "../examples";
+import { groupHom } from "../Hom";
+import { analyzeGroupHom } from "../analyzeHom";
 
 describe("kernel of a group hom", () => {
-  const Z4 = Cyclic(4);
-  const Z2 = Cyclic(2);
+  const Z4 = ZmodAdd(4);
+  const Z2 = ZmodAdd(2);
 
   test("mod 2 hom has kernel {0,2}", () => {
-    const q = hom(Z4, Z2, x => x % 2, "mod2");
+    const q = analyzeGroupHom(groupHom(Z4, Z2, x => x % 2, "mod2"));
     expect(q.witnesses?.kernelSubgroup?.elems.sort()).toEqual([0,2]);
     expect(q.witnesses?.kernelSubgroup?.name).toBe("ker(mod2)");
   });
 
   test("trivial hom has kernel all of Z4", () => {
-    const t = hom(Z4, Z2, _x => 0, "trivial");
+    const t = analyzeGroupHom(groupHom(Z4, Z2, _x => 0, "trivial"));
     expect(t.witnesses?.kernelSubgroup?.elems.sort()).toEqual([0,1,2,3]);
     expect(t.witnesses?.kernelSubgroup?.name).toBe("ker(trivial)");
   });
 
   test("identity hom has kernel {0}", () => {
-    const id = hom(Z4, Z4, x => x, "id");
+    const id = analyzeGroupHom(groupHom(Z4, Z4, x => x, "id"));
     expect(id.witnesses?.kernelSubgroup?.elems).toEqual([0]);
     expect(id.witnesses?.kernelSubgroup?.name).toBe("ker(id)");
   });
 
   test("kernel subgroup is actually a subgroup", () => {
-    const q = hom(Z4, Z2, x => x % 2, "mod2");
+    const q = analyzeGroupHom(groupHom(Z4, Z2, x => x % 2, "mod2"));
     const ker = q.witnesses?.kernelSubgroup;
     
     // Check closure under operation
