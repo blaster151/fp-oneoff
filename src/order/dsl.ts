@@ -45,21 +45,21 @@ export function latticeFromPoset<A>(P: Poset<A>): BoundedLattice<A> {
   const mins = elems.filter(a => elems.every(b => !(!P.eq(a,b) && leq(b,a))));
   const maxs = elems.filter(a => elems.every(b => !(!P.eq(a,b) && leq(a,b))));
   if (mins.length !== 1 || maxs.length !== 1) throw new Error("latticeFromPoset: need unique ⊥ and ⊤");
-  const bot = mins[0], top = maxs[0];
+  const bot = mins[0]!, top = maxs[0]!;
 
   function join(x:A,y:A): A {
     const uppers = elems.filter(u => leq(x,u) && leq(y,u));
     // pick minimal among uppers
     const mins = uppers.filter(u => uppers.every(v => !(P.leq(v,u) && !P.eq(u,v))));
     if (mins.length!==1) throw new Error("join not unique");
-    return mins[0];
+    return mins[0]!;
   }
 
   function meet(x:A,y:A): A {
     const lowers = elems.filter(u => leq(u,x) && leq(u,y));
     const maxs = lowers.filter(u => lowers.every(v => !(P.leq(u,v) && !P.eq(u,v))));
     if (maxs.length!==1) throw new Error("meet not unique");
-    return maxs[0];
+    return maxs[0]!;
   }
 
   return { ...P, bot, top, join, meet };

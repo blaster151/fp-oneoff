@@ -16,7 +16,7 @@ import {
   testMonadLaws
 } from "./index";
 import { Signature } from "../Signature";
-import { Var, App } from "../Term";
+import { Var, App, type Term } from "../Term";
 import { must } from "../../util/guards";
 import { mkFiniteSet } from "../../set/Set";
 
@@ -117,11 +117,11 @@ const semilatticeMonad = createSemilatticeSetMonad<number>();
 
 console.log("Monoid Monad Operations:");
 console.log("Unit('test'):", monoidMonad.unit("test"));
-console.log("Multiply([[Var(0)], [Var(1)]]):", monoidMonad.multiply([[Var(0)], [Var(1)]]));
+console.log("Multiply([[Var(0)], [Var(1)]]):", monoidMonad.multiply([[Var(0)], [Var(1)]] as any));
 
 console.log("\nSemilattice Monad Operations:");
 console.log("Unit(42):", semilatticeMonad.unit(42));
-console.log("Multiply([[Var(0)], [Var(1)]]):", semilatticeMonad.multiply([[Var(0)], [Var(1)]]));
+console.log("Multiply([[Var(0)], [Var(1)]]):", semilatticeMonad.multiply([[Var(0)], [Var(1)]] as any));
 
 console.log("\n4. MONAD LAW VERIFICATION");
 console.log("=========================");

@@ -18,7 +18,7 @@ export function Yoneda(Ccat: any) {
       // f: a' -> a; y(c)(f): Hom(a,c) -> Hom(a',c), h |-> h ∘ f
       return (h: any) => {
         try {
-          return Ccat.comp ? Ccat.comp(h, f) : h;
+          return Ccat.compose ? Ccat.compose(h, f) : h;
         } catch (e) {
           // If composition fails, return h (may be structural issue)
           return h;

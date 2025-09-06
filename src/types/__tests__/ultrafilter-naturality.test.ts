@@ -243,8 +243,8 @@ describe("Ultrafilters via naturality (MiniFinSet with 0,1,2,3,2×2)", () => {
       const paired = pairTo2x2("3", chi1, chi2);
       
       // Test composition with Boolean operations
-      const andResult = MiniFinSet.comp(and2, paired);
-      const orResult = MiniFinSet.comp(or2, paired);
+      const andResult = MiniFinSet.compose(and2, paired);
+      const orResult = MiniFinSet.compose(or2, paired);
       
       console.log('     Boolean operations via categorical composition:');
       console.log(`       χ_S ∧ χ_T via ∧ ∘ ⟨χ_S, χ_T⟩: ✅`);

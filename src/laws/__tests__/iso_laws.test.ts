@@ -42,6 +42,6 @@ describe("Isomorphism laws", () => {
     
     expect(result.ok).toBe(false);
     expect(result.failures.length).toBeGreaterThan(0);
-    expect(result.failures[0].witness).toBeDefined();
+    expect(result.failures[0]?.witness).toBeDefined();
   });
 });

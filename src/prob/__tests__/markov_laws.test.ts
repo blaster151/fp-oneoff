@@ -31,7 +31,7 @@ describe("Markov kernels (row-stochastic matrices)", () => {
     const d = [0.4,0.6];
     const out = push(d, P);
     const idOut = push(d, I);
-    expect(Math.abs(idOut[0]-d[0])+Math.abs(idOut[1]-d[1])).toBeLessThan(1e-9);
-    expect(Math.abs(out[0]+out[1]-1)).toBeLessThan(1e-9);
+    expect(Math.abs(idOut[0]! - d[0]!) + Math.abs(idOut[1]! - d[1]!)).toBeLessThan(1e-9);
+    expect(Math.abs(out[0]! + out[1]! - 1)).toBeLessThan(1e-9);
   });
 });

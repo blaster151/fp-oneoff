@@ -1,5 +1,6 @@
 // Finite rings (possibly noncommutative). Morphisms live in RingHom.ts.
-export type RingEq<A> = (x:A,y:A)=>boolean;
+import type { Eq } from '../../algebra/core/Eq';
+export type RingEq<A> = Eq<A>;
 
 export type FiniteRing<A> = {
   elems: A[];

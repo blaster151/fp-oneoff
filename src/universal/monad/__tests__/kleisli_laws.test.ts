@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Signature, opOf } from "../../Signature";
 import { Var, App } from "../../Term";
 import { KleisliFromTheory } from "../Kleisli";
+import type { FiniteSet } from "../../../set/Set";
 
 /** Use the monoid theory (assoc+unit) to instantiate the Kleisli category. */
 const MonSig: Signature = { ops: [{ name:"e", arity:0 }, { name:"mul", arity:2 }] };
@@ -21,8 +22,8 @@ describe("Kleisli(Set, T) laws for monoid theory", () => {
   const C = Fin(["X","Y"]);
 
   // helpers for equality on T-carriers
-  const TEq = <X>(S: typeof A | typeof B | typeof C) => {
-    const TA = T.Tcarrier(S as any);
+  const TEq = <X>(S: FiniteSet<X>) => {
+    const TA = T.Tcarrier(S);
     return (t1:any,t2:any) => TA.eq(t1,t2);
   };
 
@@ -34,14 +35,14 @@ describe("Kleisli(Set, T) laws for monoid theory", () => {
     const idA = idK(A), idB = idK(B);
 
     // Test left identity: id ⋆ f = f
-    const comp_id_f = composeK(idA, f)(A, A, B);
+    const comp_id_f = composeK(idA, f)(A, A, B as any);
     const eqTB = TEq(B);
     for (const a of A.elems) {
       expect(eqTB(comp_id_f(a), f(a))).toBe(true);
     }
 
     // Test right identity: g ⋆ id = g  
-    const comp_g_id = composeK(idB, g)(B, B, C);
+    const comp_g_id = composeK(idB, g)(B, B, C as any);
     const eqTC = TEq(C);
     for (const b of B.elems) {
       expect(eqTC(comp_g_id(b), g(b))).toBe(true);
@@ -50,7 +51,7 @@ describe("Kleisli(Set, T) laws for monoid theory", () => {
 
   it("associativity: (g ⋆ f) = g ⋆ f (simple case)", () => {
     // Test simple associativity with simple functions
-    const gf = composeK(f, g)(A, B, C);
+    const gf = composeK(f, g)(A, B as any, C as any);
     const eqTC = TEq(C);
     
     // For simple functions, the composition should work correctly

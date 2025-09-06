@@ -43,6 +43,12 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
   const G = f.source, H = f.target;
   const eqH = H.eq ?? ((x:B,y:B)=> Object.is(x,y));
 
+  // Guard against missing elems
+  if (!G.elems || !H.elems) {
+    // Return unanalyzed homomorphism if groups don't have elems
+    return f;
+  }
+
   // Injectivity: distinct elements map to distinct images.
   let injective = true;
   outer: for (let i=0;i<G.elems.length;i++) for (let j=i+1;j<G.elems.length;j++) {
@@ -72,6 +78,8 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
     isHom: true,
     injective,
     surjective,
+    isMono: injective,
+    isEpi: surjective,
     isIso: bijective,
     leftInverse: bijective,
     rightInverse: bijective,

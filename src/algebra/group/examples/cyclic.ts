@@ -11,7 +11,7 @@ export function Zmod(n: number): Group<number> {
     inv: (a) => norm(-a),
     eq: (a, b) => norm(a) === norm(b),
     show: (a) => `${norm(a)} (mod ${n})`,
-  } as unknown as Group<number>;
+  };
 }
 
 /** The quotient map q_n : Z → Z_n */
@@ -23,8 +23,7 @@ export function modHom(n: number) {
     op: (a, b) => a + b,
     inv: (a) => -a,
     eq: (a, b) => a === b,
-    show: (a) => `${a}`,
-  } as unknown as Group<number>;
-  const Zn = Zmod(n) as unknown as Group<number>;
+  };
+  const Zn = Zmod(n);
   return { Z, Zn, qn: (x: number) => ((x % n) + n) % n };
 }

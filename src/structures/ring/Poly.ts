@@ -51,7 +51,7 @@ export function PolyRing(n:number, d:number): FiniteRing<Poly> {
 export function evalPoly(p: Poly, a: number): number {
   let acc = 0, pow = 1;
   for (let i=0;i<p.coeffs.length;i++){
-    acc = modn(p.n, acc + p.coeffs[i]*pow);
+    acc = modn(p.n, acc + (p.coeffs[i] ?? 0)*pow);
     pow = modn(p.n, pow * a);
   }
   return acc;

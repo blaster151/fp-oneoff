@@ -21,7 +21,7 @@ export function powersetLattice<U>(univ: U[], eq: (x:U,y:U)=>boolean): CompleteL
   const n = univ.length;
   for (let mask=0; mask < (1<<n); mask++) {
     const s: U[] = [];
-    for (let i=0;i<n;i++) if (mask & (1<<i)) s.push(univ[i]);
+    for (let i=0;i<n;i++) if (mask & (1<<i)) s.push(univ[i]!);
     elems.push(s);
   }
   const subset = (A:U[], B:U[]) => A.every(x => B.some(y=>eq(x,y)));

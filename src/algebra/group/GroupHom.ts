@@ -1,7 +1,7 @@
 import { FiniteGroup } from "./Group";
 import { Subgroup, NormalSubgroup, isNormal } from "./NormalSubgroup";
 import { Eq } from "../core/Eq";
-import { quotientGroup } from "./Quotient";
+import { QuotientGroup } from "./QuotientGroup";
 
 /** Group homomorphism witness with law checker. */
 export class GroupHom<G, H> {
@@ -11,21 +11,33 @@ export class GroupHom<G, H> {
     readonly map: (g: G) => H
   ) {}
 
+  // Interface compatibility
+  get source() { return this.G; }
+  get target() { return this.H; }
+
   /** Law: f(x ◦ y) = f(x) ⋄ f(y) and f(e_G) = e_H, f(x)^{-1} = f(x)^{-1}. */
   respectsOp(x: G, y: G): boolean {
     const { G, H, map: f } = this;
-    return H.eq(f(G.op(x, y)), H.op(f(x), f(y)));
+    const eqH = H.eq ?? ((x: H, y: H) => x === y);
+    return eqH(f(G.op(x, y)), H.op(f(x), f(y)));
   }
-  preservesId(): boolean { return this.H.eq(this.map(this.G.id), this.H.id); }
+  preservesId(): boolean { 
+    const eqH = this.H.eq ?? ((x: H, y: H) => x === y);
+    const gId = (this.G as any).e ?? (this.G as any).id;
+    const hId = (this.H as any).e ?? (this.H as any).id;
+    return eqH(this.map(gId), hId); 
+  }
   preservesInv(x: G): boolean {
     const { G, H, map: f } = this;
-    return H.eq(f(G.inv(x)), H.inv(f(x)));
+    const eqH = H.eq ?? ((x: H, y: H) => x === y);
+    return eqH(f(G.inv(x)), H.inv(f(x)));
   }
 
   /** Kernel: { g ∈ G | f(g) = e_H } as a NormalSubgroup witness. */
   kernel(): NormalSubgroup<G> {
     const { G, H, map: f } = this;
-    const carrier = (g: G) => H.eq(f(g), H.id);
+    const eqH = H.eq ?? ((x: H, y: H) => x === y);
+    const carrier = (g: G) => eqH(f(g), (H as any).e ?? (H as any).id);
 
     // Subgroup axioms (constructive checks):
     // 1) e ∈ ker f
@@ -48,8 +60,8 @@ export class GroupHom<G, H> {
   /** Canonical factorization through the kernel-pair quotient using Eq abstraction. */
   factorization(eqH: Eq<H>) {
     const { G, H, map } = this;
-    const cong = { eq: (x:G,y:G) => eqH.eq(map(x), map(y)) };
-    const Q = quotientGroup(G, cong);
+    const cong = { G, eqv: (x:G,y:G) => eqH.eq(map(x), map(y)) };
+    const Q = QuotientGroup(cong);
     const quotient = Q.Group;
     const pi = (g:G) => Q.norm(g);
     const iota = (q:{rep:G}) => map(q.rep);

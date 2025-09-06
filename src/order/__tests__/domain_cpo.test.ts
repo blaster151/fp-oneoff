@@ -37,7 +37,7 @@ describe("Generic finite CPO via cpoFromPoset", () => {
 
   it("lfpω on monotone f(n)=min(n+1,3) is 3", () => {
     const f = (n:number)=> Math.min(n+1, 3);
-    const fix = C.bot === 0 ? (function(){ return (function step(x:number){ const nx=f(x); return nx===x?x:step(nx); })(0); })() : -1;
+    const fix = C.bot === 0 ? (function(): number { return (function step(x:number): number { const nx=f(x); return nx===x?x:step(nx); })(0); })() : -1;
     expect(C.eq(lfpOmega(C, f), 3)).toBe(true);
   });
 });

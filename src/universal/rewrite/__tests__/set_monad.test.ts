@@ -6,11 +6,10 @@ import {
   testMonadLaws,
   type SetMonad
 } from "../SetMonad";
+import { Var, App, type Term } from "../../Term";
 import { type FiniteSet, mkFiniteSet } from "../../../set/Set";
-import { Signature } from "../../Signature";
+import { Signature, opOf } from "../../Signature";
 import { rule } from "../Rules";
-import { opOf } from "../../Signature";
-import { App, Var } from "../../Term";
 
 describe("Set-level Monad from Finitary Theory", () => {
   
@@ -34,26 +33,26 @@ describe("Set-level Monad from Finitary Theory", () => {
     it("unit creates a term from an element", () => {
       const result = monad.unit("test");
       expect(result).toHaveLength(1);
-      expect(result[0].tag).toBe("Var");
+      expect(result[0]?.tag).toBe("Var");
     });
     
     it("multiply flattens nested terms", () => {
       const nested: any = [[Var(0)], [Var(1)]];
-      const result = monad.multiply(nested);
+      const result = monad.multiply(nested as any);
       expect(result).toHaveLength(2);
     });
     
     it("map preserves structure", () => {
       const terms = [Var(0), Var(1)];
       const f = (x: string) => x.toUpperCase();
-      const result = monad.map(f)(terms);
+      const result = monad.map(f as any)(terms);
       expect(result).toHaveLength(2);
     });
     
     it("bind combines terms", () => {
       const terms = [Var(0)];
       const f = (x: string) => [Var(1)];
-      const result = monad.bind(terms, f);
+      const result = monad.bind(terms, f as any);
       expect(result).toHaveLength(1);
     });
   });
@@ -71,12 +70,12 @@ describe("Set-level Monad from Finitary Theory", () => {
     it("unit operation works", () => {
       const result = monad.unit("test");
       expect(result).toHaveLength(1);
-      expect(result[0].tag).toBe("Var");
+      expect(result[0]?.tag).toBe("Var");
     });
     
     it("multiply operation works", () => {
-      const nested = [[Var(0)], [Var(1)]];
-      const result = monad.multiply(nested);
+      const nested: Term[][] = [[Var(0)], [Var(1)]];
+      const result = monad.multiply(nested as any);
       expect(result).toHaveLength(2);
     });
     
@@ -105,12 +104,12 @@ describe("Set-level Monad from Finitary Theory", () => {
     it("unit operation works", () => {
       const result = monad.unit(42);
       expect(result).toHaveLength(1);
-      expect(result[0].tag).toBe("Var");
+      expect(result[0]?.tag).toBe("Var");
     });
     
     it("multiply operation works", () => {
-      const nested = [[Var(0)], [Var(1)]];
-      const result = monad.multiply(nested);
+      const nested: Term[][] = [[Var(0)], [Var(1)]];
+      const result = monad.multiply(nested as any);
       expect(result).toHaveLength(2);
     });
     
@@ -159,7 +158,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     const monad = createMonoidSetMonad<string>();
     
     it("handles empty finite sets", () => {
-      const testSet: FiniteSet<string> = mkFiniteSet([], (a, b) => a === b);
+      const testSet: FiniteSet<string> = mkFiniteSet<string>([], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       // Empty set should trivially satisfy all laws
@@ -178,8 +177,9 @@ describe("Set-level Monad from Finitary Theory", () => {
     });
     
     it("handles larger finite sets", () => {
+      const numberMonad = createMonoidSetMonad<number>();
       const testSet: FiniteSet<number> = mkFiniteSet([1, 2, 3, 4, 5], (a, b) => a === b);
-      const laws = testMonadLaws(monad, testSet);
+      const laws = testMonadLaws(numberMonad, testSet);
       
       expect(typeof laws.leftIdentity).toBe("boolean");
       expect(typeof laws.rightIdentity).toBe("boolean");

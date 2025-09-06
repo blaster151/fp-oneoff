@@ -14,7 +14,7 @@ export function kernelToMatrix<A,B>(
     const row = Bs.map(() => 0);
     for (const {x, p} of d) {
       const j = Bs.findIndex(b => eqB(b, x));
-      if (j >= 0) row[j] += p;
+      if (j >= 0) row[j]! += p;
     }
     const s = row.reduce((a,b)=>a+b,0) || 1;
     return row.map(x => x / s);
@@ -69,6 +69,7 @@ export const Samples = {
   // put mass on first B
   pointFirst<A,B>(Bs: B[]): Kernel<A,B> {
     const first = Bs[0];
+    if (first === undefined) throw new Error("pointFirst: empty array");
     return (_:A) => [{ x: first, p: 1 }];
   },
   // uniform distribution on Bs

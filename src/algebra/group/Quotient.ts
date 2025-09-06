@@ -17,6 +17,7 @@ function uniqueByEq<A>(xs: A[], eq: (x:A,y:A)=>boolean): A[] {
 
 export function leftCoset<A>(G: Group<A>, N: Subgroup<A>, g: A): Coset<A> {
   const eq = G.eq ?? eqDefault;
+  if (!N.elems) throw new Error("Subgroup missing elems property");
   const set = uniqueByEq(N.elems.map(n => G.op(g, n)), eq);
   return { rep: g, set };
 }
@@ -57,7 +58,29 @@ export function isNormal<A>(G: Group<A>, N: Subgroup<A>): boolean {
  */
 export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
   const eq = (c1: Coset<A>, c2: Coset<A>) => sameCoset(G, c1, c2);
-  const cos = cosets(G, N);
+  
+  // Handle case where N is a congruence relation without elems
+  let cos: Coset<A>[];
+  if (!N.elems) {
+    // Treat as congruence relation - create equivalence classes
+    const classes = new Map<string, A[]>();
+    for (const g of G.elems) {
+      let found = false;
+      for (const [key, classElems] of classes) {
+        if (classElems.some(h => (N as any).eq?.(g, h))) {
+          classElems.push(g);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        classes.set(JSON.stringify(g), [g]);
+      }
+    }
+    cos = Array.from(classes.values()).map(set => ({ rep: set[0]!, set }));
+  } else {
+    cos = cosets(G, N);
+  }
 
   const findCoset = (g: A) => cos.find(c => (G.eq ?? eqDefault)(c.rep, g) || c.set.some(x => (G.eq ?? eqDefault)(x,g)))!;
 
@@ -66,7 +89,7 @@ export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
     return findCoset(gh);
   };
 
-  const e = findCoset(G.e);
+  const e = findCoset((G as any).e ?? (G as any).id);
   const inv = (c: Coset<A>) => findCoset(G.inv(c.rep));
 
   return {

@@ -328,7 +328,7 @@ export function intersectionViaAnd<A>(
   const paired = pairTo2x2(Aobj, chiS, chiT);
   
   // Compose with AND: A → 2×2 → 2
-  return MiniFinSet.comp(and2, paired);
+  return MiniFinSet.compose(and2, paired);
 }
 
 /**
@@ -344,7 +344,7 @@ export function unionViaOr<A>(
   const paired = pairTo2x2(Aobj, chiS, chiT);
   
   // Compose with OR: A → 2×2 → 2
-  return MiniFinSet.comp(or2, paired);
+  return MiniFinSet.compose(or2, paired);
 }
 
 /**
@@ -363,7 +363,7 @@ export function complementViaOr<A>(Aobj: Obj, S: Set<A>): Mor {
   }
   
   // Compose: A → 2 → 2
-  return MiniFinSet.comp(notMorphism, chiS);
+  return MiniFinSet.compose(notMorphism, chiS);
 }
 
 /************ Utility Functions ************/

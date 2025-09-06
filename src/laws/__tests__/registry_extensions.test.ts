@@ -17,11 +17,11 @@ describe("Law Registry Extensions", () => {
     registerLawful(pack);
     
     expect(allLawful()).toHaveLength(1);
-    expect(allLawful()[0].tag).toBe("Monoid/boolean/and");
+    expect(allLawful()[0]?.tag).toBe("Monoid/boolean/and");
     
     const report = runAll();
     expect(report).toHaveLength(1);
-    expect(report[0].ok).toBe(true);
+    expect(report[0]?.ok).toBe(true);
   });
 
   it("can register and run custom isomorphism laws", () => {
@@ -52,11 +52,11 @@ describe("Law Registry Extensions", () => {
     registerLawful(pack);
     
     expect(allLawful()).toHaveLength(1);
-    expect(allLawful()[0].tag).toBe("Iso/string-number/custom");
+    expect(allLawful()[0]?.tag).toBe("Iso/string-number/custom");
     
     const report = runAll();
     expect(report).toHaveLength(1);
-    expect(report[0].ok).toBe(true);
+    expect(report[0]?.ok).toBe(true);
   });
 
   it("can register multiple packs and run them all", () => {
@@ -88,9 +88,9 @@ describe("Law Registry Extensions", () => {
     
     const report = runAll();
     expect(report).toHaveLength(1);
-    expect(report[0].ok).toBe(false);
-    expect(report[0].failures).toBeDefined();
-    expect(report[0].failures!.length).toBeGreaterThan(0);
+    expect(report[0]?.ok).toBe(false);
+    expect(report[0]?.failures).toBeDefined();
+    expect(report[0]?.failures!.length).toBeGreaterThan(0);
   });
 
   it("can clear and re-register packs", () => {

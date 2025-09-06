@@ -33,7 +33,7 @@ export function makeKleisliDiagramTools(
     const eqTC = (T.Tcarrier(Cset as any).eq as unknown) as (x:any,y:any)=>boolean;
     const bad: A[] = [];
     for (const a of Aset.elems) {
-      const lhs = composeK(f, g)(Aset, Bset, Cset)(a);
+      const lhs = composeK(f, g)(Aset, Bset, Cset as any)(a);
       const rhs = h(a);
       if (!eqTC(lhs, rhs)) bad.push(a);
     }
@@ -53,8 +53,8 @@ export function makeKleisliDiagramTools(
     const eqTD = (T.Tcarrier(Dset as any).eq as unknown) as (x:any,y:any)=>boolean;
     const bad: A[] = [];
     for (const a of Aset.elems) {
-      const topThenRight = composeK(f, g)(Aset, Bset, Dset)(a);
-      const leftThenBottom = composeK(h, k)(Aset, Cset, Dset)(a);
+      const topThenRight = composeK(f, g)(Aset, Bset, Dset as any)(a);
+      const leftThenBottom = composeK(h, k)(Aset, Cset as any, Dset as any)(a);
       if (!eqTD(topThenRight, leftThenBottom)) bad.push(a);
     }
     return { commutes: bad.length===0, witnesses: bad };
