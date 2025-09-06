@@ -25,6 +25,11 @@ export function leftCosets<A>(
   G: FiniteGroup<A>,
   N: FiniteGroup<A>,
 ): Coset<A>[] {
+  // Fast bail-out for trivial subgroup (cosets are all singletons)
+  if (N.elems.length === 1) {
+    return G.elems.map(rep => ({ rep }));
+  }
+
   const seen: A[] = [];
   const res: Coset<A>[] = [];
   const inSeen = (a: A) => seen.some(s => G.eq(s, a));
