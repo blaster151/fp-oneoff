@@ -1,6 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { Z2, TwoElt } from "../FiniteGroups";
-import { GroupHom, isHomomorphism, isIsomorphismFinite } from "../Group";
+import { 
+  GroupHom, 
+  isHomomorphism, 
+  isIsomorphismFinite,
+  isMonomorphism,
+  isEpimorphism,
+  isomorphismEquivalenceWitness,
+  isEquivalenceRelation,
+  deriveHomomorphismWitness,
+  deriveGroupWitness
+} from "../Group";
 import { hom, iso } from "../iso/Constructors";
 import { Zplus, autoZ_id, autoZ_neg, Qplus } from "../NumberGroups";
 import { Rational, one, fromBigInt, make, eq as qEq, mul as qMul, zero as qZero } from "../../../number/Rational";
@@ -60,5 +70,129 @@ describe("Group Isomorphisms and Automorphisms", () => {
     // iso characterization by two-sided hom inverse (Theorem 4)
     expect(leftInvQ(make(5n,7n))).toBe(true);
     expect(rightInvQ(make(-9n,2n))).toBe(true);
+  });
+
+  // --- Categorical Characterizations ---
+
+  it("Theorem 5: Monomorphism = injective homomorphism", () => {
+    // Identity map is injective (hence monomorphism)
+    const idHom = hom(Z2, Z2, x => x);
+    expect(isMonomorphism(idHom)).toBe(true);
+    
+    // Trivial map (everything to identity) is not injective (hence not monomorphism)
+    const trivialHom = hom(Z2, Z2, _ => "e");
+    expect(isMonomorphism(trivialHom)).toBe(false);
+  });
+
+  it("Epimorphism = surjective homomorphism", () => {
+    // Identity map is surjective (hence epimorphism)
+    const idHom = hom(Z2, Z2, x => x);
+    expect(isEpimorphism(idHom)).toBe(true);
+    
+    // Trivial map (everything to identity) is not surjective (hence not epimorphism)
+    const trivialHom = hom(Z2, Z2, _ => "e");
+    expect(isEpimorphism(trivialHom)).toBe(false);
+  });
+
+  // --- Equivalence Relation Properties ---
+
+  it("Theorem 3: Isomorphism is an equivalence relation", () => {
+    const witness = isomorphismEquivalenceWitness(Z2);
+    
+    // Reflexive: identity isomorphism
+    const idIso = iso(
+      hom(Z2, Z2, x => x),
+      hom(Z2, Z2, x => x),
+      (b: TwoElt) => Z2.eq(b, b),
+      (a: TwoElt) => Z2.eq(a, a)
+    );
+    expect(witness.reflexive(idIso)).toBe(true);
+    
+    // Symmetric: if f is iso, then f^{-1} is iso
+    const f = hom(Z2, Z2, x => x === "e" ? "j" : "e"); // swap elements
+    const fInv = hom(Z2, Z2, x => x === "e" ? "j" : "e"); // same map (self-inverse)
+    const swapIso = iso(f, fInv, (b: TwoElt) => Z2.eq(f.map(fInv.map(b)), b), (a: TwoElt) => Z2.eq(fInv.map(f.map(a)), a));
+    expect(witness.symmetric(swapIso, swapIso)).toBe(true);
+    
+    // Transitive: composition of isomorphisms is isomorphism
+    expect(witness.transitive(idIso, swapIso, swapIso)).toBe(true);
+  });
+
+  it("Generic equivalence relation infrastructure works", () => {
+    const elements = ["e", "j"] as const;
+    const witness = isEquivalenceRelation((a, b) => a === b, elements);
+    
+    // Reflexive: a ~ a
+    expect(witness.reflexive("e")).toBe(true);
+    expect(witness.reflexive("j")).toBe(true);
+    
+    // Symmetric: a ~ b => b ~ a
+    expect(witness.symmetric("e", "j")).toBe(true); // e ≠ j, so condition is vacuously true
+    expect(witness.symmetric("e", "e")).toBe(true); // e = e, so e = e
+    
+    // Transitive: a ~ b && b ~ c => a ~ c
+    expect(witness.transitive("e", "j", "e")).toBe(true); // e ≠ j, so condition is vacuously true
+    expect(witness.transitive("e", "e", "e")).toBe(true); // e = e && e = e => e = e
+  });
+
+  it("Isomorphism characterization: bijective homomorphism", () => {
+    // Identity is bijective (injective + surjective)
+    const idHom = hom(Z2, Z2, x => x);
+    expect(isMonomorphism(idHom)).toBe(true);
+    expect(isEpimorphism(idHom)).toBe(true);
+    
+    // Trivial map is neither injective nor surjective
+    const trivialHom = hom(Z2, Z2, _ => "e");
+    expect(isMonomorphism(trivialHom)).toBe(false);
+    expect(isEpimorphism(trivialHom)).toBe(false);
+  });
+
+  // --- Witness Pack System ---
+
+  it("Auto-derivation: homomorphism witness pack", () => {
+    // Identity homomorphism - should be all properties
+    const idHom = hom(Z2, Z2, x => x);
+    const idWitness = deriveHomomorphismWitness(idHom);
+    expect(idWitness.isHomomorphism).toBe(true);
+    expect(idWitness.isMonomorphism).toBe(true);
+    expect(idWitness.isEpimorphism).toBe(true);
+    expect(idWitness.isIsomorphism).toBe(true);
+    
+    // Trivial homomorphism - should be none of the categorical properties
+    const trivialHom = hom(Z2, Z2, _ => "e");
+    const trivialWitness = deriveHomomorphismWitness(trivialHom);
+    expect(trivialWitness.isHomomorphism).toBe(true); // still a homomorphism
+    expect(trivialWitness.isMonomorphism).toBe(false);
+    expect(trivialWitness.isEpimorphism).toBe(false);
+    expect(trivialWitness.isIsomorphism).toBe(false);
+  });
+
+  it("Auto-derivation: group witness pack", () => {
+    // Z2 should be a valid abelian group of order 2
+    const z2Witness = deriveGroupWitness(Z2);
+    expect(z2Witness.isGroup).toBe(true);
+    expect(z2Witness.isAbelian).toBe(true);
+    expect(z2Witness.order).toBe(2);
+    
+    // Z+ should be infinite
+    const zPlusWitness = deriveGroupWitness(Zplus);
+    expect(zPlusWitness.isGroup).toBe(true);
+    expect(zPlusWitness.isAbelian).toBe(true);
+    expect(zPlusWitness.order).toBe("infinite");
+  });
+
+  it("Witness pack integration: complete categorical analysis", () => {
+    // Test the complete pipeline: group properties + homomorphism properties
+    const groupWitness = deriveGroupWitness(Z2);
+    const homWitness = deriveHomomorphismWitness(hom(Z2, Z2, x => x));
+    
+    // Both should validate the structure
+    expect(groupWitness.isGroup).toBe(true);
+    expect(homWitness.isIsomorphism).toBe(true);
+    
+    // This demonstrates the witness pack system working together
+    // to provide complete categorical analysis
+    console.log("Group witness:", groupWitness);
+    console.log("Homomorphism witness:", homWitness);
   });
 });
