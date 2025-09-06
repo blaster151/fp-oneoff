@@ -1,19 +1,8 @@
 // Finite group core + helpers
+import { FiniteGroup } from "../../structures/group/Group.js";
 
-export type Elem<A> = A;
-
-export interface FiniteGroup<A> {
-  // carrier
-  readonly elems: ReadonlyArray<Elem<A>>;
-  // structure
-  readonly op: (a: A, b: A) => A;    // group operation
-  readonly id: A;                    // identity
-  readonly inv: (a: A) => A;         // inverse
-  // equality on elements (default: ===)
-  readonly eq?: (a: A, b: A) => boolean;
-  // human name (for diagnostics)
-  readonly name?: string;
-}
+// Re-export canonical interface
+export { FiniteGroup };
 
 export const eqOf = <A>(G: FiniteGroup<A>) =>
   G.eq ?? ((x, y) => Object.is(x, y));
@@ -68,5 +57,6 @@ export function Product<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>): FiniteGroup<
   };
 }
 
-// Re-export shims used in tests from Hom.ts for convenience
-export { groupHom as hom, composeHom as composeHomomorphisms, idHom } from "./Hom";
+// Re-export shims used in tests from canonical sources for convenience
+export { hom } from "../../structures/group/Hom.js";
+export { idHom, compose as composeHomomorphisms } from "../../structures/group/GrpCat.js";

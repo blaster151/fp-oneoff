@@ -1,6 +1,6 @@
 import { strict as A } from "assert";
-import { Eq } from "../../core/Eq";
-import { groupHom } from "../Hom";
+import { Eq } from "../../../types/eq.js";
+import { hom as groupHom } from "../../../structures/group/Hom.js";
 import { analyzeGroupHom } from "../analyzeHom";
 import { ZmodAdd } from "../examples";
 

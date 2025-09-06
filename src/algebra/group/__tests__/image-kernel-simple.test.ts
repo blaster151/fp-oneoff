@@ -1,7 +1,7 @@
 import { strict as A } from "assert";
 import { imageSubgroup } from "../Image";
 import { kernelNormalSubgroup } from "../Kernel";
-import { groupHom } from "../Hom";
+import { hom as groupHom } from "../../../structures/group/Hom.js";
 import { analyzeGroupHom } from "../analyzeHom";
 import { Cyclic } from "../Group";
 

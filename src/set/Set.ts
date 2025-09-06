@@ -1,4 +1,7 @@
-export type Eq<A> = (x:A,y:A)=>boolean;
+import { Eq } from '../types/eq.js';
+
+// Re-export for backward compatibility
+export { Eq };
 
 export type FiniteSet<A> = {
   elems: A[];

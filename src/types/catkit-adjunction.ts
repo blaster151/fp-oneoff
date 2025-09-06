@@ -4,14 +4,7 @@
 // This extends the existing category theory foundation with adjunction theory.
 
 import { eqJSON } from './eq.js';
-
-// ---- Base: SmallCategory is assumed (from existing types). Re-declare minimal types here for isolation. ----
-export interface SmallCategory<O, M> {
-  id:  (o: O) => M;
-  src: (m: M) => O;
-  dst: (m: M) => O;
-  compose:(g: M, f: M) => M; // g ∘ f
-}
+import { SmallCategory } from './category-to-nerve-sset.js';
 
 // ---- Functors & Naturality ----------------------------------------------------------------------
 

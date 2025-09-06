@@ -1,6 +1,6 @@
 import { FiniteGroup } from "./Group";
 import { Subgroup, NormalSubgroup, isNormal } from "./NormalSubgroup";
-import { Eq } from "../core/Eq";
+import { Eq } from "../../types/eq.js";
 import { QuotientGroup } from "./QuotientGroup";
 
 /** Group homomorphism witness with law checker. */

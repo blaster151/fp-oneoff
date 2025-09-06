@@ -6,11 +6,11 @@ export function imageSubgroup<G,H>(
   hom: GroupHom<G,H>,
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<H> {
-  const { source: G, target: HH, map } = hom;
+  const { source: G, target: HH, f } = hom;
   if (!G || !G.elems) throw new Error("Source group missing or invalid");
   const elems: H[] = [];
   for (const g of G.elems) {
-    const h = map(g);
+    const h = f(g);
     if (!elems.some(x => eqH(x,h))) elems.push(h);
   }
   return {

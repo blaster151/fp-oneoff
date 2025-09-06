@@ -1,21 +1,9 @@
 // Minimal shared structures for subgroup/iso/cosets
+import { FiniteGroup as Group } from "../../structures/group/Group.js";
+import { GroupHom } from "../../structures/group/Hom.js";
 
-export interface Group<A> {
-  name?: string;
-  elems: A[];
-  op: (a: A, b: A) => A;
-  e: A;
-  inv: (a: A) => A;
-  eq?: (a: A, b: A) => boolean;
-}
-
-export interface GroupHom<A,B> {
-  name?: string;
-  source: Group<A>;
-  target: Group<B>;
-  map: (a: A) => B;
-  witnesses?: any; // filled by analyzers
-}
+// Re-export canonical interfaces with aliases for backward compatibility
+export { Group, GroupHom };
 
 export interface Subgroup<A> extends Group<A> {
   // subset of some ambient group; we keep ambient implicit for now

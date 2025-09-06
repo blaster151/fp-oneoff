@@ -2,14 +2,7 @@
 // Core equivalences, isomorphisms, natural isomorphisms, and adjoint equivalences
 
 import { eqJSON } from './eq.js';
-
-// ---------- Core minimal types ----------
-export interface SmallCategory<O,M> {
-  id:  (o: O) => M;
-  src: (m: M) => O;
-  dst: (m: M) => O;
-  compose:(g: M, f: M) => M; // g ∘ f
-}
+import { SmallCategory } from './category-to-nerve-sset.js';
 export interface Functor<A_O,A_M,B_O,B_M> {
   Fobj:(a:A_O)=>B_O;
   Fmor:(m:A_M)=>B_M;
