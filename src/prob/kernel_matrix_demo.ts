@@ -125,7 +125,8 @@ const weatherMatrix = kernelToMatrix(weatherStates, weatherStates, (a, b) => a =
 console.log("Weather transition matrix:");
 console.log("States:", weatherStates);
 for (let i = 0; i < weatherMatrix.length; i++) {
-  console.log(`  ${weatherStates[i]}: [${weatherMatrix[i].map(p => p.toFixed(2)).join(", ")}]`);
+  const row = weatherMatrix[i] ?? [];
+  console.log(`  ${weatherStates[i]!}: [${row.map(p => p.toFixed(2)).join(", ")}]`);
 }
 
 console.log("\n=== Kernel-Matrix Demo Complete ===");
