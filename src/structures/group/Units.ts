@@ -14,4 +14,4 @@ export function UnitsMod(n: number) {
   checkGroup(U);
   return U;
 }
-const gcd = (a:number,b:number)=> b===0? Math.abs(a): gcd(b, a%b);
+const gcd = (a:number,b:number): number => b===0? Math.abs(a): gcd(b, a%b);

@@ -19,8 +19,8 @@ describe("Biproduct universal properties (product and coproduct) in Ab", () => {
     const p = { source:X, target:G, f:(x:number)=> x%2 };
     const q = { source:X, target:H, f:(x:number)=> x%3 };
 
-    const { GH, pair } = productLift(X,G,H,p,q,S);
-    const { p1, p2 } = biproduct(G,H,S);
+    const { GH, pair } = productLift(X,G,H,p,q);
+    const { p1, p2 } = biproduct(G,H);
 
     // projections equal given legs
     expect(homEq(G, {source:X,target:G,f:(x:number)=>p1.f(pair.f(x))}, p)).toBe(true);
@@ -36,8 +36,8 @@ describe("Biproduct universal properties (product and coproduct) in Ab", () => {
     const f = { source:G, target:Y, f:(u:number)=> u };
     const g = { source:H, target:Y, f:(v:number)=> (2*v)%6 };
 
-    const { GH, copair } = coproductLift(G,H,Y,f,g,S);
-    const { i1, i2 } = biproduct(G,H,S);
+    const { GH, copair } = coproductLift(G,H,Y,f,g);
+    const { i1, i2 } = biproduct(G,H);
 
     // copair∘i1 = f, copair∘i2 = g
     const comp = <A,B,C>(h1:any,h2:any)=> ({ source:h1.source, target:h2.target, f:(a:A)=>h2.f(h1.f(a)) });

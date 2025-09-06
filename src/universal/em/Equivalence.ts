@@ -88,6 +88,7 @@ export function checkHomCoincides<A,B>(
       if (term.tag === "Var") {
         // Map Var(i) representing A.elems[i] to Var(j) representing h(A.elems[i]) in B
         const a = Aset.elems[term.ix];
+        if (a === undefined) throw new Error(`Invalid variable index: ${term.ix}`);
         const b = h(a);
         const j = B.elems.findIndex(x => B.eq(x, b));
         return Var(j);

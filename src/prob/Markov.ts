@@ -17,14 +17,14 @@ export function compose(P: Stoch, Q: Stoch): Stoch {
   const R: Stoch = Array.from({length:n},()=>Array(m).fill(0));
   for (let i=0;i<n;i++) for (let j=0;j<m;j++) for (let t=0;t<k;t++) {
     const row = R[i];
-    if (row && row[j] !== undefined) row[j] += (P[i]?.[t] ?? 0) * (Q[t]?.[j] ?? 0);
+    if (row) row[j]! += (P[i]?.[t] ?? 0) * (Q[t]?.[j] ?? 0);
   }
   // normalize tiny drift
   for (let i=0;i<n;i++){
     const row = R[i];
     if (row) {
       const s = row.reduce((a,b)=>a+b,0);
-      for (let j=0;j<m;j++) if (row[j] !== undefined) row[j] /= s || 1;
+      for (let j=0;j<m;j++) row[j]! /= s || 1;
     }
   }
   return R;

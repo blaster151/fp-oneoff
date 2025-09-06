@@ -53,7 +53,7 @@ export function quotientRing<A>(R: FiniteRing<A>, I: Ideal<A>) {
   // Partition into equivalence classes using union-find over indices.
   const idx = new Map<number, number>(); // index -> class representative index
   const parent = Array(R.elems.length).fill(0).map((_,i)=>i);
-  const find = (i:number): number => parent[i]===i ? i : (parent[i]=find(parent[i]));
+  const find = (i:number): number => parent[i]===i ? i : (parent[i]! = find(parent[i]!));
   const uni = (i:number,j:number)=> { i=find(i); j=find(j); if (i!==j) parent[j]=i; };
 
   const inI = (x:A)=> I.elems.some(y=>R.eq(x,y));
