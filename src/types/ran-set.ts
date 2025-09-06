@@ -198,7 +198,7 @@ export function computeRanEnd<C_O, C_M, D_O, D_M>(
       // H(u)(α_c(m)) = α_{c'}(g(u) ∘ m)
       for (const m of D.hom(d, g.Fobj(c))) {
         const left = H_u(alpha_c.get(keyDMor(m)));
-        const composed = D.comp(g_u, m);
+        const composed = D.compose(g_u, m);
         const right = alpha_cp.get(keyDMor(composed));
         
         const eq = eqJSON<unknown>();
@@ -288,7 +288,7 @@ export function RanSetDirect<C_O, C_M, D_O, D_M>(
         
         if (alpha_c) {
           for (const m of D.hom(dp, gc)) {
-            const composed = D.comp(m, f);
+            const composed = D.compose(m, f);
             const value = alpha_c.get(keyDMor(composed));
             if (value !== undefined) {
               newFs.set(keyDMor(m), value);
@@ -340,7 +340,7 @@ export function checkDinaturality<C_O, C_M, D_O, D_M>(
     
     for (const m of D.hom(d, g.Fobj(c))) {
       const left = H_u(alpha_c.get(keyDMor(m)));
-      const right = alpha_cp.get(keyDMor(D.comp(g_u, m)));
+      const right = alpha_cp.get(keyDMor(D.compose(g_u, m)));
       
       if (!eqJSON<unknown>()(left, right)) {
         return false;

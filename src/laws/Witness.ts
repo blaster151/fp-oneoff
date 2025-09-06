@@ -17,6 +17,7 @@ export type Lawful<A, S> = {
   eq: Eq<A>;
   struct: S;            // the structure implementation (ops, data)
   laws: Law<any>[];     // usually specialized helpers generate these
+  run?: () => { ok: boolean; failures: any[] }; // optional custom runner
 };
 
 /** A two-sided "equivalence witness" (isomorphism-like): f ⊣⊢ g with round trips. */

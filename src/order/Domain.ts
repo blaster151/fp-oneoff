@@ -24,7 +24,10 @@ export function cpoFromPoset<A>(P: Poset<A>, bot: A): CPO<A> {
     // sanity: last is an upper bound; minimal among upper bounds (finite scan)
     const uppers = P.elems.filter(u => chain.every(x => leq(x, u)));
     const minimal = uppers.find(u => uppers.every(v => !(!eq(u, v) && leq(v, u))));
-    return minimal ?? last;
+    if (minimal === undefined) {
+      throw new Error("lub: could not find minimal upper bound");
+    }
+    return minimal;
   }
   return { ...P, bot, lub };
 }

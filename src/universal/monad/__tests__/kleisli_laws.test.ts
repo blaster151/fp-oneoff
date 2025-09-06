@@ -21,8 +21,8 @@ describe("Kleisli(Set, T) laws for monoid theory", () => {
   const C = Fin(["X","Y"]);
 
   // helpers for equality on T-carriers
-  const TEq = <X>(S: typeof A | typeof B | typeof C) => {
-    const TA = T.Tcarrier(S as any);
+  const TEq = <X>(S: FiniteSet<X>) => {
+    const TA = T.Tcarrier(S);
     return (t1:any,t2:any) => TA.eq(t1,t2);
   };
 

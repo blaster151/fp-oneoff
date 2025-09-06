@@ -176,6 +176,11 @@ export const MiniFinSet: SmallCategory<Obj, Mor> & { objects: Obj[]; morphisms: 
     return findMorByTable(f.src, g.dst, table);
   },
   
+  // Alias for compose
+  comp: (g: Mor, f: Mor): Mor => {
+    return MiniFinSet.compose(g, f);
+  },
+  
   hom: (a: Obj, b: Obj): Mor[] => {
     const key = `${a}|${b}`;
     return HOM[key] || [];

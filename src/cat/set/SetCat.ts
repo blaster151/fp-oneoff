@@ -84,7 +84,7 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
     bijective,
     isMono: injective,
     isEpi: surjective,
-    inverse
+    ...(inverse ? { inverse } : {})
   };
   return f;
 }

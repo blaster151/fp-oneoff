@@ -13,6 +13,7 @@ export interface SmallCategory<O, M> {
   src: (m: M) => O;                 // domain of m
   dst: (m: M) => O;                 // codomain of m
   compose:(g: M, f: M) => M;           // g ∘ f, requires dst(f) = src(g)
+  comp?:(g: M, f: M) => M;             // alias for compose
 }
 
 /** Simple arrow for building quivers / free categories. */
@@ -39,7 +40,7 @@ export function makeFreeCategory<O>(_Q: Quiver<O>): SmallCategory<O, PathMor<O>>
 
   const ofEdge = (e: Edge<O>): PathMor<O> => ({ src: e.src, dst: e.dst, edges: [e] });
 
-  const comp = (g: PathMor<O>, f: PathMor<O>): PathMor<O> => {
+  const compose = (g: PathMor<O>, f: PathMor<O>): PathMor<O> => {
     if (f.dst !== g.src) throw new Error(`Cannot compose: dst(f) != src(g)`);
     return { src: f.src, dst: g.dst, edges: [...f.edges, ...g.edges] };
   };
@@ -47,7 +48,7 @@ export function makeFreeCategory<O>(_Q: Quiver<O>): SmallCategory<O, PathMor<O>>
   const src = (m: PathMor<O>) => m.src;
   const dst = (m: PathMor<O>) => m.dst;
 
-  return { id, comp, src, dst, ofEdge };
+  return { id, compose, src, dst, ofEdge, comp: compose };
 }
 
 // 3) Functors and natural transformations ---------------------------------------------
@@ -782,7 +783,7 @@ export function RelCat(): SmallCategory<SetObj<any>, Rel> {
   const src = (r: Rel) => r.src;
   const dst = (r: Rel) => r.dst;
 
-  const comp = (S: Rel, R: Rel): Rel => {
+  const compose = (S: Rel, R: Rel): Rel => {
     if (R.dst !== S.src) throw new Error("Rel ∘ Rel: cod/domain mismatch");
     return {
       src: R.src, dst: S.dst,
@@ -792,18 +793,18 @@ export function RelCat(): SmallCategory<SetObj<any>, Rel> {
     };
   };
 
-  return { id, src, dst, comp };
+  return { id, src, dst, compose, comp: compose };
 }
 
 export function FuncCat(): SmallCategory<SetObj<any>, FnM> {
   const id = (A: SetObj<any>): FnM => ({ src:A, dst:A, f: (a:any)=>a });
   const src = (f: FnM) => f.src;
   const dst = (f: FnM) => f.dst;
-  const comp = (g: FnM, f: FnM): FnM => {
+  const compose = (g: FnM, f: FnM): FnM => {
     if (f.dst !== g.src) throw new Error("Fn ∘ Fn: cod/domain mismatch");
     return { src: f.src, dst: g.dst, f: (a:any) => g.f(f.f(a)) };
   };
-  return { id, src, dst, comp };
+  return { id, src, dst, compose, comp: compose };
 }
 
 // Diagonal relation on A (identity wrt relational composition)

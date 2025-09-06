@@ -56,7 +56,7 @@ function nodeSequential<G, A>(w: number, kids: Array<G>): WLanF<G, A> {
     (nt: (gx: G) => any) => {
       const liftLan  = LanH.hfmap<G, any>(nt);
       const liftWrap = (WrapH as any).hfmap(liftLan);
-      const newVal   = liftWrap<A>(val as any);
+      const newVal   = liftWrap(val as any);
       return { _t: "node", w, val: newVal } as any;
     }
   );

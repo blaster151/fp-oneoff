@@ -11,6 +11,7 @@ export interface SmallCategory<O, M> {
   src: (m: M) => O;
   dst: (m: M) => O;
   compose:(g: M, f: M) => M; // g ∘ f
+  comp?:(g: M, f: M) => M; // alias for compose
 }
 
 // ---- Functors & Naturality ----------------------------------------------------------------------
@@ -199,9 +200,9 @@ export function Disc<X>(objs: ReadonlyArray<X>) {
   const morphisms = objs.map(x => ({ tag:"id", x } as Id<X>));
   const id = (o:X)=>({tag:"id", x:o} as Id<X>);
   const src = (m:Id<X>)=>m.x, dst = (m:Id<X>)=>m.x;
-  const comp = (g:Id<X>, f:Id<X>) => (g.x===f.x? g : g); // only identities exist
+  const compose = (g:Id<X>, f:Id<X>) => (g.x===f.x? g : g); // only identities exist
   const C: SmallCategory<X, Id<X>> & { objects:X[]; morphisms:Id<X>[]; hom:(x:X,y:X)=>Id<X>[] } = {
-    id, src, dst, comp, objects: objects.slice() as X[], morphisms: morphisms as Id<X>[],
+    id, src, dst, compose, comp: compose, objects: objects.slice() as X[], morphisms: morphisms as Id<X>[],
     hom: (x,y)=> x===y ? [id(x)] : []
   };
   return C;

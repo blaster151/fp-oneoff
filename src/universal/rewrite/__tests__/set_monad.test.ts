@@ -34,7 +34,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     it("unit creates a term from an element", () => {
       const result = monad.unit("test");
       expect(result).toHaveLength(1);
-      expect(result[0].tag).toBe("Var");
+      expect(result[0]?.tag).toBe("Var");
     });
     
     it("multiply flattens nested terms", () => {
@@ -71,11 +71,11 @@ describe("Set-level Monad from Finitary Theory", () => {
     it("unit operation works", () => {
       const result = monad.unit("test");
       expect(result).toHaveLength(1);
-      expect(result[0].tag).toBe("Var");
+      expect(result[0]?.tag).toBe("Var");
     });
     
     it("multiply operation works", () => {
-      const nested = [[Var(0)], [Var(1)]];
+      const nested: Term[][] = [[Var(0)], [Var(1)]];
       const result = monad.multiply(nested);
       expect(result).toHaveLength(2);
     });
@@ -105,11 +105,11 @@ describe("Set-level Monad from Finitary Theory", () => {
     it("unit operation works", () => {
       const result = monad.unit(42);
       expect(result).toHaveLength(1);
-      expect(result[0].tag).toBe("Var");
+      expect(result[0]?.tag).toBe("Var");
     });
     
     it("multiply operation works", () => {
-      const nested = [[Var(0)], [Var(1)]];
+      const nested: Term[][] = [[Var(0)], [Var(1)]];
       const result = monad.multiply(nested);
       expect(result).toHaveLength(2);
     });
@@ -159,7 +159,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     const monad = createMonoidSetMonad<string>();
     
     it("handles empty finite sets", () => {
-      const testSet: FiniteSet<string> = mkFiniteSet([], (a, b) => a === b);
+      const testSet: FiniteSet<string> = mkFiniteSet<string>([], (a, b) => a === b);
       const laws = testMonadLaws(monad, testSet);
       
       // Empty set should trivially satisfy all laws
@@ -178,8 +178,9 @@ describe("Set-level Monad from Finitary Theory", () => {
     });
     
     it("handles larger finite sets", () => {
+      const numberMonad = createMonoidSetMonad<number>();
       const testSet: FiniteSet<number> = mkFiniteSet([1, 2, 3, 4, 5], (a, b) => a === b);
-      const laws = testMonadLaws(monad, testSet);
+      const laws = testMonadLaws(numberMonad, testSet);
       
       expect(typeof laws.leftIdentity).toBe("boolean");
       expect(typeof laws.rightIdentity).toBe("boolean");
