@@ -1,4 +1,4 @@
-import { Group } from "./Group";
+import { Group } from "./structures";
 import { Eq } from "../../types/eq.js";
 
 /** A congruence ≈ on a group G: an equivalence relation compatible with op. */

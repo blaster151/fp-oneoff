@@ -1,19 +1,8 @@
 // Finite group core + helpers
+import { FiniteGroup } from "../../structures/group/Group.js";
 
-export type Elem<A> = A;
-
-export interface FiniteGroup<A> {
-  // carrier
-  readonly elems: ReadonlyArray<Elem<A>>;
-  // structure
-  readonly op: (a: A, b: A) => A;    // group operation
-  readonly id: A;                    // identity
-  readonly inv: (a: A) => A;         // inverse
-  // equality on elements (default: ===)
-  readonly eq?: (a: A, b: A) => boolean;
-  // human name (for diagnostics)
-  readonly name?: string;
-}
+// Re-export canonical interface
+export { FiniteGroup };
 
 export const eqOf = <A>(G: FiniteGroup<A>) =>
   G.eq ?? ((x, y) => Object.is(x, y));
