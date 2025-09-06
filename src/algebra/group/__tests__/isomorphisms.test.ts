@@ -14,7 +14,10 @@ import {
   makeInverseWitness,
   isIsomorphismByInverse,
   hasInverse,
-  createIsomorphismLawChecker
+  createIsomorphismLawChecker,
+  checkIsInverse,
+  tryBuildInverse,
+  createProofWorkflow
 } from "../Group";
 import { hom, iso } from "../iso/Constructors";
 import { Zplus, autoZ_id, autoZ_neg, Qplus } from "../NumberGroups";
@@ -291,5 +294,128 @@ describe("Group Isomorphisms and Automorphisms", () => {
     
     console.log("Theorem 4 witness:", witness);
     console.log("This witness structure generalizes to any category!");
+  });
+
+  // --- Proof-Driven Isomorphism Checking ---
+
+  it("Proof-driven: checkIsInverse encodes the proof steps", () => {
+    // Test with identity isomorphism
+    const idHom = hom(Z2, Z2, x => x);
+    const idInv = hom(Z2, Z2, x => x);
+    
+    // This should pass all proof steps:
+    // Step 1: g preserves operation (homomorphism law)
+    // Step 2: left and right identity laws (round-trips)
+    const result = checkIsInverse(idHom, idInv, Z2.elements, Z2.elements);
+    expect(result).toBe(true);
+    
+    // Test with wrong inverse (should fail)
+    const wrongInv = hom(Z2, Z2, _ => "e"); // constant map
+    const wrongResult = checkIsInverse(idHom, wrongInv, Z2.elements, Z2.elements);
+    expect(wrongResult).toBe(false);
+  });
+
+  it("Proof-driven: tryBuildInverse automatically constructs inverse", () => {
+    // Test with identity homomorphism
+    const idHom = hom(Z2, Z2, x => x);
+    const constructedInverse = tryBuildInverse(idHom, Z2.elements, Z2.elements);
+    
+    expect(constructedInverse).not.toBeNull();
+    expect(constructedInverse!.map("e")).toBe("e");
+    expect(constructedInverse!.map("j")).toBe("j");
+    
+    // Test with non-injective homomorphism (should fail)
+    const constantHom = hom(Z2, Z2, _ => "e");
+    const failedInverse = tryBuildInverse(constantHom, Z2.elements, Z2.elements);
+    expect(failedInverse).toBeNull();
+  });
+
+  it("Proof-driven: complete proof workflow mechanically derives isomorphism", () => {
+    // Create proof workflow for identity homomorphism
+    const idHom = hom(Z2, Z2, x => x);
+    const workflow = createProofWorkflow(idHom, Z2.elements, Z2.elements);
+    
+    // Step 1: Attempt inverse construction
+    const constructedInverse = workflow.attemptInverseConstruction();
+    expect(constructedInverse).not.toBeNull();
+    
+    // Step 2: Validate the proof
+    const proofValid = workflow.validateProof(constructedInverse!);
+    expect(proofValid).toBe(true);
+    
+    // Step 3: Check if it's an isomorphism
+    expect(workflow.isIsomorphism).toBe(true);
+    
+    // Step 4: Examine the proof steps
+    const proof = workflow.proof;
+    expect(proof.step1_inverseExists).toBe(true);
+    expect(proof.step2_inverseIsHomomorphism).toBe(true);
+    expect(proof.step3_roundTripsValid).toBe(true);
+    
+    console.log("Proof workflow result:", {
+      constructedInverse: constructedInverse?.map,
+      proofValid,
+      isIsomorphism: workflow.isIsomorphism,
+      proof
+    });
+  });
+
+  it("Proof-driven: workflow fails for non-isomorphism", () => {
+    // Create proof workflow for constant homomorphism (not an isomorphism)
+    const constantHom = hom(Z2, Z2, _ => "e");
+    const workflow = createProofWorkflow(constantHom, Z2.elements, Z2.elements);
+    
+    // Step 1: Attempt inverse construction (should fail)
+    const constructedInverse = workflow.attemptInverseConstruction();
+    expect(constructedInverse).toBeNull();
+    
+    // Step 2: Check proof steps
+    const proof = workflow.proof;
+    expect(proof.step1_inverseExists).toBe(false);
+    expect(proof.step2_inverseIsHomomorphism).toBe(false);
+    expect(proof.step3_roundTripsValid).toBe(false);
+    
+    // Step 3: Should not be an isomorphism
+    expect(workflow.isIsomorphism).toBe(false);
+    
+    console.log("Failed proof workflow:", {
+      constructedInverse,
+      isIsomorphism: workflow.isIsomorphism,
+      proof
+    });
+  });
+
+  it("Proof-driven: demonstrates the proof flow in code", () => {
+    // This test demonstrates the complete proof flow:
+    // Forward: if f iso, check g preserves laws
+    // Converse: if g exists and is homomorphic, f iso
+    
+    const idHom = hom(Z2, Z2, x => x);
+    const workflow = createProofWorkflow(idHom, Z2.elements, Z2.elements);
+    
+    // Forward direction: if f is isomorphism, then g should preserve laws
+    const constructedInverse = workflow.attemptInverseConstruction();
+    expect(constructedInverse).not.toBeNull();
+    
+    // Check that g preserves the operation (homomorphism law)
+    const preservesOp = Z2.elements.every((x) =>
+      Z2.elements.every((y) => {
+        const lhs = constructedInverse!.map(Z2.op(x, y));
+        const rhs = Z2.op(constructedInverse!.map(x), constructedInverse!.map(y));
+        return Z2.eq(lhs, rhs);
+      })
+    );
+    expect(preservesOp).toBe(true);
+    
+    // Converse direction: if g exists and is homomorphic, then f is iso
+    const proofValid = workflow.validateProof(constructedInverse!);
+    expect(proofValid).toBe(true);
+    expect(workflow.isIsomorphism).toBe(true);
+    
+    console.log("Complete proof flow demonstrated:");
+    console.log("1. Constructed inverse:", constructedInverse?.map);
+    console.log("2. Preserves operation:", preservesOp);
+    console.log("3. Proof valid:", proofValid);
+    console.log("4. Is isomorphism:", workflow.isIsomorphism);
   });
 });

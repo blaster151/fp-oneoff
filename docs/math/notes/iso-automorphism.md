@@ -9,6 +9,23 @@ such that \(g\circ f = \mathrm{id}_G\) and \(f\circ g = \mathrm{id}_H\).
 
 **Key Insight:** This reframes isomorphism *not in terms of injectivity/surjectivity*, but purely in terms of invertibility. In categorical terms, this generalizes: in **any category**, an isomorphism is a morphism with a two-sided inverse. This theorem is the pivot point from **Grp** to general **Cat**.
 
+## Proof-Driven Implementation
+
+**Core Proof Insight:**
+1. **Forward direction**: If $f : G \to H$ is a group isomorphism, then $f$ is bijective. So it has a two-sided inverse function $g$. We only need to check: is $g$ itself a homomorphism?
+2. **Converse direction**: If $f$ has a two-sided inverse $g$, then as a function between sets $f$ must be a bijection. And since it was given as a homomorphism, that's enough to conclude $f$ is an isomorphism.
+
+**Operational Translation:**
+- The check isn't about *guessing bijection properties directly* — it's about constructing the inverse and verifying that it's a homomorphism.
+- This matches the category-theory perspective: isomorphism = morphism with a two-sided inverse morphism.
+- The whole point is to remove "bijectivity" from the *definition* and relegate it to a consequence of invertibility.
+
+**Runtime Law Enforcement:**
+- `checkIsInverse` implements the proof steps: operation preservation + round-trip laws.
+- `tryBuildInverse` automatically constructs inverse via brute-force inversion over finite sets.
+- `createProofWorkflow` mechanically derives isomorphisms following the complete proof flow.
+- The substrate doesn't just "store" isomorphisms, it **re-derives them mechanically**.
+
 ## Categorical Foundations
 
 **Theorem 3 – Isomorphism is an equivalence relation**
@@ -52,6 +69,12 @@ such that \(g\circ f = \mathrm{id}_G\) and \(f\circ g = \mathrm{id}_H\).
 - `hasInverse` generic function for checking inverse relationships.
 - `IsomorphismLawChecker` system requiring proper inverse witnesses.
 - `createIsomorphismLawChecker` factory for law validation.
+
+**Proof-Driven Isomorphism Checking:**
+- `checkIsInverse` encodes the proof steps: operation preservation + round-trip laws.
+- `tryBuildInverse` automatically constructs inverse via brute-force inversion.
+- `createProofWorkflow` mechanically derives isomorphisms following the proof flow.
+- `ProofWorkflow` interface tracks proof steps: inverse exists, is homomorphism, round-trips valid.
 
 **Examples:**
 - Two-element groups are isomorphic.

@@ -378,3 +378,123 @@ export function createIsomorphismLawChecker<A, B>(
     }
   };
 }
+
+// --- Proof-Driven Isomorphism Checking ---
+
+// Round-trip inverse checking that encodes the proof steps
+export function checkIsInverse<A, B>(
+  f: GroupHom<A, B>,
+  g: GroupHom<B, A>,
+  elemsA: readonly A[],
+  elemsB: readonly B[]
+): boolean {
+  // Step 1: confirm g preserves the operation (homomorphism law)
+  const preservesOp = elemsB.every((x) =>
+    elemsB.every((y) => {
+      const lhs = g.map(f.target.op(x, y));
+      const rhs = f.source.op(g.map(x), g.map(y));
+      return f.source.eq(lhs, rhs);
+    })
+  );
+
+  // Step 2: confirm left and right identity laws (round-trips)
+  const left = elemsA.every(a => f.source.eq(g.map(f.map(a)), a));
+  const right = elemsB.every(b => f.target.eq(f.map(g.map(b)), b));
+
+  return preservesOp && left && right;
+}
+
+// Automatic inverse construction workflow
+export function tryBuildInverse<A, B>(
+  f: GroupHom<A, B>,
+  elemsA: readonly A[],
+  elemsB: readonly B[]
+): GroupHom<B, A> | null {
+  // Build the inverse map by inverting f
+  const map = new Map<B, A>();
+  
+  for (const a of elemsA) {
+    const b = f.map(a);
+    if (map.has(b)) return null; // not injective - can't build inverse
+    map.set(b, a);
+  }
+  
+  // Check if we have a complete inverse (surjective)
+  for (const b of elemsB) {
+    if (!map.has(b)) return null; // not surjective - can't build inverse
+  }
+  
+  // Create the inverse homomorphism
+  const g: GroupHom<B, A> = {
+    source: f.target,
+    target: f.source,
+    map: (b: B) => map.get(b)!
+  };
+  
+  return g;
+}
+
+// Proof workflow: mechanically derive isomorphism
+export interface ProofWorkflow<A, B> {
+  readonly attemptInverseConstruction: () => GroupHom<B, A> | null;
+  readonly validateProof: (g: GroupHom<B, A>) => boolean;
+  readonly isIsomorphism: boolean;
+  readonly proof: {
+    readonly step1_inverseExists: boolean;
+    readonly step2_inverseIsHomomorphism: boolean;
+    readonly step3_roundTripsValid: boolean;
+  };
+}
+
+// Create proof workflow for a homomorphism
+export function createProofWorkflow<A, B>(
+  f: GroupHom<A, B>,
+  elemsA?: readonly A[],
+  elemsB?: readonly B[]
+): ProofWorkflow<A, B> {
+  if (!elemsA || !elemsB) {
+    // For infinite groups, provide trivial workflow
+    return {
+      attemptInverseConstruction: () => null,
+      validateProof: () => false,
+      isIsomorphism: false,
+      proof: {
+        step1_inverseExists: false,
+        step2_inverseIsHomomorphism: false,
+        step3_roundTripsValid: false
+      }
+    };
+  }
+
+  let constructedInverse: GroupHom<B, A> | null = null;
+  let proofValid = false;
+
+  return {
+    attemptInverseConstruction: () => {
+      constructedInverse = tryBuildInverse(f, elemsA, elemsB);
+      return constructedInverse;
+    },
+    
+    validateProof: (g: GroupHom<B, A>) => {
+      proofValid = checkIsInverse(f, g, elemsA, elemsB);
+      return proofValid;
+    },
+    
+    get isIsomorphism() {
+      if (!constructedInverse) return false;
+      return checkIsInverse(f, constructedInverse, elemsA, elemsB);
+    },
+    
+    get proof() {
+      const step1 = constructedInverse !== null;
+      const step2 = step1 && isHomomorphism(constructedInverse!);
+      const step3 = step2 && checkIsInverse(f, constructedInverse!, elemsA, elemsB);
+      
+      return {
+        step1_inverseExists: step1,
+        step2_inverseIsHomomorphism: step2,
+        step3_roundTripsValid: step3
+      };
+    }
+  };
+}
