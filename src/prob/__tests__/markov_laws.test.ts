@@ -13,15 +13,15 @@ describe("Markov kernels (row-stochastic matrices)", () => {
     const rhs = compose(P, compose(Q,R));
     // compare rows approximately
     for (let i=0;i<lhs.length;i++)
-      for (let j=0;j<lhs[0].length;j++)
-        expect(Math.abs(lhs[i][j]-rhs[i][j])).toBeLessThan(1e-7);
+      for (let j=0;j<lhs[0]!.length;j++)
+        expect(Math.abs(lhs[i]![j]! - rhs[i]![j]!)).toBeLessThan(1e-7);
 
     const I = idStoch(2);
     const PI = compose(P, I);
     const IP = compose(I, P);
     for (let i=0;i<2;i++) for (let j=0;j<2;j++){
-      expect(Math.abs(PI[i][j]-P[i][j])).toBeLessThan(1e-7);
-      expect(Math.abs(IP[i][j]-P[i][j])).toBeLessThan(1e-7);
+      expect(Math.abs(PI[i]![j]! - P[i]![j]!)).toBeLessThan(1e-7);
+      expect(Math.abs(IP[i]![j]! - P[i]![j]!)).toBeLessThan(1e-7);
     }
   });
 

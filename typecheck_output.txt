@@ -75,19 +75,6 @@ src/prob/MarkovKernelIso.ts(72,5): error TS2322: Type '(_: A) => { x: B | undefi
       Types of property 'x' are incompatible.
         Type 'B | undefined' is not assignable to type 'B'.
           'B' could be instantiated with an arbitrary type which could be unrelated to 'B | undefined'.
-src/prob/__tests__/markov_laws.test.ts(16,22): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(17,25): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(17,25): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(17,35): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(17,35): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(23,23): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(23,23): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(23,32): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(23,32): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(24,23): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(24,23): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(24,32): error TS2532: Object is possibly 'undefined'.
-src/prob/__tests__/markov_laws.test.ts(24,32): error TS2532: Object is possibly 'undefined'.
 src/prob/__tests__/markov_laws.test.ts(34,21): error TS2532: Object is possibly 'undefined'.
 src/prob/__tests__/markov_laws.test.ts(34,30): error TS2532: Object is possibly 'undefined'.
 src/prob/__tests__/markov_laws.test.ts(34,45): error TS2532: Object is possibly 'undefined'.
@@ -106,10 +93,6 @@ src/structures/ab/__tests__/ab_biproduct_up.test.ts(40,38): error TS2554: Expect
 src/structures/group/Units.ts(17,7): error TS7023: 'gcd' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
 src/structures/ring/Ideal.ts(56,74): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
   Type 'undefined' is not assignable to type 'number'.
-src/structures/ring/Poly.ts(27,58): error TS2532: Object is possibly 'undefined'.
-src/structures/ring/Poly.ts(27,70): error TS2532: Object is possibly 'undefined'.
-src/structures/ring/Poly.ts(36,39): error TS2532: Object is possibly 'undefined'.
-src/structures/ring/Poly.ts(36,51): error TS2532: Object is possibly 'undefined'.
 src/structures/ring/Poly.ts(54,27): error TS2532: Object is possibly 'undefined'.
 src/structures/ring/Spec.ts(27,34): error TS2379: Argument of type 'FiniteRing<A>' is not assignable to parameter of type 'FiniteRing<A | undefined>' with 'exactOptionalPropertyTypes: true'. Consider adding 'undefined' to the types of the target's properties.
   Types of property 'eq' are incompatible.
