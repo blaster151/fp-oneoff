@@ -97,7 +97,7 @@ const testKernels = [pointKernel, uniformKernel, modKernel, weatherKernel];
 let allPassed = true;
 
 for (let i = 0; i < testKernels.length; i++) {
-  const k = testKernels[i];
+  const k = testKernels[i]!;
   const P = kernelToMatrix(A, B, eqNum, k);
   const kBack = matrixToKernel(A, B, P);
   const passed = kernelsEq(A, eqNum, k, kBack);

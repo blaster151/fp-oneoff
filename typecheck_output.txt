@@ -80,10 +80,6 @@ src/prob/__tests__/markov_laws.test.ts(34,54): error TS2532: Object is possibly 
 src/prob/__tests__/markov_laws.test.ts(35,21): error TS2532: Object is possibly 'undefined'.
 src/prob/__tests__/markov_laws.test.ts(35,28): error TS2532: Object is possibly 'undefined'.
 src/prob/kernel_matrix_demo.ts(87,30): error TS2558: Expected 3 type arguments, but got 2.
-src/prob/kernel_matrix_demo.ts(101,41): error TS2345: Argument of type 'Kernel<number, number> | undefined' is not assignable to parameter of type 'Kernel<number, number>'.
-  Type 'undefined' is not assignable to type 'Kernel<number, number>'.
-src/prob/kernel_matrix_demo.ts(103,38): error TS2345: Argument of type 'Kernel<number, number> | undefined' is not assignable to parameter of type 'Kernel<number, number>'.
-  Type 'undefined' is not assignable to type 'Kernel<number, number>'.
 src/structures/ab/__tests__/ab_biproduct_up.test.ts(22,48): error TS2554: Expected 5 arguments, but got 6.
 src/structures/ab/__tests__/ab_biproduct_up.test.ts(23,38): error TS2554: Expected 2 arguments, but got 3.
 src/structures/ab/__tests__/ab_biproduct_up.test.ts(39,52): error TS2554: Expected 5 arguments, but got 6.
