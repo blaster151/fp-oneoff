@@ -7,6 +7,7 @@ export function kernelNormalSubgroup<G,H>(
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<G> {
   const { source: G, target: HH, map } = hom;
+  if (!G.elems) throw new Error("Source group missing elems property");
   const elems = G.elems.filter(g => eqH(map(g), HH.id));
   return {
     elems,

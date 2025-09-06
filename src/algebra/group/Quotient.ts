@@ -17,6 +17,7 @@ function uniqueByEq<A>(xs: A[], eq: (x:A,y:A)=>boolean): A[] {
 
 export function leftCoset<A>(G: Group<A>, N: Subgroup<A>, g: A): Coset<A> {
   const eq = G.eq ?? eqDefault;
+  if (!N.elems) throw new Error("Subgroup missing elems property");
   const set = uniqueByEq(N.elems.map(n => G.op(g, n)), eq);
   return { rep: g, set };
 }

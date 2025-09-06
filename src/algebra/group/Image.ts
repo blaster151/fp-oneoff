@@ -7,6 +7,7 @@ export function imageSubgroup<G,H>(
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<H> {
   const { source: G, target: HH, map } = hom;
+  if (!G.elems) throw new Error("Source group missing elems property");
   const elems: H[] = [];
   for (const g of G.elems) {
     const h = map(g);
