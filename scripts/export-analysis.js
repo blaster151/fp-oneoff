@@ -404,12 +404,15 @@ async function main() {
   }
   
   // Save detailed report
-  const reportPath = path.join(projectRoot, 'export-analysis-report.json');
+  const reportsDir = path.join(projectRoot, 'reports');
+  await fs.promises.mkdir(reportsDir, { recursive: true });
+  
+  const reportPath = path.join(reportsDir, 'export-analysis-report.json');
   await fs.promises.writeFile(reportPath, JSON.stringify(report, null, 2));
   console.log(`\n💾 Detailed report saved to: ${reportPath}`);
   
   // Generate CSV for easy analysis
-  const csvPath = path.join(projectRoot, 'export-analysis.csv');
+  const csvPath = path.join(reportsDir, 'export-analysis.csv');
   const csvContent = generateCSV(report);
   await fs.promises.writeFile(csvPath, csvContent);
   console.log(`📊 CSV report saved to: ${csvPath}`);

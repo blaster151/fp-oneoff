@@ -368,7 +368,10 @@ async function main() {
   }
   
   // Save detailed report
-  const reportPath = path.join(projectRoot, 'type-shape-analysis-report.json');
+  const reportsDir = path.join(projectRoot, 'reports');
+  await fs.promises.mkdir(reportsDir, { recursive: true });
+  
+  const reportPath = path.join(reportsDir, 'type-shape-analysis-report.json');
   await fs.promises.writeFile(reportPath, JSON.stringify(report, null, 2));
   console.log(`\n💾 Detailed report saved to: ${reportPath}`);
 }

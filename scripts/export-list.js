@@ -191,7 +191,10 @@ function countUsage(exports, imports) {
 }
 
 async function generateMarkdownReport(exportList) {
-  const reportPath = path.join(projectRoot, 'export-list.md');
+  const reportsDir = path.join(projectRoot, 'reports');
+  await fs.promises.mkdir(reportsDir, { recursive: true });
+  
+  const reportPath = path.join(reportsDir, 'export-list.md');
   
   let content = '# Export List\n\n';
   content += `Generated on ${new Date().toISOString()}\n\n`;
@@ -217,7 +220,10 @@ async function generateMarkdownReport(exportList) {
 }
 
 async function generateCSVReport(exportList) {
-  const reportPath = path.join(projectRoot, 'export-list.csv');
+  const reportsDir = path.join(projectRoot, 'reports');
+  await fs.promises.mkdir(reportsDir, { recursive: true });
+  
+  const reportPath = path.join(reportsDir, 'export-list.csv');
   
   const headers = ['Name', 'Type', 'File', 'Line', 'IsReExport', 'OriginalFile', 'UsageCount'];
   const rows = exportList.map(exp => [
