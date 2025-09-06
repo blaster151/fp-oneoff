@@ -68,7 +68,9 @@ export function createSetMonad<A>(
     multiply: (ttx: FreeAlgebra<FreeAlgebra<A>>) => {
       const result: Term[] = [];
       
-      for (const innerTerms of ttx) {
+      // ttx is Term[][], so each element is Term[]
+      for (const innerTerms of (ttx as unknown) as Term[][]) {
+        // innerTerms is Term[], so each element is Term
         for (const term of innerTerms) {
           // Apply rewrite rules to normalize the term
           const normalized = normalize(term, rules);

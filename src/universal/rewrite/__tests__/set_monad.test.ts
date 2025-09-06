@@ -6,11 +6,10 @@ import {
   testMonadLaws,
   type SetMonad
 } from "../SetMonad";
+import { Var, App, type Term } from "../../Term";
 import { type FiniteSet, mkFiniteSet } from "../../../set/Set";
-import { Signature } from "../../Signature";
+import { Signature, opOf } from "../../Signature";
 import { rule } from "../Rules";
-import { opOf } from "../../Signature";
-import { App, Var } from "../../Term";
 
 describe("Set-level Monad from Finitary Theory", () => {
   
@@ -39,21 +38,21 @@ describe("Set-level Monad from Finitary Theory", () => {
     
     it("multiply flattens nested terms", () => {
       const nested: any = [[Var(0)], [Var(1)]];
-      const result = monad.multiply(nested);
+      const result = monad.multiply(nested as any);
       expect(result).toHaveLength(2);
     });
     
     it("map preserves structure", () => {
       const terms = [Var(0), Var(1)];
       const f = (x: string) => x.toUpperCase();
-      const result = monad.map(f)(terms);
+      const result = monad.map(f as any)(terms);
       expect(result).toHaveLength(2);
     });
     
     it("bind combines terms", () => {
       const terms = [Var(0)];
       const f = (x: string) => [Var(1)];
-      const result = monad.bind(terms, f);
+      const result = monad.bind(terms, f as any);
       expect(result).toHaveLength(1);
     });
   });
@@ -76,7 +75,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     
     it("multiply operation works", () => {
       const nested: Term[][] = [[Var(0)], [Var(1)]];
-      const result = monad.multiply(nested);
+      const result = monad.multiply(nested as any);
       expect(result).toHaveLength(2);
     });
     
@@ -110,7 +109,7 @@ describe("Set-level Monad from Finitary Theory", () => {
     
     it("multiply operation works", () => {
       const nested: Term[][] = [[Var(0)], [Var(1)]];
-      const result = monad.multiply(nested);
+      const result = monad.multiply(nested as any);
       expect(result).toHaveLength(2);
     });
     
