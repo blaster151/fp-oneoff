@@ -71,7 +71,6 @@ src/order/dsl.ts(65,23): error TS2322: Type 'A | undefined' is not assignable to
   'A' could be instantiated with an arbitrary type which could be unrelated to 'A | undefined'.
 src/prob/Markov.ts(19,5): error TS2532: Object is possibly 'undefined'.
 src/prob/Markov.ts(19,5): error TS2532: Object is possibly 'undefined'.
-src/prob/Markov.ts(22,15): error TS2532: Object is possibly 'undefined'.
 src/prob/Markov.ts(23,27): error TS2532: Object is possibly 'undefined'.
 src/prob/Markov.ts(23,27): error TS2532: Object is possibly 'undefined'.
 src/prob/MarkovKernelIso.ts(17,19): error TS2532: Object is possibly 'undefined'.

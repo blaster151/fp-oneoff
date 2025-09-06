@@ -19,7 +19,7 @@ export function compose(P: Stoch, Q: Stoch): Stoch {
     R[i][j] += (P[i]?.[t] ?? 0) * (Q[t]?.[j] ?? 0);
   // normalize tiny drift
   for (let i=0;i<n;i++){
-    const s = R[i].reduce((a,b)=>a+b,0);
+    const s = (R[i] ?? []).reduce((a,b)=>a+b,0);
     for (let j=0;j<m;j++) R[i][j] /= s || 1;
   }
   return R;
