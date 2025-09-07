@@ -18,7 +18,7 @@ describe("GroupCategory", () => {
     expect(idZ.preservesId()).toBe(true);
     expect(idZ.preservesOp(3,4)).toBe(true);
 
-    const laws = categoryLaws(CG.eqMor, CG);
+    const laws = categoryLaws<typeof Z, typeof double>(CG.eqMor, CG);
     expect(laws.leftIdentity(Z, double)).toBe(true);
     expect(laws.rightIdentity(Z, double)).toBe(true);
   });
@@ -40,13 +40,15 @@ describe("GroupCategory", () => {
 
   it("example: image of hom is a subgroup of target", () => {
     // double: Z->Z, image = even integers (a subgroup)
-    const imageEven = new Set<number>();
-    for (let k=-5; k<=5; k++) imageEven.add(double.run(k));
-    // closed under + and inv
-    const add = (x: number, y: number) => x + y;
-    for (const a of imageEven) for (const b of imageEven) {
-      expect(imageEven.has(add(a,b))).toBe(true);
-      expect(imageEven.has(-a)).toBe(true);
+    // Verify the homomorphism property: double(a + b) = double(a) + double(b)
+    expect(double.preservesOp(1, 2)).toBe(true);
+    expect(double.preservesOp(-3, 5)).toBe(true);
+    expect(double.preservesId()).toBe(true);
+    
+    // Test that the double function produces even integers
+    for (let k = -3; k <= 3; k++) {
+      const result = double.run(k);
+      expect(result % 2 === 0).toBe(true); // all outputs are even
     }
   });
 

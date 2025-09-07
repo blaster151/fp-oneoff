@@ -3,7 +3,7 @@ export type BinOp<A> = (x: A, y: A) => A;
 
 export interface EnhancedGroup<A> {
   readonly carrier: "finite" | "infinite";
-  readonly elems?: A[];                // optional, used for exhaustive checks
+  readonly elems?: A[] | undefined;                // optional, used for exhaustive checks
   readonly eq: (x: A, y: A) => boolean;
 
   // structure
@@ -18,7 +18,7 @@ export interface EnhancedGroup<A> {
     rightId: (a: A) => boolean;               // a*e = a
     leftInv: (a: A) => boolean;               // inv(a)*a = e
     rightInv: (a: A) => boolean;              // a*inv(a) = e
-  };
+  } | undefined;
 }
 
 // Helpers: canonical tiny groups used in tests
