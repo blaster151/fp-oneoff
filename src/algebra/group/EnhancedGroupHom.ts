@@ -1,34 +1,43 @@
-import { EnhancedFiniteGroup, EnhancedGroupHom } from "./EnhancedGroup";
-import { EnhancedCongruence } from "./EnhancedCongruence";
-import { enhancedQuotientGroup } from "./EnhancedQuotientGroup";
+import { EnhancedGroup } from "./EnhancedGroup";
 
-export function enhancedGroupHom<G,H>(
-  G: EnhancedFiniteGroup<G>, H: EnhancedFiniteGroup<H>, map: (g:G)=>H
-): EnhancedGroupHom<G,H> {
-  const self: EnhancedGroupHom<G,H> = {
-    G, H, map,
+export interface EnhancedGroupHom<A, B> {
+  readonly src: EnhancedGroup<A>;
+  readonly dst: EnhancedGroup<B>;
+  readonly run: (a: A) => B;
 
-    factorization() {
-      // Kernel-pair congruence: x ~ y iff f(x)=f(y)
-      const cong: EnhancedCongruence<G> = { eq: (x,y) => H.show
-        ? H.show!(map(x)) === H.show!(map(y))
-        : map(x) === map(y) // fallback (best-effort); tests will use show or deep eq
-      };
+  // witness that structure is respected: f(x* y) = f(x) * f(y)
+  readonly preservesOp: (x: A, y: A) => boolean;
+  readonly preservesId: () => boolean;
+  readonly preservesInv: (x: A) => boolean;
+}
 
-      const Q = enhancedQuotientGroup(G, cong);
-      const quotient = Q.Group;
-      const pi = (g:G) => Q.norm(g);
-      const iota = (q:{rep:G}) => map(q.rep);
-
-      const law_compose_equals_f = (g:G) => {
-        const lhs = iota(pi(g));
-        const rhs = map(g);
-        if (H.show) return H.show(lhs) === H.show(rhs);
-        return lhs === rhs;
-      };
-
-      return { quotient, pi, iota, law_compose_equals_f };
-    }
+// builder that auto-fills witnesses from src/dst
+export function mkHom<A, B>(
+  src: EnhancedGroup<A>,
+  dst: EnhancedGroup<B>,
+  run: (a: A) => B
+): EnhancedGroupHom<A, B> {
+  return {
+    src, dst, run,
+    preservesOp: (x, y) => dst.eq(run(src.op(x, y)), dst.op(run(x), run(y))),
+    preservesId: () => dst.eq(run(src.e), dst.e),
+    preservesInv: (x) => dst.eq(run(src.inv(x)), dst.inv(run(x))),
   };
-  return self;
+}
+
+// composition and identity as homomorphisms
+export function idHom<A>(G: EnhancedGroup<A>): EnhancedGroupHom<A, A> {
+  return mkHom(G, G, (x) => x);
+}
+
+export function composeHom<A, B, C>(
+  g: EnhancedGroupHom<B, C>,
+  f: EnhancedGroupHom<A, B>
+): EnhancedGroupHom<A, C> {
+  if (f.dst !== g.src) {
+    // optional runtime guard for dev
+    console.warn("composeHom: incompatible sources/targets");
+  }
+  const run = (a: A) => g.run(f.run(a));
+  return mkHom(f.src, g.dst, run);
 }
