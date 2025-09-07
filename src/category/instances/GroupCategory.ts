@@ -1,11 +1,12 @@
 import { EnhancedGroup } from "../../algebra/group/EnhancedGroup";
 import { EnhancedGroupHom, composeHom, idHom } from "../../algebra/group/EnhancedGroupHom";
+import { Category } from "../core/Category";
 
 // Objects are EnhancedGroup<A>; morphisms are EnhancedGroupHom<A,B>
 export type GObj<A> = EnhancedGroup<A>;
 export type GMor<A, B> = EnhancedGroupHom<A, B>;
 
-export const GroupCategory = {
+export const GroupCategory: Category<GObj<any>, GMor<any, any>> = {
   id: <A>(G: GObj<A>): GMor<A, A> => idHom(G),
   compose:
     <A, B, C>(g: GMor<B, C>, f: GMor<A, B>): GMor<A, C> =>

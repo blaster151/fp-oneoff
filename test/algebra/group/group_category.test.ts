@@ -18,7 +18,7 @@ describe("GroupCategory", () => {
     expect(idZ.preservesId()).toBe(true);
     expect(idZ.preservesOp(3,4)).toBe(true);
 
-    const laws = categoryLaws<typeof Z, typeof double>(CG.eqMor, CG);
+    const laws = categoryLaws<typeof Z, typeof double>(CG.eqMor!, CG);
     expect(laws.leftIdentity(Z, double)).toBe(true);
     expect(laws.rightIdentity(Z, double)).toBe(true);
   });
@@ -35,7 +35,7 @@ describe("GroupCategory", () => {
     const h = mkHom(Z, Z, x => x - x);        // constant 0 (still a hom)
     const L = CG.compose(CG.compose(h, g), f);
     const R = CG.compose(h, CG.compose(g, f));
-    expect(CG.eqMor(L, R)).toBe(true);
+    expect(CG.eqMor!(L, R)).toBe(true);
   });
 
   it("example: image of hom is a subgroup of target", () => {
