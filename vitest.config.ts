@@ -7,7 +7,8 @@ export default defineConfig({
     include: [
       'src/**/*.test.ts',
       'src/**/__tests__/**/*.test.ts',
-      'tests/**/*.test.ts'
+      'tests/**/*.test.ts',
+      'test/**/*.test.ts'
     ],
     exclude: [
       'node_modules',
