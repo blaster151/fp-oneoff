@@ -28,7 +28,7 @@ export function Dn(n: number): CayleyTable {
     else if (fa === 1 && fb === 0) { k = (i - j + n) % n; f = 1; }
     else /* fa=1, fb=1 */      { k = (i - j + n) % n; f = 0; }
 
-    t[a][b] = idx(k, f);
+    t[a]![b] = idx(k, f);
   }
   return t;
 }
