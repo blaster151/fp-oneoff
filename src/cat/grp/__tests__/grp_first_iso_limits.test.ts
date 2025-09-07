@@ -5,6 +5,7 @@ import { FinGroup, FinGroupMor, makeFinGroup } from "../FinGrp";
 import { firstIso, kernel, image } from "../first_iso";
 import { pullback, pushout } from "../limits";
 import { isInjective, isSurjective, isIso, isMono, isEpi } from "../recognition";
+import { Grp } from "../GrpCategory";
 
 /** ---------- Tiny concrete groups ---------- **/
 
@@ -121,5 +122,56 @@ describe("Recognition helpers on finite groups", () => {
     expect(isInjective(Z4, idZ4)).toBe(true);
     expect(isSurjective(Z4, Z4, idZ4)).toBe(true);
     expect(isIso(Z4, Z4, idZ4)).toBe(true);
+  });
+});
+
+/** ---------- Categorical Laws in Grp (bridging to Smith's "mega-category") ---------- **/
+
+describe("Grp as a Category (plural idiom realized)", () => {
+  it("categorical identity laws hold", () => {
+    const idZ4 = Grp.id(Z4);
+    const idZ2 = Grp.id(Z2);
+    
+    // Test left and right identity laws using morphisms with matching domains
+    expect(Grp.laws?.leftIdentity?.(Z4, idZ4)).toBe(true);
+    expect(Grp.laws?.rightIdentity?.(Z4, idZ4)).toBe(true);
+    expect(Grp.laws?.leftIdentity?.(Z2, idZ2)).toBe(true);
+    expect(Grp.laws?.rightIdentity?.(Z2, idZ2)).toBe(true);
+  });
+  
+  it("categorical composition is associative", () => {
+    // Test (h∘g)∘f = h∘(g∘f) using categorical composition
+    const comp1 = Grp.compose(f_Z8_to_Z4, g_Z4_to_Z2);
+    const comp2 = Grp.compose(g_Z4_to_Z2, Grp.id(Z2));
+    
+    expect(Grp.laws?.associativity?.(f_Z8_to_Z4, g_Z4_to_Z2, Grp.id(Z2))).toBe(true);
+  });
+  
+  it("recognition helpers work within Grp categorical context", () => {
+    // In Grp, mono ⇔ injective, epi ⇔ surjective (finite case)
+    const idZ4 = Grp.id(Z4);
+    
+    expect(isInjective(Z4, idZ4)).toBe(true);
+    expect(isSurjective(Z4, Z4, idZ4)).toBe(true);
+    expect(isIso(Z4, Z4, idZ4)).toBe(true);
+    
+    // This demonstrates: "in Grp, identity morphisms are isomorphisms"
+    expect(isMono(Z4, idZ4)).toBe(true);
+    expect(isEpi(Z4, Z4, idZ4)).toBe(true);
+  });
+  
+  it("First Iso Theorem as factorization property in Grp", () => {
+    // The theorem states that every morphism f in Grp factors as:
+    // G --epi--> G/ker(f) --iso--> im(f) --mono--> H
+    const { cosets, img, phi } = firstIso(Z8, Z4, f_Z8_to_Z4);
+    
+    // Verify the factorization exists in our categorical setting
+    expect(cosets.length).toBe(img.length); // bijection witness
+    
+    // Key insight: in the category Grp, every morphism admits epi-mono factorization
+    // This is a categorical universal property, not just a group-theoretic accident
+    const phiValues = cosets.map(c => phi(c));
+    const uniqueValues = new Set(phiValues);
+    expect(uniqueValues.size).toBe(img.length); // phi is bijective
   });
 });

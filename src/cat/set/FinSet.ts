@@ -25,11 +25,11 @@ export function finsetMor<A, B>(dom: FiniteSet<A>, cod: FiniteSet<B>, fn: (a: A)
   // (optional) totality check: image must be in cod.elems
   dom.elems.forEach(a => {
     const b = fn(a);
-    if (!cod.elems.some(c => cod.eq(c, b))) {
+    if (!cod.elems.some(c => Object.is(c, b))) {
       // relax: allow value not pre-listed; FinSet stays small but codomain may extend.
     }
   });
-  return mkMor(dom, cod, fn) as FinSetMor<A, B>;
+  return mkMor(dom as any, cod as any, fn) as FinSetMor<A, B>;
 }
 
 // Convenience: create finite set using existing SetObj
