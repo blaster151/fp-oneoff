@@ -1,8 +1,9 @@
 import type { Group, GroupHom, GroupIso } from "../Group";
-import { hom } from "../../../structures/group/Hom.js";
 
-// Re-export the canonical hom function
-export { hom };
+// Build a GroupHom, caller promises it's a homomorphism (tests can verify)
+export function hom<A, B>(source: Group<A>, target: Group<B>, f: (a: A) => B): GroupHom<A, B> {
+  return { source, target, map: f };
+}
 
 // Build a GroupIso with witness predicates.
 // For finite groups, witnesses can systematically check the laws by enumeration.

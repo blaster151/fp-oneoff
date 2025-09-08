@@ -115,28 +115,35 @@ export function identityAutomorphism<A>(G: FiniteGroup<A>): GroupAutomorphism<A>
  * This maps x to -x, which is its own inverse
  */
 export function negationAutomorphism(G: FiniteGroup<number>): GroupAutomorphism<number> {
+  // For finite groups, we need to use modular arithmetic
+  const order = G.elems?.length ?? 1;
+  
   return new GroupIsomorphism(
     G,
     G,
-    (n: number) => -n,
-    (n: number) => -n
+    (n: number) => (order - n) % order,  // Modular negation
+    (n: number) => (order - n) % order   // Modular negation
   );
 }
 
 /**
  * Create a scaling automorphism for additive groups
- * This maps x to factor * x, with inverse x / factor
+ * This maps x to factor * x, with inverse using modular inverse
  */
 export function scalingAutomorphism(G: FiniteGroup<number>, factor: number): GroupAutomorphism<number> {
   if (factor === 0) {
     throw new Error("Scaling factor cannot be zero");
   }
   
+  // For finite groups, we need to use modular arithmetic
+  const order = G.elems?.length ?? 1;
+  const modInverse = modInverseOf(factor, order);
+  
   return new GroupIsomorphism(
     G,
     G,
-    (n: number) => factor * n,
-    (n: number) => n / factor
+    (n: number) => (factor * n) % order,
+    (n: number) => (modInverse * n) % order
   );
 }
 
@@ -197,4 +204,11 @@ function modInverse(a: number, m: number): number {
     }
   }
   throw new Error(`No modular inverse exists for ${a} mod ${m}`);
+}
+
+/**
+ * Helper function to compute modular inverse (renamed for clarity)
+ */
+function modInverseOf(a: number, m: number): number {
+  return modInverse(a, m);
 }

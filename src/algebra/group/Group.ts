@@ -1,62 +1,103 @@
-// Finite group core + helpers
-import { FiniteGroup } from "../../structures/group/Group.js";
+// Minimal, runtime-checkable group structure over a concrete carrier `A`
+// We support both finite carriers (enumerated) and infinite ones (no enumeration).
+export interface Group<A> {
+  readonly eq: (x: A, y: A) => boolean;   // decidable equality for tests/witnesses
+  readonly op: (x: A, y: A) => A;          // group operation (associative)
+  readonly id: A;                          // identity element
+  readonly inv: (x: A) => A;               // inverse
+  // Optional: total listing of elements for finite groups (enables decision procedures)
+  readonly elements?: readonly A[];
+}
 
-// Re-export canonical interface
-export { FiniteGroup };
+// Structure-respecting map between groups
+export interface GroupHom<A, B> {
+  readonly source: Group<A>;
+  readonly target: Group<B>;
+  readonly map: (a: A) => B;
+}
 
-export const eqOf = <A>(G: FiniteGroup<A>) =>
-  G.eq ?? ((x, y) => Object.is(x, y));
+// Isomorphism = homomorphism with a **homomorphic**, two-sided inverse.
+// We store both directions plus explicit witnesses of the laws.
+export interface GroupIso<A, B> {
+  readonly to: GroupHom<A, B>;
+  readonly from: GroupHom<B, A>;
+  // Witnesses (verifiable for finite groups)
+  readonly leftInverse: (b: B) => boolean;  // from.map(to.map(a)) == a  (checked via source.elements if present)
+  readonly rightInverse: (a: A) => boolean; // to.map(from.map(b)) == b  (checked via target.elements if present)
+}
 
-export function isGroup<A>(G: FiniteGroup<A>): boolean {
-  const eq = eqOf(G);
-  const E = G.elems;
-  // closure + identity + inverses + associativity (brute force)
-  for (const a of E) for (const b of E) {
-    const ab = G.op(a, b);
-    if (!E.some(e => eq(e, ab))) return false;
-  }
-  for (const a of E) {
-    if (!eq(G.op(G.id, a), a) || !eq(G.op(a, G.id), a)) return false;
-    if (!E.some(x => eq(G.op(a, x), G.id) && eq(G.op(x, a), G.id))) return false;
-  }
-  for (const a of E) for (const b of E) for (const c of E) {
-    const lhs = G.op(G.op(a, b), c);
-    const rhs = G.op(a, G.op(b, c));
-    if (!eq(lhs, rhs)) return false;
+// Narrow special case: automorphism
+export type GroupAuto<A> = GroupIso<A, A>;
+
+// --- Utilities ---
+
+export function isHomomorphism<A, B>(h: GroupHom<A, B>): boolean {
+  const { source: G, target: H, map: f } = h;
+  if (!G.elements) return true; // cannot decide; assume responsibility to the caller
+  // identity law: f(e_G) = e_H
+  if (!H.eq(f(G.id), H.id)) return false;
+  // operation preservation: f(x * y) = f(x) ⋆ f(y)
+  for (const x of G.elements) {
+    for (const y of G.elements) {
+      const lhs = f(G.op(x, y));
+      const rhs = H.op(f(x), f(y));
+      if (!H.eq(lhs, rhs)) return false;
+    }
   }
   return true;
 }
 
-/** Cyclic group C_n written additively (mod n). */
-export function Cyclic(n: number): FiniteGroup<number> {
-  if (n <= 0 || !Number.isInteger(n)) throw new Error(`Cyclic: n must be a positive integer`);
-  const elems = Array.from({ length: n }, (_, i) => i);
-  const op    = (a: number, b: number) => (a + b) % n;
-  const id    = 0;
-  const inv   = (a: number) => (n - (a % n)) % n;
-  return { elems, op, id, inv, name: `C${n}` };
+export function isBijectionFinite<A, B>(h: GroupHom<A, B>): boolean {
+  const { source: G, target: H, map: f } = h;
+  if (!G.elements || !H.elements) return false;
+  if (G.elements.length !== H.elements.length) return false;
+  // injective + surjective via images covering without collisions
+  const image: B[] = G.elements.map(f);
+  // surjective: every target element appears in image
+  for (const b of H.elements) {
+    if (!image.some(x => H.eq(x, b))) return false;
+  }
+  // injective: equal images imply equal preimages
+  for (let i = 0; i < G.elements.length; i++) {
+    for (let j = i + 1; j < G.elements.length; j++) {
+      const bi = image[i], bj = image[j];
+      if (H.eq(bi, bj) && !G.eq(G.elements[i], G.elements[j])) return false;
+    }
+  }
+  return true;
 }
 
-/** Direct product G × H (componentwise operation). */
-export function Product<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>): FiniteGroup<[A,B]> {
-  const eqG = eqOf(G), eqH = eqOf(H);
-  const elems: Array<[A,B]> = [];
-  for (const a of G.elems) for (const b of H.elems) elems.push([a,b]);
-  return {
-    elems,
-    op: ([a1,b1], [a2,b2]) => [G.op(a1,a2), H.op(b1,b2)],
-    id: [G.id, H.id],
-    inv: ([a,b]) => [G.inv(a), H.inv(b)],
-    eq: (pair1, pair2) => {
-      if (!pair1 || !pair2) return false;
-      const [x1,y1] = pair1;
-      const [x2,y2] = pair2;
-      return eqG(x1,x2) && eqH(y1,y2);
-    },
-    name: `(${G.name ?? 'G'})×(${H.name ?? 'H'})`
-  };
+// Check the "redefined" characterization (Theorem 4):
+// A homomorphism is an iso iff there exists a homomorphic two-sided inverse.
+export function isIsomorphismByInverse<A, B>(iso: GroupIso<A, B>): boolean {
+  const { to, from, leftInverse, rightInverse } = iso;
+  if (!isHomomorphism(to)) return false;
+  if (!isHomomorphism(from)) return false;
+  // If we can enumerate, check witnesses everywhere; otherwise trust the provided functions
+  const allA: A[] | undefined = to.source.elements?.slice();
+  const allB: B[] | undefined = to.target.elements?.slice();
+
+  if (allA) {
+    for (const a of allA) {
+      const b = to.map(a);
+      const back = from.map(b);
+      if (!to.source.eq(back, a)) return false;
+      if (!rightInverse(a)) return false;
+    }
+  }
+  if (allB) {
+    for (const b of allB) {
+      const a = from.map(b);
+      const forth = to.map(a);
+      if (!to.target.eq(forth, b)) return false;
+      if (!leftInverse(b)) return false;
+    }
+  }
+  return true;
 }
 
-// Re-export shims used in tests from canonical sources for convenience
-export { hom } from "../../structures/group/Hom.js";
-export { idHom, compose as composeHomomorphisms } from "../../structures/group/GrpCat.js";
+// For finite groups, decide isomorphism by explicit inverse + hom laws + bijectivity.
+export function isIsomorphismFinite<A, B>(iso: GroupIso<A, B>): boolean {
+  const bij = isBijectionFinite(iso.to);
+  return bij && isIsomorphismByInverse(iso);
+}

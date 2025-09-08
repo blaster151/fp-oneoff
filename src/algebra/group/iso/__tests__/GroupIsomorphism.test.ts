@@ -1,39 +1,37 @@
 import { describe, it, expect } from "vitest";
-import { GroupIsomorphism, GroupAutomorphism, identityAutomorphism, negationAutomorphism, scalingAutomorphism, conjugationAutomorphism } from "../GroupIsomorphism";
-import { Zn } from "../../../structures/group/util/FiniteGroups";
+import { GroupIsomorphism, GroupAutomorphism, identityAutomorphism, negationAutomorphism, scalingAutomorphism, conjugationAutomorphism, powerAutomorphism } from "../GroupIsomorphism";
+import { Zn } from "../../../../structures/group/util/FiniteGroups";
 
 describe("GroupIsomorphism", () => {
   describe("Basic isomorphism properties", () => {
     it("should be a refinement of GroupHom", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
-      // Create a simple isomorphism: Z4 -> Z2 by x -> x % 2
+      // Create a simple automorphism: Z4 -> Z4 by x -> 3x (multiplication by 3)
       const iso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2  // Inverse: 0 -> 0, 1 -> 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4  // Inverse is also multiplication by 3 (since 3*3 = 9 ≡ 1 mod 4)
       );
 
       // Should inherit homomorphism properties
       expect(iso.source).toBe(Z4);
-      expect(iso.target).toBe(Z2);
+      expect(iso.target).toBe(Z4);
       expect(iso.map(0)).toBe(0);
-      expect(iso.map(1)).toBe(1);
-      expect(iso.map(2)).toBe(0);
+      expect(iso.map(1)).toBe(3);
+      expect(iso.map(2)).toBe(2);
       expect(iso.map(3)).toBe(1);
     });
 
     it("should verify left inverse law", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
       const iso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4
       );
 
       expect(iso.leftInverse()).toBe(true);
@@ -41,13 +39,12 @@ describe("GroupIsomorphism", () => {
 
     it("should verify right inverse law", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
       const iso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4
       );
 
       expect(iso.rightInverse()).toBe(true);
@@ -55,13 +52,12 @@ describe("GroupIsomorphism", () => {
 
     it("should verify complete isomorphism", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
       const iso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4
       );
 
       expect(iso.verifyIsomorphism()).toBe(true);
@@ -69,14 +65,13 @@ describe("GroupIsomorphism", () => {
 
     it("should detect broken isomorphism", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
       // This is NOT an isomorphism - wrong inverse
       const brokenIso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y  // Wrong inverse: should be 0->0, 1->2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => y  // Wrong inverse: should be (3 * y) % 4
       );
 
       expect(brokenIso.leftInverse()).toBe(false);
@@ -87,63 +82,61 @@ describe("GroupIsomorphism", () => {
   describe("Isomorphism composition", () => {
     it("should compose isomorphisms correctly", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
-      const Z1 = Zn(1);
       
       const iso1 = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4
       );
       
       const iso2 = new GroupIsomorphism(
-        Z2,
-        Z1,
-        (x: number) => 0,  // Everything maps to 0
-        (y: number) => 0   // Only 0 maps back
+        Z4,
+        Z4,
+        (x: number) => x,  // Identity
+        (y: number) => y   // Identity
       );
       
       const composed = iso1.compose(iso2);
       
       expect(composed.source).toBe(Z4);
-      expect(composed.target).toBe(Z1);
+      expect(composed.target).toBe(Z4);
       expect(composed.map(0)).toBe(0);
-      expect(composed.map(1)).toBe(0);
-      expect(composed.map(2)).toBe(0);
-      expect(composed.map(3)).toBe(0);
+      expect(composed.map(1)).toBe(3);
+      expect(composed.map(2)).toBe(2);
+      expect(composed.map(3)).toBe(1);
     });
 
     it("should get inverse isomorphism", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
       const iso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4
       );
       
       const inverse = iso.getInverse();
       
-      expect(inverse.source).toBe(Z2);
+      expect(inverse.source).toBe(Z4);
       expect(inverse.target).toBe(Z4);
       expect(inverse.map(0)).toBe(0);
-      expect(inverse.map(1)).toBe(2);
+      expect(inverse.map(1)).toBe(3);
+      expect(inverse.map(2)).toBe(2);
+      expect(inverse.map(3)).toBe(1);
     });
   });
 
   describe("Integration with law testing framework", () => {
     it("should generate isomorphism laws", () => {
       const Z4 = Zn(4);
-      const Z2 = Zn(2);
       
       const iso = new GroupIsomorphism(
         Z4,
-        Z2,
-        (x: number) => x % 2,
-        (y: number) => y === 0 ? 0 : 2
+        Z4,
+        (x: number) => (3 * x) % 4,
+        (y: number) => (3 * y) % 4
       );
       
       const laws = iso.getIsomorphismLaws();
@@ -175,7 +168,7 @@ describe("GroupAutomorphism", () => {
       const Z4 = Zn(4);
       const neg = negationAutomorphism(Z4);
       
-      expect(neg.map(0)).toBe(0);  // -0 = 0
+      expect(Z4.eq(neg.map(0), 0)).toBe(true);  // -0 = 0
       expect(neg.map(1)).toBe(3);  // -1 = 3 (mod 4)
       expect(neg.map(2)).toBe(2);  // -2 = 2 (mod 4)
       expect(neg.map(3)).toBe(1);  // -3 = 1 (mod 4)
@@ -187,7 +180,7 @@ describe("GroupAutomorphism", () => {
       const neg = negationAutomorphism(Z4);
       
       // For negation, the inverse is also negation
-      expect(neg.inverse(0)).toBe(0);
+      expect(Z4.eq(neg.inverse(0), 0)).toBe(true);
       expect(neg.inverse(1)).toBe(3);
       expect(neg.inverse(2)).toBe(2);
       expect(neg.inverse(3)).toBe(1);
@@ -212,10 +205,10 @@ describe("GroupAutomorphism", () => {
       
       // The inverse should be scaling by 1/3 mod 4
       // Since 3 * 3 ≡ 1 (mod 4), the inverse of 3 is 3
-      expect(scale.inverse(0)).toBe(0);  // 0 / 3 = 0
-      expect(scale.inverse(1)).toBe(3);  // 1 / 3 = 3 (since 3 * 3 = 1)
-      expect(scale.inverse(2)).toBe(2);  // 2 / 3 = 2 (since 3 * 2 = 2)
-      expect(scale.inverse(3)).toBe(1);  // 3 / 3 = 1
+      expect(scale.inverse(0)).toBe(0);  // 3 * 0 = 0
+      expect(scale.inverse(1)).toBe(3);  // 3 * 1 = 3 (since 3 * 3 = 1)
+      expect(scale.inverse(2)).toBe(2);  // 3 * 2 = 6 ≡ 2 (mod 4)
+      expect(scale.inverse(3)).toBe(1);  // 3 * 3 = 9 ≡ 1 (mod 4)
     });
 
     it("should reject zero scaling factor", () => {
