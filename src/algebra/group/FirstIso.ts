@@ -200,3 +200,14 @@ export function firstIsomorphism<A, B>(f: GroupHom<A, B>): {
 
   return { quotient, imageGrp, iso };
 }
+
+/** Create the canonical projection homomorphism G → G/N */
+export function canonicalProjection<A>(G: Group<A>, N: NormalSubgroup<A>): GroupHom<A, Coset<A>> {
+  const quotient = quotientGroup(G, N);
+  return {
+    src: G,
+    dst: quotient,
+    map: (a: A) => ({ rep: a }),
+    respectsOp: () => true // The canonical projection always respects the operation
+  };
+}

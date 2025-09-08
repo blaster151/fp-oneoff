@@ -1,5 +1,4 @@
 import { Group, Subgroup } from "./structures";
-import { FiniteGroup } from "./Group";
 
 export interface Coset<A> {
   rep: A;      // chosen representative
@@ -93,13 +92,15 @@ export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
   const e = findCoset((G as any).e ?? (G as any).id);
   const inv = (c: Coset<A>) => findCoset(G.inv(c.rep));
 
-  const result: FiniteGroup<Coset<A>> = {
+  const result: Group<Coset<A>> = {
     elems: cos,
+    eq,
     op,
     id: e,
-    inv,
-    eq
+    inv
   };
-  (result as any).name = `${(G as any).name ?? "G"}/${(N as any).name ?? "N"}`;
+  if ((G as any).name || (N as any).name) {
+    (result as any).label = `${(G as any).name ?? "G"}/${(N as any).name ?? "N"}`;
+  }
   return result;
 }

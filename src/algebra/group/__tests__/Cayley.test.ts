@@ -71,7 +71,7 @@ describe("Cayley Table Operations", () => {
         },
         id: "zero",
         inv: (x: string) => x, // self-inverse
-        elements: ["zero", "one"]
+        elems: ["zero", "one"]
       });
 
       expect(isSameTableUpToRename(Z2, Z2_renamed)).toBe(true);
@@ -84,7 +84,7 @@ describe("Cayley Table Operations", () => {
         op: (x: number, y: number) => x ^ y, // XOR operation (Klein 4-group)
         id: 0,
         inv: (x: number) => x, // self-inverse
-        elements: [0, 1, 2, 3]
+        elems: [0, 1, 2, 3]
       });
 
       // Z4 and K4 are both groups of order 4, but not isomorphic
@@ -135,7 +135,7 @@ describe("Cayley Table Operations", () => {
         op: (x: number, y: number) => (x + y) % 2,
         id: 0,
         inv: (x: number) => x,
-        elements: [0, 1]
+        elems: [0, 1]
       });
 
       // Z2 and Z2_copy should be isomorphic (they're the same group)
