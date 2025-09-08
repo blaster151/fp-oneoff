@@ -28,7 +28,7 @@ export class GroupIsomorphism<A, B> extends GroupHom<unknown, unknown, A, B> {
     
     // For finite groups, check all elements
     if (G.elements) {
-      return G.elements.every(a => eqA(inverse(map(a)), a));
+      return G.elements.every((a: any) => eqA(inverse(map(a)), a));
     }
     
     // For infinite groups, this is a promise that the caller must verify
@@ -46,7 +46,7 @@ export class GroupIsomorphism<A, B> extends GroupHom<unknown, unknown, A, B> {
     
     // For finite groups, check all elements
     if (H.elements) {
-      return H.elements.every(b => eqB(map(inverse(b)), b));
+      return H.elements.every((b: any) => eqB(map(inverse(b)), b));
     }
     
     // For infinite groups, this is a promise that the caller must verify

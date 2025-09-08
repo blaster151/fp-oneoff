@@ -33,17 +33,17 @@ describe("image subgroup from group hom", () => {
     for (const a of img!.elems) {
       for (const b of img!.elems) {
         const ab = img!.op(a, b);
-        expect(img!.elems.some(x => img!.eq ? img!.eq(x, ab) : x === ab)).toBe(true);
+        expect(img!.elems.some((x: any) => img!.eq ? img!.eq(x, ab) : x === ab)).toBe(true);
       }
     }
     
     // Check identity is present (should be 0 from Z2)
-    expect(img!.elems.some(x => img!.eq ? img!.eq(x, 0) : x === 0)).toBe(true);
+    expect(img!.elems.some((x: any) => img!.eq ? img!.eq(x, 0) : x === 0)).toBe(true);
     
     // Check inverses are present
     for (const a of img!.elems) {
       const invA = img!.inv(a);
-      expect(img!.elems.some(x => img!.eq ? img!.eq(x, invA) : x === invA)).toBe(true);
+      expect(img!.elems.some((x: any) => img!.eq ? img!.eq(x, invA) : x === invA)).toBe(true);
     }
   });
 });

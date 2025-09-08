@@ -5,14 +5,14 @@ export function isInjective<A,B>(f: GroupHom<unknown,unknown,A,B>): boolean {
   const G = f.src, H = f.dst;
   if (!G.elements) throw new Error("isInjective: need finite src.");
   const images = G.elements.map(f.map);
-  return G.elements.every((x,i) =>
-    G.elements!.slice(i+1).every(y => !H.eq(images[i]!, f.map(y)))
+  return G.elements.every((x: any, i: number) =>
+    G.elements!.slice(i+1).every((y: any) => !H.eq(images[i]!, f.map(y)))
   );
 }
 export function isSurjective<A,B>(f: GroupHom<unknown,unknown,A,B>): boolean {
   const G = f.src, H = f.dst;
   if (!G.elements || !H.elements) throw new Error("isSurjective: need finite src/dst.");
-  return H.elements.every(h => G.elements!.some(g => H.eq(f.map(g), h)));
+  return H.elements.every((h: any) => G.elements!.some((g: any) => H.eq(f.map(g), h)));
 }
 export function isBijective<A,B>(f: GroupHom<unknown,unknown,A,B>): boolean {
   return isInjective(f) && isSurjective(f);

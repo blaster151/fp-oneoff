@@ -10,7 +10,7 @@ const Z8: EnhancedGroup<number> = {
   op: addMod(8),
   e: 0,
   inv: negMod(8),
-  show: x => `${x} (mod 8)`
+  show: (x: any) => `${x} (mod 8)`
 };
 
 // f: Z8 → Z4 by reduction mod 4
@@ -19,7 +19,7 @@ const Z4: EnhancedFiniteGroup<number> = {
   op: addMod(4),
   e: 0,
   inv: negMod(4),
-  show: x => `${x} (mod 4)`
+  show: (x: any) => `${x} (mod 4)`
 };
 const mod4 = (x:number)=> x % 4;
 

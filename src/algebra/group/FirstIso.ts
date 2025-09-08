@@ -37,7 +37,7 @@ export function image<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   // Closure witnesses are immediate from hom property; for finite, compute elements explicitly.
   const elems = src.elements?.map(map);
   const unique = elems
-    ? elems.filter((b, i) => elems.findIndex(bb => dst.eq(bb, b)) === i)
+    ? elems.filter((b: any, i: number) => elems.findIndex((bb: any) => dst.eq(bb, b)) === i)
     : undefined;
 
   // Induced operation = dst operation restricted
@@ -50,7 +50,7 @@ export function image<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   };
 
   const include = (b: B) =>
-    unique ? unique.some(bb => dst.eq(bb, b)) : (() => { throw new Error("Non-finite image: use include only with finite groups."); })();
+    unique ? unique.some((bb: any) => dst.eq(bb, b)) : (() => { throw new Error("Non-finite image: use include only with finite groups."); })();
 
   return { subgroup, include, elements: unique || undefined };
 }
@@ -166,7 +166,7 @@ export function firstIsomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): {
     if (!imageGrp.elements!.some(img => f.dst.eq(img, b))) {
       throw new Error("Element not in image of f");
     }
-    const a = f.src.elements!.find(x => f.dst.eq(f.map(x), b));
+    const a = f.src.elements!.find((x: any) => f.dst.eq(f.map(x), b));
     if (!a) throw new Error("Internal error: element not in image.");
     return classOf(a);
   };
