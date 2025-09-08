@@ -29,6 +29,7 @@ describe("GroupHom factorization through quotient (Smith §2.7 Thm 9)", () => {
     const { quotient: Q, pi, iota, law_compose_equals_f } = f.factorization();
 
     // Witness: iota∘pi = f
+    if (Z8.elems === undefined) throw new Error("Z8.elems is undefined");
     for (const g of Z8.elems) A.ok(law_compose_equals_f(g));
 
     // Size checks: |Q| should equal size of image of f
