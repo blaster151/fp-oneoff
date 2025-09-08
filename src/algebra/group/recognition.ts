@@ -2,16 +2,16 @@ import { GroupHom } from "./Hom";
 
 // Bijective (finite): injective + surjective by counting / membership
 export function isInjective<A,B>(f: GroupHom<unknown,unknown,A,B>): boolean {
-  const G = f.src, H = f.dst;
-  if (!G.elements) throw new Error("isInjective: need finite src.");
+  const G = f.source, H = f.target;
+  if (!G.elements) throw new Error("isInjective: need finite source.");
   const images = G.elements.map(f.map);
   return G.elements.every((x: any, i: number) =>
     G.elements!.slice(i+1).every((y: any) => !H.eq(images[i]!, f.map(y)))
   );
 }
 export function isSurjective<A,B>(f: GroupHom<unknown,unknown,A,B>): boolean {
-  const G = f.src, H = f.dst;
-  if (!G.elements || !H.elements) throw new Error("isSurjective: need finite src/dst.");
+  const G = f.source, H = f.target;
+  if (!G.elements || !H.elements) throw new Error("isSurjective: need finite source/target.");
   return H.elements.every((h: any) => G.elements!.some((g: any) => H.eq(f.map(g), h)));
 }
 export function isBijective<A,B>(f: GroupHom<unknown,unknown,A,B>): boolean {

@@ -10,7 +10,7 @@ export interface Pullback<A,B,C> {
 
 // Finite-only executable pullback
 export function pullback<A,B,C>(f: GroupHom<unknown,unknown,A,B>, g: GroupHom<unknown,unknown,C,B>): Pullback<A,B,C> {
-  const G = f.src, K = g.src, H = f.dst;
+  const G = f.source, K = g.source, H = f.target;
   if (!G.elements || !K.elements) throw new Error("pullback: need finite G and K.");
 
   const elems: Array<[A,C]> = [];
