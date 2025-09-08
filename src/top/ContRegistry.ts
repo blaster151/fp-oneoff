@@ -17,6 +17,6 @@ export function allCont() { return _entries.slice(); }
 export function runContAll() {
   return _entries.map(e => ({
     tag: e.tag,
-    ok: continuous(e.eqDom as any, e.TA as any, e.TB as any, e.f as any)
+    ok: continuous(e.eqDom as any, e.eqDom as any, e.TA as any, e.TB as any, e.f as any)
   }));
 }
