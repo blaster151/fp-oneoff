@@ -15,7 +15,10 @@ export function SetObj<A>(
   // ensure uniqueness to keep reasoning simple
   const uniq: A[] = [];
   for (const a of elems) if (!uniq.some(b => (opts?.eq ?? Object.is)(a, b))) uniq.push(a);
-  return { elems: uniq, eq: opts?.eq, name: opts?.name };
+  const result: FiniteSet<A> = { elems: uniq };
+  if (opts?.eq !== undefined) (result as any).eq = opts.eq;
+  if (opts?.name !== undefined) (result as any).name = opts.name;
+  return result;
 }
 
 // ---------- morphisms + witnesses ----------
@@ -39,7 +42,8 @@ export interface SetWitnesses<A,B> {
 }
 
 export function setHom<A,B>(A: FiniteSet<A>, B: FiniteSet<B>, map: (a:A)=>B, name?: string): SetHom<A,B> {
-  const f: SetHom<A,B> = { source: A, target: B, map, name };
+  const f: SetHom<A,B> = { source: A, target: B, map };
+  if (name !== undefined) (f as any).name = name;
   return analyzeSetHom(f);
 }
 
@@ -50,8 +54,12 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
   // injective
   let injective = true;
   outer: for (let i=0;i<A.elems.length;i++) for (let j=i+1;j<A.elems.length;j++) {
-    const xi = A.elems[i], xj = A.elems[j];
-    if (eqB(f.map(xi), f.map(xj))) { injective = false; break outer; }
+    const xi = A.elems[i];
+    const xj = A.elems[j];
+    if (xi !== undefined && xj !== undefined && eqB(f.map(xi), f.map(xj))) { 
+      injective = false; 
+      break outer; 
+    }
   }
 
   // surjective
@@ -76,14 +84,15 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
     inverse = { source: B, target: A, map: invMap, name: f.name ? `${f.name}⁻¹` : 'inv' };
   }
 
-  f.witnesses = {
+  const witnesses: SetWitnesses<A,B> = {
     isTotal: true,
     injective,
     surjective,
     bijective,
     isMono: injective,
-    isEpi: surjective,
-    inverse
+    isEpi: surjective
   };
+  if (inverse !== undefined) (witnesses as any).inverse = inverse;
+  f.witnesses = witnesses;
   return f;
 }

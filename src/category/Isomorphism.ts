@@ -117,7 +117,9 @@ export function isBijective<A, B>(
   // Check injectivity
   for (let i = 0; i < elemsA.length; i++) {
     for (let j = i + 1; j < elemsA.length; j++) {
-      if (eqB(f(elemsA[i]), f(elemsA[j]))) {
+      const ai = elemsA[i];
+      const aj = elemsA[j];
+      if (ai !== undefined && aj !== undefined && eqB(f(ai), f(aj))) {
         return false; // Not injective
       }
     }

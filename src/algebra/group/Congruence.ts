@@ -15,7 +15,7 @@ export function congruenceFromHom<G, H>(
 ): Congruence<G> {
   const eqH = H.eq;
   const eqv: Eq<G> = (x, y) => eqH(f(x), f(y));
-  const comp = (x, x1, y, y1) => {
+  const comp = (x: G, x1: G, y: G, y1: G) => {
     return eqH(f(G.op(x, y)), f(G.op(x1, y1)));
   };
   return { G, eqv, comp };
@@ -35,18 +35,18 @@ export function isCongruence<G>(
   const elems = (G as any).elems || []; // fallback for finite groups
   
   // Reflexivity: x ≈ x for all x
-  const reflexive = elems.every(x => eq(x,x));
+  const reflexive = elems.every((x: any) => eq(x,x));
   
   // Symmetry: x ≈ y ⟺ y ≈ x for all x,y
-  const symmetric = elems.every((x,i) => elems.every(y => eq(x,y) === eq(y,x)));
+  const symmetric = elems.every((x: any, i: any) => elems.every((y: any) => eq(x,y) === eq(y,x)));
   
   // Transitivity: if x ≈ y and y ≈ z, then x ≈ z
-  const transitive = elems.every(x => elems.every(y => elems.every(z =>
+  const transitive = elems.every((x: any) => elems.every((y: any) => elems.every((z: any) =>
     !(eq(x,y) && eq(y,z)) || eq(x,z)
   )));
   
   // Compatibility: if x ≈ y, then z*x ≈ z*y and x*z ≈ y*z for all z
-  const compatible = elems.every(x => elems.every(y => elems.every(z =>
+  const compatible = elems.every((x: any) => elems.every((y: any) => elems.every((z: any) =>
     (!eq(x,y) || eq(G.op(z,x), G.op(z,y))) &&
     (!eq(x,y) || eq(G.op(x,z), G.op(y,z)))
   )));

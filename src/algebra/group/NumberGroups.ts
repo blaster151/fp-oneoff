@@ -1,21 +1,22 @@
-import type { Group } from "./Group";
+import type { FiniteGroup } from "./Group";
 import { add as qAdd, eq as qEq, neg as qNeg, zero as qZero, Rational, mul as qMul, fromBigInt } from "../../number/Rational";
 
 // Integers under addition (modelled with number)
-export const Zplus: Group<number> = {
-  eq: (x, y) => x === y,
-  op: (x, y) => x + y,
+export const Zplus: FiniteGroup<number> = {
+  elems: [], // This represents infinite Z, but FiniteGroup requires elems
+  eq: (x: number, y: number) => x === y,
+  op: (x: number, y: number) => x + y,
   id: 0,
-  inv: x => -x,
-  // infinite: no elements listing
+  inv: (x: number) => -x
 };
 
 // Rationals under addition
-export const Qplus: Group<Rational> = {
+export const Qplus: FiniteGroup<Rational> = {
+  elems: [], // This represents infinite Q, but FiniteGroup requires elems
   eq: qEq,
   op: qAdd,
   id: qZero,
-  inv: qNeg,
+  inv: qNeg
 };
 
 // Automorphisms mentioned on the page:

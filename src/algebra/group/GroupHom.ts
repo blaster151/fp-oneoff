@@ -60,13 +60,13 @@ export class GroupHom<G, H> {
   /** Canonical factorization through the kernel-pair quotient using Eq abstraction. */
   factorization(eqH: Eq<H>) {
     const { G, H, map } = this;
-    const cong = { G, eqv: (x:G,y:G) => eqH.eq(map(x), map(y)) };
+    const cong = { G: G as any, eqv: (x:G,y:G) => eqH(map(x), map(y)), comp: (x: G, x1: G, y: G, y1: G) => eqH(map(G.op(x, y)), map(G.op(x1, y1))) };
     const Q = QuotientGroup(cong);
     const quotient = Q.Group;
     const pi = (g:G) => Q.norm(g);
     const iota = (q:{rep:G}) => map(q.rep);
 
-    const law_compose_equals_f = (g:G) => eqH.eq(iota(pi(g)), map(g));
+    const law_compose_equals_f = (g:G) => eqH(iota(pi(g)), map(g));
 
     return { quotient, pi, iota, law_compose_equals_f };
   }

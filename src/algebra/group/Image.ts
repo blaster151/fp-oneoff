@@ -13,11 +13,13 @@ export function imageSubgroup<G,H>(
     const h = f(g);
     if (!elems.some(x => eqH(x,h))) elems.push(h);
   }
-  return {
+  const result: FiniteGroup<H> = {
     elems,
     op: HH.op,
-    e: (HH as any).e ?? (HH as any).id,
-    inv: HH.inv,
-    name: `im(${hom.name || 'f'})`
+    id: (HH as any).e ?? (HH as any).id,
+    inv: HH.inv
   };
+  if (HH.eq) (result as any).eq = HH.eq;
+  (result as any).name = `im(${hom.name || 'f'})`;
+  return result;
 }

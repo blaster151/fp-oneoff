@@ -20,11 +20,11 @@ export interface IsoClass<G> {
  * Create an isomorphism class from a group
  */
 export function isoClass<G>(G: Group<G>, canonicalName?: string): IsoClass<G> {
-  return {
-    representative: G,
-    canonicalName,
-    witnesses: undefined
+  const result: IsoClass<G> = {
+    representative: G
   };
+  if (canonicalName !== undefined) (result as any).canonicalName = canonicalName;
+  return result;
 }
 
 /**
@@ -53,8 +53,8 @@ export function multiplicationTable<G>(G: Group<G>): string {
   // Create a normalized table by sorting elements consistently
   const sortedElems = [...elems].sort((a, b) => {
     // Use string representation for consistent ordering
-    const aStr = G.show ? G.show(a) : String(a);
-    const bStr = G.show ? G.show(b) : String(b);
+    const aStr = String(a);
+    const bStr = String(b);
     return aStr.localeCompare(bStr);
   });
   
@@ -69,9 +69,13 @@ export function multiplicationTable<G>(G: Group<G>): string {
   for (let i = 0; i < n; i++) {
     const row: number[] = [];
     for (let j = 0; j < n; j++) {
-      const result = op(sortedElems[i], sortedElems[j]);
-      const resultIndex = elemToIndex.get(result)!;
-      row.push(resultIndex);
+      const elemI = sortedElems[i];
+      const elemJ = sortedElems[j];
+      if (elemI !== undefined && elemJ !== undefined) {
+        const result = op(elemI, elemJ);
+        const resultIndex = elemToIndex.get(result)!;
+        row.push(resultIndex);
+      }
     }
     table.push(row);
   }
