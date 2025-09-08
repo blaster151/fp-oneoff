@@ -1,13 +1,14 @@
 import { FiniteGroup } from "../Group";
 
 export function Zn(n: number): FiniteGroup<number> {
-  const elements = Array.from({ length: n }, (_, i) => i);
+  const elems = Array.from({ length: n }, (_, i) => i);
   return {
-    elements,
+    elems,
     eq: (a, b) => a === b,
     op: (a, b) => (a + b) % n,
     id: 0,
-    inv: (a) => (n - a) % n
+    inv: (a) => (n - a) % n,
+    label: `Z${n}`
   };
 }
 

@@ -266,7 +266,7 @@ describe("Inverse Witness System (Theorem 4)", () => {
   describe("Integration with existing Zn groups", () => {
     it("should work with Zn groups", () => {
       const Z4 = Zn(4);
-      const elements = Z4.elements!;
+      const elements = Z4.elems;
       
       const id: Homomorphism<number, number> = {
         source: Z4,
@@ -280,7 +280,7 @@ describe("Inverse Witness System (Theorem 4)", () => {
 
     it("should work with scaling automorphism", () => {
       const Z4 = Zn(4);
-      const elements = Z4.elements!;
+      const elements = Z4.elems;
       
       const scale3: Homomorphism<number, number> = {
         source: Z4,
