@@ -1,4 +1,5 @@
-import { Group, GroupHom, Subgroup } from "./structures";
+import { GroupHom } from "./Hom";
+import { Subgroup } from "./structures";
 
 function eqDefault<T>(a:T,b:T){ return Object.is(a,b); }
 
@@ -10,7 +11,7 @@ export interface GroupHomWitnesses<A,B> {
   kernelSubgroup?: Subgroup<A>;
 }
 
-export function analyzeGroupHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
+export function analyzeGroupHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unknown,unknown,A,B> {
   const G = f.source, H = f.target;
   const eqH = H.eq ?? eqDefault;
   const eqG = G.eq ?? eqDefault;

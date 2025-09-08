@@ -11,8 +11,8 @@ const Z2a = Z2;
 const Z2b = Z2;
 
 const rename: Record<TwoElt, TwoElt> = { e: "e", j: "j" }; // trivial rename; could swap as well
-const f: GroupHom<TwoElt, TwoElt> = hom(Z2a, Z2b, x => rename[x]);
-const g: GroupHom<TwoElt, TwoElt> = hom(Z2b, Z2a, y => {
+const f: GroupHom<unknown, unknown, TwoElt, TwoElt> = hom(Z2a, Z2b, x => rename[x]);
+const g: GroupHom<unknown, unknown, TwoElt, TwoElt> = hom(Z2b, Z2a, y => {
   // inverse of rename (same map here)
   const entries = Object.entries(rename) as [TwoElt, TwoElt][];
   for (const [k, v] of entries) if (v === y) return k;

@@ -1,9 +1,9 @@
 import { FiniteGroup } from "./Group";
-import { GroupHom } from "./structures";
+import { GroupHom } from "./Hom";
 
 /** The kernel ker(f) = { g ∈ G | f(g) = e_H }. */
 export function kernelNormalSubgroup<G,H>(
-  hom: GroupHom<G,H>,
+  hom: GroupHom<unknown,unknown,G,H>,
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<G> {
   const { source: G, target: HH, f } = hom;

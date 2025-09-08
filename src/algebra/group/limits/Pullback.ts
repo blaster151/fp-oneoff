@@ -1,4 +1,5 @@
-import { Group, GroupHom } from "../FirstIso";
+import { GroupHom } from "../Hom";
+import { Group } from "../structures";
 
 export interface Pullback<A,B,C> {
   P: Group<[A,C]>;
@@ -8,7 +9,7 @@ export interface Pullback<A,B,C> {
 }
 
 // Finite-only executable pullback
-export function pullback<A,B,C>(f: GroupHom<A,B>, g: GroupHom<C,B>): Pullback<A,B,C> {
+export function pullback<A,B,C>(f: GroupHom<unknown,unknown,A,B>, g: GroupHom<unknown,unknown,C,B>): Pullback<A,B,C> {
   const G = f.src, K = g.src, H = f.dst;
   if (!G.elements || !K.elements) throw new Error("pullback: need finite G and K.");
 

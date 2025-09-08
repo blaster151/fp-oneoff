@@ -10,17 +10,11 @@ export interface Group<T> {
   elements?: T[] | undefined;
 }
 
-export interface GroupHom<A, B> {
-  src: Group<A>;
-  dst: Group<B>;
-  map: (a: A) => B;
-  // witness: f(x*y) = f(x)⋆f(y)
-  respectsOp: () => boolean; // typically implemented by exhaustive check if finite, or assumed trusted
-}
+import { GroupHom } from "./Hom";
 
 // --- Kernel and image ---
 
-export function kernel<A, B>(f: GroupHom<A, B>): { set: (a: A) => boolean } {
+export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): { set: (a: A) => boolean } {
   const { src, dst, map } = f;
   return {
     set: (a: A) => dst.eq(map(a), dst.e),
@@ -33,7 +27,7 @@ function subsetArray<T>(G: Group<T>, pred: (x: T) => boolean): T[] | undefined {
   return G.elements.filter(pred);
 }
 
-export function image<A, B>(f: GroupHom<A, B>): {
+export function image<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   subgroup: Group<B>;
   include: (b: B) => boolean;
   elements?: B[] | undefined;
@@ -68,7 +62,7 @@ export interface NormalSubgroup<T> {
   contains: (x: T) => boolean;
 }
 
-export function kernelIsNormal<A, B>(f: GroupHom<A, B>): NormalSubgroup<A> {
+export function kernelIsNormal<A, B>(f: GroupHom<unknown, unknown, A, B>): NormalSubgroup<A> {
   const K = kernel(f);
   const { src: G } = f;
   // In groups, ker(f) is always normal; no computation needed for the proof,
@@ -143,7 +137,7 @@ export interface GroupIso<X, Y> {
   rightInverse: () => boolean; // to∘from = id
 }
 
-export function firstIsomorphism<A, B>(f: GroupHom<A, B>): {
+export function firstIsomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   quotient: Group<Coset<A>>;
   imageGrp: Group<B>;
   iso: GroupIso<Coset<A>, B>;
@@ -214,17 +208,17 @@ export function canonicalProjection<A>(G: Group<A>, N: NormalSubgroup<A>): any {
 }
 
 /** Factor a homomorphism through its quotient - returns the canonical factorization */
-export function factorThroughQuotient<A, B>(f: GroupHom<A, B>): {
+export function factorThroughQuotient<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   quotient: Group<Coset<A>>;
-  pi: GroupHom<A, Coset<A>>;
-  iota: GroupHom<Coset<A>, B>;
+  pi: GroupHom<unknown, unknown, A, Coset<A>>;
+  iota: GroupHom<unknown, unknown, Coset<A>, B>;
 } {
   const K = kernelIsNormal(f);
   const quotient = quotientGroup(f.src, K);
   const pi = canonicalProjection(f.src, K);
   
   // iota: G/K → B, iota([a]_K) = f(a)
-  const iota: GroupHom<Coset<A>, B> = {
+  const iota: GroupHom<unknown, unknown, Coset<A>, B> = {
     src: quotient,
     dst: f.dst,
     map: (c: Coset<A>) => f.map(c.rep),

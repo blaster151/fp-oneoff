@@ -1,4 +1,4 @@
-import { GroupHom } from "../GroupHom";
+import { GroupHom } from "../Hom";
 import { FiniteGroup } from "../Group";
 import { isoLaws } from "../../../laws/Witness";
 
@@ -8,7 +8,7 @@ import { isoLaws } from "../../../laws/Witness";
  * An isomorphism is a homomorphism with an inverse that satisfies
  * the round-trip laws: inverse(map(a)) === a and map(inverse(b)) === b
  */
-export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
+export class GroupIsomorphism<A, B> extends GroupHom<unknown, unknown, A, B> {
   constructor(
     G: FiniteGroup<A>,
     H: FiniteGroup<B>,

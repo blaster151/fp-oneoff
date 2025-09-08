@@ -1,9 +1,9 @@
 import { FiniteGroup } from "./Group";
-import { GroupHom } from "./structures";
+import { GroupHom } from "./Hom";
 
 /** The subgroup im(f) ⊆ H as an induced finite group. */
 export function imageSubgroup<G,H>(
-  hom: GroupHom<G,H>,
+  hom: GroupHom<unknown,unknown,G,H>,
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<H> {
   const { source: G, target: HH, f } = hom;

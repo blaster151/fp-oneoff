@@ -1,4 +1,5 @@
-import { Group, GroupHom } from "../FirstIso";
+import { GroupHom } from "../Hom";
+import { Group } from "../structures";
 
 /**
  * Finite pushout (demo): given mono-like inclusions f:H->G, g:H->K and a known finite ambient group U
@@ -8,10 +9,10 @@ import { Group, GroupHom } from "../FirstIso";
  * NOTE: This is a pragmatic finite constructor suitable for tests/demos, not a general free-product implementation.
  */
 export function pushoutFinite<H,G,K,U>(
-  f: GroupHom<H,G>,
-  g: GroupHom<H,K>,
-  embedG: GroupHom<G,U>,
-  embedK: GroupHom<K,U>
+  f: GroupHom<unknown,unknown,H,G>,
+  g: GroupHom<unknown,unknown,H,K>,
+  embedG: GroupHom<unknown,unknown,G,U>,
+  embedK: GroupHom<unknown,unknown,K,U>
 ): { P: Group<U>; inG: (x: G)=>U; inK: (y: K)=>U } {
   const Ugrp = embedG.dst; // also embedK.dst
   if (!Ugrp.elements) throw new Error("pushoutFinite: need finite ambient U.");
