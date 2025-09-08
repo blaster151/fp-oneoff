@@ -4,6 +4,7 @@ import { GroupHom, isHomomorphism, isIsomorphismFinite } from "../Group";
 import { hom, iso } from "../iso/Constructors";
 import { Zplus, autoZ_id, autoZ_neg, Qplus } from "../NumberGroups";
 import { Rational, one, fromBigInt, make, eq as qEq, mul as qMul, add as qAdd, zero as qZero } from "../../../number/Rational";
+import { eqOf } from "../Group";
 
 // (1) Any two 2-element groups are isomorphic.
 // We'll use Z2 for both sides but "rename" elements to simulate two presentations.
@@ -19,8 +20,8 @@ const g: GroupHom<unknown, unknown, TwoElt, TwoElt> = hom(Z2b, Z2a, y => {
   throw new Error("impossible");
 });
 
-const leftInv = (b: TwoElt) => Z2b.eq(f.map(g.map(b)), b);
-const rightInv = (a: TwoElt) => Z2a.eq(g.map(f.map(a)), a);
+const leftInv = (b: TwoElt) => eqOf(Z2b)(f.map(g.map(b)), b);
+const rightInv = (a: TwoElt) => eqOf(Z2a)(g.map(f.map(a)), a);
 
 const isoZ2 = iso(f, g, leftInv, rightInv);
 
@@ -38,7 +39,7 @@ describe("Group Isomorphisms - Book Examples", () => {
     const homZ_id = hom(Zplus, Zplus, autoZ_id);
     const homZ_neg = hom(Zplus, Zplus, autoZ_neg);
 
-    const leftInvZ = (z: number) => Zplus.eq(homZ_id.map(homZ_id.map(z)), z); // trivial, shows pattern
+    const leftInvZ = (z: number) => eqOf(Zplus)(homZ_id.map(homZ_id.map(z)), z); // trivial, shows pattern
     const rightInvZ = leftInvZ;
 
     it("Aut(Z,+): id is hom; neg is hom", () => {
@@ -57,8 +58,8 @@ describe("Group Isomorphisms - Book Examples", () => {
     it("Aut(Z,+): negation automorphism is valid", () => {
       const isoZ_neg = iso(homZ_neg, homZ_neg, leftInvZ, rightInvZ);
       // Test that negation is its own inverse
-      expect(Zplus.eq(homZ_neg.map(homZ_neg.map(5)), 5)).toBe(true);
-      expect(Zplus.eq(homZ_neg.map(homZ_neg.map(-3)), -3)).toBe(true);
+      expect(eqOf(Zplus)(homZ_neg.map(homZ_neg.map(5)), 5)).toBe(true);
+      expect(eqOf(Zplus)(homZ_neg.map(homZ_neg.map(-3)), -3)).toBe(true);
     });
   });
 

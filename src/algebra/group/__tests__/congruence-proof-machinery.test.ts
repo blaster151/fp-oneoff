@@ -3,6 +3,7 @@ import { hom } from "../Hom";
 import { isCongruence, congruenceFromHom } from "../Congruence";
 import { factorThroughQuotient } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
+import { eqOf } from "../Group";
 
 describe("Theorem 9 Proof Machinery: Congruences and Factorization", () => {
   it("kernel-pair congruence from homomorphism satisfies all congruence properties", () => {
@@ -43,14 +44,14 @@ describe("Theorem 9 Proof Machinery: Congruences and Factorization", () => {
     // Test that ι is well-defined (same coset gives same image)
     const coset1 = pi(0);
     const coset2 = pi(4); // 0 and 4 should be in same coset (both ≡ 0 mod 4)
-    expect(quotient.eq(coset1, coset2)).toBe(true);
-    expect(Zn.eq(iota(coset1), iota(coset2))).toBe(true);
+    expect(eqOf(quotient)(coset1, coset2)).toBe(true);
+    expect(eqOf(Zn)(iota(coset1), iota(coset2))).toBe(true);
     
     // Test composition: ι ∘ π = f
     for (const g of testWindow) {
       const composed = iota(pi(g));
       const direct = qn(g);
-      expect(Zn.eq(composed, direct)).toBe(true);
+      expect(eqOf(Zn)(composed, direct)).toBe(true);
     }
   });
 
