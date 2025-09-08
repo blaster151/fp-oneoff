@@ -1,6 +1,6 @@
+import { describe, it, expect } from "vitest";
 import { Cyclic, Product } from "../Group";
-import { hom } from "../../../structures/group/Hom.js";
-import { analyzeGroupHom as analyzeHom } from "../analyzeHom";
+import { hom, analyzeHom } from "../Hom";
 
 describe("Group homomorphism witnesses (mono/epi/iso)", () => {
   const C2 = Cyclic(2);
@@ -42,11 +42,10 @@ describe("Group homomorphism witnesses (mono/epi/iso)", () => {
   });
 
   test("C2×C2 ≅ Klein four via identity; sanity check iso detection", () => {
+    console.log("C2xC2 elements:", C2xC2.elems);
+    console.log("C2xC2 operation test:", C2xC2.op([0,0], [1,1]));
     const id = hom(C2xC2, C2xC2, ([a,b]) => [a,b], "id");
-    // For complex groups, we might not detect isomorphism due to computational limits
-    // but we can check that it's at least a homomorphism
-    expect(id.witnesses?.isHom).toBe(true);
-    // The identity should have the full image
-    expect(id.witnesses?.imageSubgroup?.elems.length).toBe(C2xC2.elems.length);
+    console.log("C2xC2 witnesses:", id.witnesses);
+    expect(id.witnesses?.isIso).toBe(true);
   });
 });
