@@ -7,6 +7,7 @@ import { powersetCPO } from "../order/Domain";
 import { lawfulDistNumber } from "./Prob";
 import { lawfulKleisliCategory } from "./ProbKleisli";
 import { lawfulKernelMatrixIso } from "./ProbMatrixKernelIso";
+import { lawfulKernelMatrixIso_Iso } from "./ProbKernelMatrixIso_Iso";
 import { lawfulTopProductUP } from "./TopProductUP";
 import { lawfulTopContinuity } from "./TopContinuity";
 
@@ -31,6 +32,9 @@ registerLawful(kleisliPack);
 const kernelMatrixPack = lawfulKernelMatrixIso();
 kernelMatrixPack.run = () => runLaws(kernelMatrixPack.laws, {});
 registerLawful(kernelMatrixPack);
+
+// NEW (Iso helper variant with float tolerance)
+registerLawful(lawfulKernelMatrixIso_Iso());
 
 // Topology product universal property laws
 const topPack = lawfulTopProductUP();
