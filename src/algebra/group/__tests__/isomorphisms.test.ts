@@ -38,7 +38,7 @@ describe("Group Isomorphisms - Book Examples", () => {
     const homZ_id = hom(Zplus, Zplus, autoZ_id);
     const homZ_neg = hom(Zplus, Zplus, autoZ_neg);
 
-    const leftInvZ = (z: bigint) => Zplus.eq(homZ_id.map(homZ_id.map(z)), z); // trivial, shows pattern
+    const leftInvZ = (z: number) => Zplus.eq(homZ_id.map(homZ_id.map(z)), z); // trivial, shows pattern
     const rightInvZ = leftInvZ;
 
     it("Aut(Z,+): id is hom; neg is hom", () => {
@@ -49,25 +49,25 @@ describe("Group Isomorphisms - Book Examples", () => {
     it("Aut(Z,+): identity automorphism is valid", () => {
       const isoZ_id = iso(homZ_id, homZ_id, leftInvZ, rightInvZ);
       // For infinite groups, we can't use isIsomorphismFinite, but we can check the witnesses
-      expect(leftInvZ(0n)).toBe(true);
-      expect(leftInvZ(1n)).toBe(true);
-      expect(leftInvZ(-1n)).toBe(true);
+      expect(leftInvZ(0)).toBe(true);
+      expect(leftInvZ(1)).toBe(true);
+      expect(leftInvZ(-1)).toBe(true);
     });
 
     it("Aut(Z,+): negation automorphism is valid", () => {
       const isoZ_neg = iso(homZ_neg, homZ_neg, leftInvZ, rightInvZ);
       // Test that negation is its own inverse
-      expect(Zplus.eq(homZ_neg.map(homZ_neg.map(5n)), 5n)).toBe(true);
-      expect(Zplus.eq(homZ_neg.map(homZ_neg.map(-3n)), -3n)).toBe(true);
+      expect(Zplus.eq(homZ_neg.map(homZ_neg.map(5)), 5)).toBe(true);
+      expect(Zplus.eq(homZ_neg.map(homZ_neg.map(-3)), -3)).toBe(true);
     });
   });
 
   describe("Automorphisms of (Q,+)", () => {
     // (3) Automorphisms of (Q,+): scaling by nonzero q is a hom; inverse scales by q^{-1}
-    const two = fromBigInt(2n);
-    const three = fromBigInt(3n);
-    const q = make(3n, 2n); // 3/2
-    const qInv = make(2n, 3n);
+    const two = fromBigInt(2);
+    const three = fromBigInt(3);
+    const q = make(3, 2); // 3/2
+    const qInv = make(2, 3);
     const scaleQ = hom(Qplus, Qplus, x => qMul(q, x));
     const scaleQInv = hom(Qplus, Qplus, x => qMul(qInv, x));
 
@@ -78,12 +78,12 @@ describe("Group Isomorphisms - Book Examples", () => {
       expect(isHomomorphism(scaleQ)).toBe(true);
       expect(isHomomorphism(scaleQInv)).toBe(true);
       // iso characterization by two-sided hom inverse (Theorem 4)
-      expect(leftInvQ(make(5n,7n))).toBe(true);
-      expect(rightInvQ(make(-9n,2n))).toBe(true);
+      expect(leftInvQ(make(5,7))).toBe(true);
+      expect(rightInvQ(make(-9,2))).toBe(true);
     });
 
     it("Aut(Q,+): scaling by 3/2 has inverse scaling by 2/3", () => {
-      const testRational = make(1n, 1n); // 1/1
+      const testRational = make(1, 1); // 1/1
       const scaled = scaleQ.map(testRational); // (3/2) * (1/1) = 3/2
       const back = scaleQInv.map(scaled); // (2/3) * (3/2) = 6/6 = 1/1
       expect(qEq(back, testRational)).toBe(true);
@@ -91,7 +91,7 @@ describe("Group Isomorphisms - Book Examples", () => {
 
     it("Aut(Q,+): scaling by 1 is identity", () => {
       const scaleOne = hom(Qplus, Qplus, x => qMul(one, x));
-      const testRational = make(5n, 3n);
+      const testRational = make(5, 3);
       expect(qEq(scaleOne.map(testRational), testRational)).toBe(true);
     });
 
@@ -127,11 +127,11 @@ describe("Group Isomorphisms - Book Examples", () => {
 
     it("should verify group operation preservation", () => {
       // Test that our homomorphisms preserve the group operation
-      const testA = make(1n, 2n);
-      const testB = make(3n, 4n);
+      const testA = make(1, 2);
+      const testB = make(3, 4);
       const sum = qAdd(testA, testB);
       
-      const scaleQ = hom(Qplus, Qplus, x => qMul(make(2n, 1n), x));
+      const scaleQ = hom(Qplus, Qplus, x => qMul(make(2, 1), x));
       const scaledA = scaleQ.map(testA);
       const scaledB = scaleQ.map(testB);
       const scaledSum = scaleQ.map(sum);

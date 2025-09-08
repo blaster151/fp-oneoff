@@ -9,6 +9,9 @@ export interface Group<A> {
   readonly elements?: readonly A[];
 }
 
+// Alias for backward compatibility
+export type FiniteGroup<A> = Group<A>;
+
 // Structure-respecting map between groups
 export interface GroupHom<A, B> {
   readonly source: Group<A>;

@@ -27,8 +27,8 @@ export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
     const eqA = G.eq ?? ((x: A, y: A) => x === y);
     
     // For finite groups, check all elements
-    if (G.elems) {
-      return G.elems.every(a => eqA(inverse(map(a)), a));
+    if (G.elements) {
+      return G.elements.every(a => eqA(inverse(map(a)), a));
     }
     
     // For infinite groups, this is a promise that the caller must verify
@@ -45,8 +45,8 @@ export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
     const eqB = H.eq ?? ((x: B, y: B) => x === y);
     
     // For finite groups, check all elements
-    if (H.elems) {
-      return H.elems.every(b => eqB(map(inverse(b)), b));
+    if (H.elements) {
+      return H.elements.every(b => eqB(map(inverse(b)), b));
     }
     
     // For infinite groups, this is a promise that the caller must verify
@@ -57,7 +57,7 @@ export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
    * Verify that this is actually an isomorphism by checking all laws
    */
   verifyIsomorphism(): boolean {
-    return this.respectsOp(this.G.elems?.[0] ?? (this.G as any).e, this.G.elems?.[1] ?? (this.G as any).e) &&
+    return this.respectsOp(this.G.elements?.[0] ?? (this.G as any).e, this.G.elements?.[1] ?? (this.G as any).e) &&
            this.preservesId() &&
            this.leftInverse() &&
            this.rightInverse();
@@ -116,7 +116,7 @@ export function identityAutomorphism<A>(G: FiniteGroup<A>): GroupAutomorphism<A>
  */
 export function negationAutomorphism(G: FiniteGroup<number>): GroupAutomorphism<number> {
   // For finite groups, we need to use modular arithmetic
-  const order = G.elems?.length ?? 1;
+  const order = G.elements?.length ?? 1;
   
   return new GroupIsomorphism(
     G,
@@ -136,7 +136,7 @@ export function scalingAutomorphism(G: FiniteGroup<number>, factor: number): Gro
   }
   
   // For finite groups, we need to use modular arithmetic
-  const order = G.elems?.length ?? 1;
+  const order = G.elements?.length ?? 1;
   const modInverse = modInverseOf(factor, order);
   
   return new GroupIsomorphism(
@@ -170,7 +170,7 @@ export function powerAutomorphism<A>(G: FiniteGroup<A>, k: number): GroupAutomor
     // This is a simplified version - in practice you'd use extended Euclidean algorithm
     // to find the modular inverse of k
     let result = G.id;
-    const order = G.elems?.length ?? 1;
+    const order = G.elements?.length ?? 1;
     const invK = modInverse(k, order);
     
     for (let i = 0; i < invK; i++) {

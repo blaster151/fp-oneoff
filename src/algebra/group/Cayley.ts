@@ -22,7 +22,7 @@ export function isSameTableUpToRename<A, B>(GA: Group<A>, GB: Group<B>): boolean
   if (n !== GB.elements.length) return false;
 
   // Try all permutations for small n; (for larger n, you'd use a smarter search)
-  const idx = [...Array(n).keys()];
+  const idx = Array.from({ length: n }, (_, i) => i);
   function nextPerm(p: number[]) {
     // Heap's algorithm would be better; here is a simple lexicographic next-permutation:
     let i = n - 2;
@@ -42,11 +42,20 @@ export function isSameTableUpToRename<A, B>(GA: Group<A>, GB: Group<B>): boolean
     for (let i = 0; ok && i < n; i++) {
       for (let j = 0; ok && j < n; j++) {
         // Compare a[i][j] renamed equals b[perm[i]][perm[j]]
-        const ai = GA.elements.indexOf(a[i][j]);
-        const bj = GB.elements.indexOf(b[perm[i]][perm[j]]);
-        if (ai === -1 || bj === -1) { ok = false; break; }
-        // We only need to check equality under position, not value identity
-        // For strict correctness, map values through perm as well; omitted here for brevity.
+        // We need to check if the result of a[i][j] maps to the same position
+        // as the result of b[perm[i]][perm[j]] under the permutation
+        const resultA = a[i][j];
+        const resultB = b[perm[i]][perm[j]];
+        
+        // Find the positions of these results in their respective groups
+        const posA = GA.elements.indexOf(resultA);
+        const posB = GB.elements.indexOf(resultB);
+        
+        // The results should map to the same position under the permutation
+        if (posA !== perm[posB]) {
+          ok = false;
+          break;
+        }
       }
     }
     if (ok) return true;
