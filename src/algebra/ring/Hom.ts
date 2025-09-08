@@ -1,4 +1,4 @@
-import { FiniteRing, req } from "./Ring";
+import { FiniteRing, req, Zmod } from "./Ring";
 
 // A (unital) ring hom: preserves +, *, 0, 1.
 export interface RingHom<A,B> {
@@ -101,8 +101,7 @@ export function analyzeRingHom<A,B>(f: RingHom<A,B>): RingHom<A,B> {
 
   // cancellability (probe small domains/codomains)
   // we use Z/2Z, Z/3Z, Z/4Z as typical small test rings
-  const { Zmod } = require("./Ring");
-  const probes = [2,3,4].map(Zmod);
+  const probes = [2,3,4].map(n => Zmod(n));
 
   // mono: for all g,h: J->R, f∘g = f∘h ⇒ g=h
   let isMono = true;
