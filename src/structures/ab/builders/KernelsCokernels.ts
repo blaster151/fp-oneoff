@@ -6,7 +6,7 @@ import { kernel, image, quotientGroup } from "../../group/builders/Quotient";
 /** Kernel in Ab is the usual kernel subgroup (a ↦ e). */
 export function ker<A,B>(f: GroupHom<A,B>): { K: FiniteAbGroup<A>, ι: GroupHom<A,A> } {
   const K0 = kernel(f) as FiniteAbGroup<A>;
-  const ι: GroupHom<A,A> = hom(K0, f.source, (x:A)=> x, () => true);
+  const ι: GroupHom<A,A> = hom(K0, f.source, (x:A)=> x, undefined, () => true);
   return { K: K0, ι };
 }
 
@@ -22,6 +22,7 @@ export function coker<A,B>(f: GroupHom<A,B>): { C: FiniteAbGroup<{rep:B}>, q: Gr
       const cos = (C0 as any).cosets.find((c:{rep:B, elems:B[]}) => c.elems.some((x:B)=> (f.target as any).eq(x,b)));
       return { rep: cos.rep } as any;
     },
+    undefined,
     () => true
   );
   return { C: C0, q };
@@ -33,5 +34,5 @@ export function zeroObject(): FiniteAbGroup<0> {
 }
 
 export function zeroMor<A,B>(G: FiniteAbGroup<A>, H: FiniteAbGroup<B>): GroupHom<A,B> {
-  return hom(G, H, (_:A)=> H.id, () => true);
+  return hom(G, H, (_:A)=> H.id, undefined, () => true);
 }

@@ -27,7 +27,7 @@ export function enumerateHoms<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>, maxSize
     }
     // identity check
     if (!H.eq(f(G.id), H.id)) continue;
-    homs.push(hom(G, H, f, () => true));
+    homs.push(hom(G, H, f, undefined, () => true));
   }
   return homs;
 }

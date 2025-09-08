@@ -11,7 +11,7 @@ export const pairIntoProduct = _pairIntoProduct;
 
 /** Identity homomorphism */
 export function idHom<A>(G: FiniteGroup<A>): GroupHom<A, A> {
-  return hom(G, G, (a) => a, () => true);
+  return hom(G, G, (a) => a, undefined, () => true);
 }
 
 /** Composition of homomorphisms */
@@ -23,6 +23,7 @@ export function compose<A, B, C>(
     f.source,
     g.target,
     (a) => g.f(f.f(a)),
+    undefined,
     () => (f.verify?.() ?? true) && (g.verify?.() ?? true)
   );
 }
@@ -37,14 +38,14 @@ import { trivial } from "./Group";
 // Unique hom G → 1 and 1 → G
 export function toTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
   const One = trivial(G.id, G.eq);
-  return hom(G, One, (_a: A) => One.id, () => true) as any;
+  return hom(G, One, (_a: A) => One.id, undefined, () => true) as any;
 }
 export function fromTrivial<A>(G: FiniteGroup<A>): GroupHom<A, A> {
   const One = trivial(G.id, G.eq);
-  return hom(One, G, (_: A) => G.id, () => true) as any;
+  return hom(One, G, (_: A) => G.id, undefined, () => true) as any;
 }
 
 // "Collapse" hom h : G → G, x ↦ e (always a hom)
 export function collapse<A>(G: FiniteGroup<A>): GroupHom<A,A> {
-  return hom(G, G, (_a:A) => G.id, () => true);
+  return hom(G, G, (_a:A) => G.id, undefined, () => true);
 }

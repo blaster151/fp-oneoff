@@ -12,9 +12,9 @@ export function biproduct<A,B,O>(
   p1: GroupHom<O,A>, p2: GroupHom<O,B>
 } {
   const GH = productGroup(G, H, S) as FiniteAbGroup<O>;
-  const i1: GroupHom<A,O> = hom(G, GH, (a:A)=> S.pair(a, H.id), () => true);
-  const i2: GroupHom<B,O> = hom(H, GH, (b:B)=> S.pair(G.id, b), () => true);
-  const p1: GroupHom<O,A> = hom(GH, G, (o:O)=> S.left(o), () => true);
-  const p2: GroupHom<O,B> = hom(GH, H, (o:O)=> S.right(o), () => true);
+  const i1: GroupHom<A,O> = hom(G, GH, (a:A)=> S.pair(a, H.id), undefined, () => true);
+  const i2: GroupHom<B,O> = hom(H, GH, (b:B)=> S.pair(G.id, b), undefined, () => true);
+  const p1: GroupHom<O,A> = hom(GH, G, (o:O)=> S.left(o), undefined, () => true);
+  const p2: GroupHom<O,B> = hom(GH, H, (o:O)=> S.right(o), undefined, () => true);
   return { GH, i1, i2, p1, p2 };
 }

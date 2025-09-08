@@ -2,8 +2,8 @@
 
 export interface FiniteSet<A> {
   readonly elems: ReadonlyArray<A>;
-  readonly eq: (x: A, y: A) => boolean;
-  readonly name: string;
+  readonly eq?: (x: A, y: A) => boolean;
+  readonly name?: string;
 }
 
 export const eqOf = <A>(S: FiniteSet<A>) => S.eq ?? ((x, y) => Object.is(x, y));
@@ -14,9 +14,8 @@ export function SetObj<A>(
 ): FiniteSet<A> {
   // ensure uniqueness to keep reasoning simple
   const uniq: A[] = [];
-  const eq = opts?.eq ?? ((x: A, y: A) => Object.is(x, y));
-  for (const a of elems) if (!uniq.some(b => eq(a, b))) uniq.push(a);
-  return { elems: uniq, eq, name: opts?.name ?? "Set" };
+  for (const a of elems) if (!uniq.some(b => (opts?.eq ?? Object.is)(a, b))) uniq.push(a);
+  return { elems: uniq, eq: opts?.eq, name: opts?.name };
 }
 
 // ---------- morphisms + witnesses ----------
@@ -25,7 +24,7 @@ export interface SetHom<A,B> {
   readonly source: FiniteSet<A>;
   readonly target: FiniteSet<B>;
   readonly map: (a: A) => B;
-  readonly name: string;
+  readonly name?: string;
   witnesses?: SetWitnesses<A,B>;
 }
 
@@ -40,7 +39,7 @@ export interface SetWitnesses<A,B> {
 }
 
 export function setHom<A,B>(A: FiniteSet<A>, B: FiniteSet<B>, map: (a:A)=>B, name?: string): SetHom<A,B> {
-  const f: SetHom<A,B> = { source: A, target: B, map, name: name ?? "f" };
+  const f: SetHom<A,B> = { source: A, target: B, map, name };
   return analyzeSetHom(f);
 }
 
@@ -51,14 +50,14 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
   // injective
   let injective = true;
   outer: for (let i=0;i<A.elems.length;i++) for (let j=i+1;j<A.elems.length;j++) {
-    const xi = A.elems[i]! , xj = A.elems[j]!;
+    const xi = A.elems[i], xj = A.elems[j];
     if (eqB(f.map(xi), f.map(xj))) { injective = false; break outer; }
   }
 
   // surjective
   const image: B[] = [];
   for (const a of A.elems) {
-    const y = f.map(a as A);
+    const y = f.map(a);
     if (!image.some(z => eqB(z, y))) image.push(y);
   }
   const surjective = B.elems.every(b => image.some(y => eqB(y, b)));
@@ -84,7 +83,7 @@ export function analyzeSetHom<A,B>(f: SetHom<A,B>): SetHom<A,B> {
     bijective,
     isMono: injective,
     isEpi: surjective,
-    ...(inverse ? { inverse } : {})
+    inverse
   };
   return f;
 }

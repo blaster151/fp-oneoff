@@ -7,7 +7,8 @@ export function Zn(n: number): FiniteGroup<number> {
     eq: (a, b) => a === b,
     op: (a, b) => (a + b) % n,
     id: 0,
-    inv: (a) => (n - a) % n
+    inv: (a) => (n - a) % n,
+    label: `Z${n}`
   };
 }
 

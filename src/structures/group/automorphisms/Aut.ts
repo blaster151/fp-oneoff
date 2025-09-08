@@ -31,7 +31,7 @@ function buildHomFromPerm<A>(G: FiniteGroup<A>, perm: number[]): GroupHom<A, A> 
     const j = dom.findIndex(d => G.eq(d, a));
     return idx(img, j, "element not found");
   };
-  return hom(G, G, map, () => true);
+  return hom(G, G, map, undefined, () => true);
 }
 
 function isHomomorphism<A>(G: FiniteGroup<A>, h: GroupHom<A, A>): boolean {
