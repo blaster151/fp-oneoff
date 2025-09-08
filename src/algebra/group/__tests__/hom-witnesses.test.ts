@@ -42,10 +42,7 @@ describe("Group homomorphism witnesses (mono/epi/iso)", () => {
   });
 
   test("C2×C2 ≅ Klein four via identity; sanity check iso detection", () => {
-    console.log("C2xC2 elements:", C2xC2.elems);
-    console.log("C2xC2 operation test:", C2xC2.op([0,0], [1,1]));
     const id = hom(C2xC2, C2xC2, ([a,b]) => [a,b], "id");
-    console.log("C2xC2 witnesses:", id.witnesses);
     expect(id.witnesses?.isIso).toBe(true);
   });
 });

@@ -43,10 +43,7 @@ export function isHomomorphism<A,B>(f: GroupHom<A,B>): boolean {
   for (const a of G.elems) for (const b of G.elems) {
     const lhs = f.map(G.op(a,b));
     const rhs = H.op(f.map(a), f.map(b));
-    if (!eqH(lhs, rhs)) {
-      console.log(`Homomorphism check failed: f(${JSON.stringify(G.op(a,b))}) = ${JSON.stringify(lhs)} ≠ ${JSON.stringify(rhs)} = f(${JSON.stringify(a)}) * f(${JSON.stringify(b)})`);
-      return false;
-    }
+    if (!eqH(lhs, rhs)) return false;
   }
   // identity preserved automatically from law with a=id or b=id in finite groups
   return true;
@@ -115,11 +112,9 @@ export function analyzeHom<A,B>(f: GroupHom<A,B>): GroupHom<A,B> {
 
   // Enumerate all homs H->G
   const homsHG = allGroupHoms(H, G);
-  console.log(`Found ${homsHG.length} homomorphisms from H to G`);
   for (const g of homsHG) {
     const gofEqIdG = equalPointwise(G.elems, eqG, (x:A)=> g.map(f.map(x)), (x:A)=> x);
     const fogEqIdH = equalPointwise(H.elems, eqH, (y:B)=> f.map(g.map(y as any)), (y:B)=> y);
-    console.log(`Hom ${g.name || 'unnamed'}: gofEqIdG=${gofEqIdG}, fogEqIdH=${fogEqIdH}`);
     if (gofEqIdG) leftInv = g;
     if (fogEqIdH) rightInv = g;
     if (gofEqIdG && fogEqIdH) { isIso = true; break; }
