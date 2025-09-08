@@ -1,5 +1,5 @@
 import { ZmodAdd } from "../examples";
-import { hom as groupHom } from "../../../structures/group/Hom.js";
+import { hom as groupHom } from "../Hom";
 import { analyzeGroupHom } from "../analyzeHom";
 
 describe("kernel of a group hom", () => {

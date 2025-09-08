@@ -7,6 +7,7 @@ export interface GroupHom<A, B> {
   f: (a: A) => B;
   verify?(): boolean;
   name?: string;
+  witnesses?: any; // Add witnesses property for compatibility
 }
 
 // Factory to build a well-typed homomorphism object.

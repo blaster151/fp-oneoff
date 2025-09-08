@@ -27,7 +27,9 @@ export function orderSpectrum(table: CayleyTable): Map<number, number> {
     
     // Keep multiplying by a until we get back to a (i.e., a^order = a)
     while (current !== a || order === 1) {
-      current = table[current][a];
+      const nextCurrent = table[current]?.[a];
+      if (nextCurrent === undefined) break; // Safety check for undefined access
+      current = nextCurrent;
       order++;
       if (order > n) break; // Safety check to avoid infinite loops
     }

@@ -2,7 +2,7 @@
  * A value-level witness that N ≤ G and N ⫳ G (normal).
  * We avoid enumerating elements; we carry what we need to check laws on demand.
  */
-import { Group } from "./Group";
+import { FiniteGroup } from "./Group";
 
 export interface Subgroup<G> {
   readonly carrier: (g: G) => boolean;   // membership predicate
@@ -14,7 +14,7 @@ export interface NormalSubgroup<G> extends Subgroup<G> {
   readonly conjClosed: (g: G, n: G) => boolean;
 }
 
-export function isNormal<G>(G: Group<G>, N: Subgroup<G>): NormalSubgroup<G> | null {
+export function isNormal<G>(G: FiniteGroup<G>, N: Subgroup<G>): NormalSubgroup<G> | null {
   const conjClosed = (g: G, n: G) => N.carrier(G.op(g, G.op(n, G.inv(g))));
   // Quick sanity: identity in N implies closed under conjugation of e is e
   // We don't prove the subgroup axioms here; callers should supply a Subgroup that already satisfies them.

@@ -1,10 +1,10 @@
 import { strict as A } from "assert";
 import { Eq } from "../../../types/eq.js";
-import { hom as groupHom } from "../../../structures/group/Hom.js";
+import { hom as groupHom } from "../Hom";
 import { analyzeGroupHom } from "../analyzeHom";
 import { ZmodAdd } from "../examples";
 
-const eqZ4: Eq<number> = { eq: (a,b)=> (a%4)===(b%4) };
+const eqZ4: Eq<number> = (a: number, b: number) => (a%4)===(b%4);
 
 describe("Factorization with Eq (Simple)", () => {
   it("image and kernel helpers work with existing infrastructure", () => {
@@ -28,7 +28,7 @@ describe("Factorization with Eq (Simple)", () => {
   });
 
   it("Eq abstraction works for equality checks", () => {
-    const eq = eqZ4.eq;
+    const eq = eqZ4;
     
     // Test that our Eq abstraction works
     A.ok(eq(0, 4));  // 0 ≡ 4 (mod 4)

@@ -1,4 +1,4 @@
-import { Group } from "./Group";
+import { FiniteGroup } from "./Group";
 import { Congruence } from "./Congruence";
 
 /** A quotient group G/≈. Cosets represented by a chosen representative. */
@@ -30,10 +30,12 @@ export function QuotientGroup<G>(C: Congruence<G>) {
   }
   const elems = Array.from(classes.values());
 
-  const Q: Group<Coset<G>> = {
+  const Q: FiniteGroup<Coset<G>> = {
     elems,
-    e, op, inv, eq: eqCoset,
-    show: (c) => `[${G.show ? G.show(c.rep) : String(c.rep)}]`
+    id: e,
+    op,
+    inv,
+    eq: eqCoset
   };
 
   return { Group: Q, norm, eqCoset };

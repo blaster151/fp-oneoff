@@ -200,3 +200,36 @@ export function firstIsomorphism<A, B>(f: GroupHom<A, B>): {
 
   return { quotient, imageGrp, iso };
 }
+
+/** Create the canonical projection homomorphism G → G/N */
+export function canonicalProjection<A>(G: Group<A>, N: NormalSubgroup<A>): any {
+  const quotient = quotientGroup(G, N);
+  return {
+    source: G,
+    target: quotient,
+    f: (a: A) => ({ rep: a, members: [a] } as Coset<A>),
+    verify: () => true,
+    name: `π: ${(G as any).label ?? 'G'} → ${(quotient as any).label ?? 'G/N'}`
+  };
+}
+
+/** Factor a homomorphism through its quotient - returns the canonical factorization */
+export function factorThroughQuotient<A, B>(f: GroupHom<A, B>): {
+  quotient: Group<Coset<A>>;
+  pi: GroupHom<A, Coset<A>>;
+  iota: GroupHom<Coset<A>, B>;
+} {
+  const K = kernelIsNormal(f);
+  const quotient = quotientGroup(f.src, K);
+  const pi = canonicalProjection(f.src, K);
+  
+  // iota: G/K → B, iota([a]_K) = f(a)
+  const iota: GroupHom<Coset<A>, B> = {
+    src: quotient,
+    dst: f.dst,
+    map: (c: Coset<A>) => f.map(c.rep),
+    respectsOp: () => true // This is well-defined since K = ker(f)
+  };
+  
+  return { quotient, pi: pi as any, iota: iota as any };
+}

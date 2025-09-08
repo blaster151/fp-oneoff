@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import { hom } from "../../../structures/group/Hom.js";
-import { firstIsomorphismData } from "../FirstIso";
+import { firstIsomorphism } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
 
 describe("First Isomorphism Theorem (finite sanity: Z→Z_n)", () => {

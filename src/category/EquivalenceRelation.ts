@@ -42,7 +42,9 @@ export function makeFiniteEquivalence<A>(
       // Check symmetry for all pairs
       for (let i = 0; i < testElements.length; i++) {
         for (let j = 0; j < testElements.length; j++) {
-          if (!base.symmetric(testElements[i], testElements[j])) return false;
+          const ei = testElements[i];
+          const ej = testElements[j];
+          if (ei !== undefined && ej !== undefined && !base.symmetric(ei, ej)) return false;
         }
       }
       
@@ -50,7 +52,10 @@ export function makeFiniteEquivalence<A>(
       for (let i = 0; i < testElements.length; i++) {
         for (let j = 0; j < testElements.length; j++) {
           for (let k = 0; k < testElements.length; k++) {
-            if (!base.transitive(testElements[i], testElements[j], testElements[k])) return false;
+            const ei = testElements[i];
+            const ej = testElements[j];
+            const ek = testElements[k];
+            if (ei !== undefined && ej !== undefined && ek !== undefined && !base.transitive(ei, ej, ek)) return false;
           }
         }
       }

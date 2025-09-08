@@ -92,9 +92,15 @@ export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
   const e = findCoset((G as any).e ?? (G as any).id);
   const inv = (c: Coset<A>) => findCoset(G.inv(c.rep));
 
-  return {
-    name: `${G.name ?? "G"}/${N.name ?? "N"}`,
+  const result: Group<Coset<A>> = {
     elems: cos,
-    op, e, inv, eq
+    eq,
+    op,
+    id: e,
+    inv
   };
+  if ((G as any).name || (N as any).name) {
+    (result as any).label = `${(G as any).name ?? "G"}/${(N as any).name ?? "N"}`;
+  }
+  return result;
 }

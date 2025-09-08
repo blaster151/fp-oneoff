@@ -16,7 +16,7 @@ export interface ThirdIsoResult<A> {
 /** Third Isomorphism via θ : G/K → G/N, θ([g]_K) = [g]_N and First Iso */
 export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Subgroup<A>): ThirdIsoResult<A> {
   // π_K : G → G/K
-  const piK = canonicalProjection(G, K_norm);
+  const piK = canonicalProjection(G as any, K_norm as any);
   const Q = piK.target; // G/K
 
   // N/K as a subgroup of G/K: elements are {[n]_K | n∈N}
@@ -25,10 +25,11 @@ export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Su
   // de-dupe
   const NK_unique: Coset<A>[] = [];
   for (const c of NK_elems) if (!NK_unique.some(d => eqQ(c,d))) NK_unique.push(c);
-  const NmodK: Subgroup<Coset<A>> = { name: `${N_norm.name ?? "N"}/${K_norm.name ?? "K"}`, elems: NK_unique, op: Q.op, e: Q.e, inv: Q.inv, eq: Q.eq };
+  const NmodK: Subgroup<Coset<A>> = { elems: NK_unique, op: Q.op, id: (Q as any).e ?? (Q as any).id, inv: Q.inv, eq: Q.eq };
+  (NmodK as any).label = `${(N_norm as any).label ?? "N"}/${(K_norm as any).label ?? "K"}`;
 
   // π_N : G → G/N
-  const piN = canonicalProjection(G, N_norm);
+  const piN = canonicalProjection(G as any, N_norm as any);
   const GmodN = piN.target;
 
   // θ : G/K → G/N, θ([g]_K) = [g]_N. Implement by picking a representative.

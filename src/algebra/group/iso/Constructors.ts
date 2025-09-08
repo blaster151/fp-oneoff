@@ -1,8 +1,9 @@
-import type { Group, GroupHom, GroupIso } from "../Group";
+import type { FiniteGroup } from "../Group";
+import type { GroupHom, GroupIso } from "../structures";
 
 // Build a GroupHom, caller promises it's a homomorphism (tests can verify)
-export function hom<A, B>(source: Group<A>, target: Group<B>, f: (a: A) => B): GroupHom<A, B> {
-  return { source, target, map: f };
+export function hom<A, B>(source: FiniteGroup<A>, target: FiniteGroup<B>, f: (a: A) => B): GroupHom<A, B> {
+  return { source, target, f };
 }
 
 // Build a GroupIso with witness predicates.

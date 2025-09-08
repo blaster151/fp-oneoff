@@ -11,9 +11,9 @@ import { GroupHom } from "./Hom";
 export interface ImageSubgroup<A, B> {
   readonly source: FiniteGroup<A>;
   readonly target: FiniteGroup<B>;
-  readonly homomorphism: GroupHom<A, B>;
+  readonly homomorphism: GroupHom<unknown, unknown, A, B>;
   readonly image: FiniteGroup<B>;
-  readonly inclusion: GroupHom<B, B>; // inclusion map from image to target
+  readonly inclusion: GroupHom<unknown, unknown, B, B>; // inclusion map from image to target
 }
 
 /**
@@ -22,14 +22,14 @@ export interface ImageSubgroup<A, B> {
  * The image subgroup consists of all elements in the codomain that are
  * mapped to by some element in the domain.
  */
-export function imageSubgroup<A, B>(f: GroupHom<A, B>): ImageSubgroup<A, B> {
+export function imageSubgroup<A, B>(f: GroupHom<unknown, unknown, A, B>): ImageSubgroup<A, B> {
   const G = f.source;
   const H = f.target;
   const eqH = eqOf(H);
   
   // Compute the image: f[G] = {f(x) | x ∈ G}
   const imageElements: B[] = [];
-  for (const x of G.elems) {
+  for (const x of G.elems as ReadonlyArray<A>) {
     const y = f.map(x);
     // Avoid duplicates using the target group's equality
     if (!imageElements.some(z => eqH(z, y))) {
@@ -40,17 +40,17 @@ export function imageSubgroup<A, B>(f: GroupHom<A, B>): ImageSubgroup<A, B> {
   // Create the image subgroup with operations inherited from H
   const imageGroup: FiniteGroup<B> = {
     elems: imageElements,
-    op: H.op,
-    id: H.id,
-    inv: H.inv,
-    eq: H.eq,
-    name: `Im(${f.name ?? 'f'})`
+    op: H.op as (a: B, b: B) => B,
+    id: H.id as B,
+    inv: H.inv as (a: B) => B
   };
+  if (H.eq) (imageGroup as any).eq = H.eq;
+  (imageGroup as any).name = `Im(${f.name ?? 'f'})`;
   
   // Create the inclusion homomorphism from image to target
-  const inclusion: GroupHom<B, B> = {
+  const inclusion: GroupHom<unknown, unknown, B, B> = {
     source: imageGroup,
-    target: H,
+    target: H as FiniteGroup<B>,
     map: (b: B) => b, // identity map
     name: `incl: Im(${f.name ?? 'f'}) → ${H.name ?? 'H'}`
   };
@@ -107,12 +107,12 @@ export function verifyImageSubgroup<A, B>(img: ImageSubgroup<A, B>): boolean {
 /**
  * Computes the size of the image subgroup.
  */
-export function imageSize<A, B>(f: GroupHom<A, B>): number {
+export function imageSize<A, B>(f: GroupHom<unknown, unknown, A, B>): number {
   const H = f.target;
   const eqH = eqOf(H);
   
   const imageElements: B[] = [];
-  for (const x of f.source.elems) {
+  for (const x of f.source.elems as ReadonlyArray<A>) {
     const y = f.map(x);
     if (!imageElements.some(z => eqH(z, y))) {
       imageElements.push(y);
@@ -125,14 +125,14 @@ export function imageSize<A, B>(f: GroupHom<A, B>): number {
 /**
  * Checks if a homomorphism is surjective by comparing image size to target size.
  */
-export function isSurjective<A, B>(f: GroupHom<A, B>): boolean {
+export function isSurjective<A, B>(f: GroupHom<unknown, unknown, A, B>): boolean {
   return imageSize(f) === f.target.elems.length;
 }
 
 /**
  * Creates a surjective homomorphism by restricting the codomain to the image.
  */
-export function makeSurjective<A, B>(f: GroupHom<A, B>): GroupHom<A, B> {
+export function makeSurjective<A, B>(f: GroupHom<unknown, unknown, A, B>): GroupHom<unknown, unknown, A, B> {
   const img = imageSubgroup(f);
   return {
     source: f.source,

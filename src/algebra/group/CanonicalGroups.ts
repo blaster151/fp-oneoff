@@ -7,9 +7,10 @@ import { Group } from "./structures";
 
 // Klein four-group (V₄) - the unique non-cyclic group of order 4
 export const KleinFour: Group<string> = {
-  name: "Klein Four-Group",
+  label: "Klein Four-Group",
   elems: ["e", "a", "b", "c"],
-  op: (x, y) => {
+  eq: (x: string, y: string) => x === y,
+  op: (x: string, y: string) => {
     if (x === "e") return y;
     if (y === "e") return x;
     if (x === y) return "e"; // a² = b² = c² = e
@@ -19,10 +20,8 @@ export const KleinFour: Group<string> = {
     if ((x === "b" && y === "c") || (x === "c" && y === "b")) return "a";
     return "e"; // fallback
   },
-  e: "e",
-  inv: (x) => x, // all elements are self-inverse
-  eq: (a, b) => a === b,
-  show: (x) => x
+  id: "e",
+  inv: (x: string) => x // all elements are self-inverse
 };
 
 // Cyclic group Cₙ (standard form)
@@ -32,13 +31,12 @@ export function CyclicCanonical(n: number): Group<number> {
   }
   
   return {
-    name: `C${n}`,
+    label: `C${n}`,
     elems: Array.from({ length: n }, (_, i) => i),
-    op: (a, b) => (a + b) % n,
-    e: 0,
-    inv: (a) => (n - (a % n)) % n,
-    eq: (a, b) => a === b,
-    show: (x) => `${x} (mod ${n})`
+    op: (a: number, b: number) => (a + b) % n,
+    id: 0,
+    inv: (a: number) => (n - (a % n)) % n,
+    eq: (a: number, b: number) => a === b
   };
 }
 
@@ -59,9 +57,9 @@ export function DihedralCanonical(n: number): Group<string> {
   }
   
   return {
-    name: `D${n}`,
+    label: `D${n}`,
     elems,
-    op: (x, y) => {
+    op: (x: string, y: string) => {
       // Parse elements
       const xIsReflection = x.startsWith('s');
       const yIsReflection = y.startsWith('s');
@@ -88,8 +86,8 @@ export function DihedralCanonical(n: number): Group<string> {
         return `r${(i - j + n) % n}`;
       }
     },
-    e: "r0",
-    inv: (x) => {
+    id: "r0",
+    inv: (x: string) => {
       if (x.startsWith('s')) {
         return x; // reflections are self-inverse
       } else {
@@ -97,8 +95,7 @@ export function DihedralCanonical(n: number): Group<string> {
         return `r${(n - i) % n}`;
       }
     },
-    eq: (a, b) => a === b,
-    show: (x) => x
+    eq: (a: string, b: string) => a === b
   };
 }
 
