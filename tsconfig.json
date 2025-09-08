@@ -17,5 +17,5 @@
     "types": ["vitest/globals", "vitest", "node"]
   },
   "include": ["src/**/*.ts", "**/*.test.ts", "vitest.config.*"],
-  "exclude": ["src/examples/**", "src/algebra/**", "dist/**", "node_modules/**"]
+  "exclude": ["src/examples/**", "dist/**", "node_modules/**"]
 }
