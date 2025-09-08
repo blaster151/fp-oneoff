@@ -14,6 +14,6 @@ export function kernelNormalSubgroup<G,H>(
     op: G.op,
     id: G.id,
     inv: G.inv,
-    name: `ker(${hom.name || 'f'})`
+    name: `ker(${(hom as any).label || 'f'})`
   };
 }

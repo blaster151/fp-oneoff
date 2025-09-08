@@ -33,7 +33,7 @@ export function compose<A,B,C>(g: GroupHom<unknown,unknown,B,C>, f: GroupHom<unk
     source: f.source,
     target: g.target,
     map: (a: A) => g.map(f.map(a)),
-    name: g.name ? (f.name ? `${g.name} ∘ ${f.name}` : `${g.name}∘f`) : (f.name ? `g∘${f.name}` : 'g∘f')
+    name: (g as any).label ? ((f as any).label ? `${(g as any).label} ∘ ${(f as any).label}` : `${(g as any).label}∘f`) : ((f as any).label ? `g∘${(f as any).label}` : 'g∘f')
   };
 }
 
@@ -159,7 +159,7 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
         if (eq) {
           // if f∘g = f∘h but g ≠ h then NOT mono
           const same = equalPointwise(J.elems, eqG, g.map as any, h.map as any);
-          if (!same) { isMono = false; monoCounterexample = { j: J.name ?? `C${n}`, g: g as any, h: h as any }; break outerMono; }
+          if (!same) { isMono = false; monoCounterexample = { j: (J as any).label ?? `C${n}`, g: g as any, h: h as any }; break outerMono; }
         }
       }
     }
@@ -183,7 +183,7 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
         const eq = equalPointwise(G.elems, eqOf(K), gof.map as any, hof.map as any);
         if (eq) {
           const same = equalPointwise(H.elems, eqOf(K), g.map as any, h.map as any);
-          if (!same) { isEpi = false; epiCounterexample = { j: K.name ?? `C${n}`, g: g as any, h: h as any }; break outerEpi; }
+          if (!same) { isEpi = false; epiCounterexample = { j: (K as any).label ?? `C${n}`, g: g as any, h: h as any }; break outerEpi; }
         }
       }
     }

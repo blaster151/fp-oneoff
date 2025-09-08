@@ -28,7 +28,7 @@ export function analyzeGroupHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom
     if (!imageElems.some(x => eqH(x,h))) imageElems.push(h);
   }
   const imageSubgroup: Subgroup<B> = {
-    name: f.name ? `im(${f.name})` : "im(f)",
+    name: (f as any).label ? `im(${(f as any).label})` : "im(f)",
     elems: imageElems,
     op: H.op, id: (H as any).e ?? (H as any).id, inv: H.inv, eq: H.eq,
   };
@@ -38,7 +38,7 @@ export function analyzeGroupHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom
     if (eqH(f.f(g), (H as any).e ?? (H as any).id)) kernelElems.push(g);
   }
   const kernelSubgroup: Subgroup<A> = {
-    name: f.name ? `ker(${f.name})` : "ker(f)",
+    name: (f as any).label ? `ker(${(f as any).label})` : "ker(f)",
     elems: kernelElems,
     op: G.op, id: (G as any).e ?? (G as any).id, inv: G.inv, eq: G.eq,
   };

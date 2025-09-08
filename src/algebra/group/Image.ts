@@ -20,6 +20,6 @@ export function imageSubgroup<G,H>(
     inv: HH.inv
   };
   if (HH.eq) (result as any).eq = HH.eq;
-  (result as any).name = `im(${hom.name || 'f'})`;
+  (result as any).name = `im(${(hom as any).label || 'f'})`;
   return result;
 }
