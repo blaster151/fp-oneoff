@@ -35,12 +35,12 @@ export function productGroupTuples<A, B>(
 
 /** Projection π1: G × H → G */
 export function proj1<A, B>(G: FiniteGroup<A>, H: FiniteGroup<B>): GroupHom<[A, B], A> {
-  return hom(productGroupTuples(G, H), G, ([a, b]) => a, () => true);
+  return hom(productGroupTuples(G, H), G, ([a, b]) => a, undefined, () => true);
 }
 
 /** Projection π2: G × H → H */
 export function proj2<A, B>(G: FiniteGroup<A>, H: FiniteGroup<B>): GroupHom<[A, B], B> {
-  return hom(productGroupTuples(G, H), H, ([a, b]) => b, () => true);
+  return hom(productGroupTuples(G, H), H, ([a, b]) => b, undefined, () => true);
 }
 
 /** Pair into product: K → G × H given K → G and K → H */
@@ -55,6 +55,7 @@ export function pairIntoProduct<K, A, B>(
     K,
     productGroupTuples(G, H),
     (k) => [u.f(k), v.f(k)],
+    undefined,
     () => (u.verify?.() ?? true) && (v.verify?.() ?? true)
   );
 }

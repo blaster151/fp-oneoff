@@ -10,8 +10,8 @@ export function projections<A, B, O>(
   GH: FiniteGroup<O>
 ): { pi1: GroupHom<O, A>; pi2: GroupHom<O, B> } {
   return {
-    pi1: hom(GH, G, (o) => S.left(o), () => true),
-    pi2: hom(GH, H, (o) => S.right(o), () => true)
+    pi1: hom(GH, G, (o) => S.left(o), undefined, () => true),
+    pi2: hom(GH, H, (o) => S.right(o), undefined, () => true)
   };
 }
 
@@ -25,5 +25,5 @@ export function pairHom<K, A, B, O>(
   f: GroupHom<K, A>,
   g: GroupHom<K, B>
 ): GroupHom<K, O> {
-  return hom(K, GH, (k) => S.pair(f.f(k), g.f(k)), () => true);
+  return hom(K, GH, (k) => S.pair(f.f(k), g.f(k)), undefined, () => true);
 }

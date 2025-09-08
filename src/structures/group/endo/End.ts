@@ -45,8 +45,8 @@ export function endMonoid<A>(G: FiniteGroup<A>) {
   const eq = (f:GroupHom<A,A>, g:GroupHom<A,A>) =>
     G.elems.every(a => G.eq(f.f(a), g.f(a)));
   const op = (f:GroupHom<A,A>, g:GroupHom<A,A>) =>
-    hom(G, G, (a:A)=> g.f(f.f(a)), () => true);
-  const e = hom(G, G, (a:A)=>a, () => true);
+    hom(G, G, (a:A)=> g.f(f.f(a)), undefined, () => true);
+  const e = hom(G, G, (a:A)=>a, undefined, () => true);
   const inv = (_:GroupHom<A,A>) => { throw new Error("End(G) is a monoid (no inv in general)"); };
   return { elems, eq, op, e, inv };
 }

@@ -2,12 +2,12 @@ import { GroupHom, hom } from "../GrpCat";
 
 /** Identity homomorphism. */
 export function id<A>(Obj: GroupHom<A, A>["source"]): GroupHom<A, A> {
-  return hom(Obj, Obj, (a: A) => a, () => true);
+  return hom(Obj, Obj, (a: A) => a, undefined, () => true);
 }
 
 /** Composition g ∘ f. Types ensure target/source match. */
 export function compose<A, B, C>(f: GroupHom<A, B>, g: GroupHom<B, C>): GroupHom<A, C> {
-  return hom(f.source, g.target, (a: A) => g.f(f.f(a)), () => true);
+  return hom(f.source, g.target, (a: A) => g.f(f.f(a)), undefined, () => true);
 }
 
 // Back-compat alias (TODO deprecate and remove after callers are migrated)
