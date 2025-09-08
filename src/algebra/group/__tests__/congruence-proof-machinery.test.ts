@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { hom } from "../../../structures/group/Hom.js";
+import { hom } from "../Hom";
 import { isCongruence, congruenceFromHom } from "../Congruence";
 import { factorThroughQuotient } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";

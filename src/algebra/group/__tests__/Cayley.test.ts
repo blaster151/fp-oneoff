@@ -1,11 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { cayleyTable, isSameTableUpToRename } from "../Cayley";
-import { Z2, Z3, Z4 } from "../../../structures/group/util/FiniteGroups";
+import { ZmodAdd } from "../examples";
 import { mkFiniteGroup } from "../FiniteGroups";
 
 describe("Cayley Table Operations", () => {
   describe("cayleyTable", () => {
     it("should generate correct Cayley table for Z2", () => {
+      const Z2 = ZmodAdd(2);
       const table = cayleyTable(Z2);
       expect(table).toEqual([
         [0, 1],
@@ -14,6 +15,7 @@ describe("Cayley Table Operations", () => {
     });
 
     it("should generate correct Cayley table for Z3", () => {
+      const Z3 = ZmodAdd(3);
       const table = cayleyTable(Z3);
       expect(table).toEqual([
         [0, 1, 2],
@@ -23,6 +25,7 @@ describe("Cayley Table Operations", () => {
     });
 
     it("should generate correct Cayley table for Z4", () => {
+      const Z4 = ZmodAdd(4);
       const table = cayleyTable(Z4);
       expect(table).toEqual([
         [0, 1, 2, 3],
@@ -47,12 +50,18 @@ describe("Cayley Table Operations", () => {
 
   describe("isSameTableUpToRename", () => {
     it("should recognize identical groups as isomorphic", () => {
+      const Z2 = ZmodAdd(2);
+      const Z3 = ZmodAdd(3);
+      const Z4 = ZmodAdd(4);
       expect(isSameTableUpToRename(Z2, Z2)).toBe(true);
       expect(isSameTableUpToRename(Z3, Z3)).toBe(true);
       expect(isSameTableUpToRename(Z4, Z4)).toBe(true);
     });
 
     it("should recognize different sized groups as non-isomorphic", () => {
+      const Z2 = ZmodAdd(2);
+      const Z3 = ZmodAdd(3);
+      const Z4 = ZmodAdd(4);
       expect(isSameTableUpToRename(Z2, Z3)).toBe(false);
       expect(isSameTableUpToRename(Z3, Z4)).toBe(false);
       expect(isSameTableUpToRename(Z2, Z4)).toBe(false);
@@ -74,10 +83,12 @@ describe("Cayley Table Operations", () => {
         elems: ["zero", "one"]
       });
 
+      const Z2 = ZmodAdd(2);
       expect(isSameTableUpToRename(Z2, Z2_renamed)).toBe(true);
     });
 
     it("should recognize non-isomorphic groups of same size", () => {
+      const Z4 = ZmodAdd(4);
       // Create a different group of size 4 (not Z4)
       const K4 = mkFiniteGroup({
         eq: (x: number, y: number) => x === y,
@@ -112,6 +123,7 @@ describe("Cayley Table Operations", () => {
 
   describe("Mathematical Properties", () => {
     it("should verify Cayley table properties", () => {
+      const Z3 = ZmodAdd(3);
       const table = cayleyTable(Z3);
       
       // Identity property: first row and column should be the group elements
@@ -130,6 +142,7 @@ describe("Cayley Table Operations", () => {
       // This test shows how the Cayley table approach implements
       // the mathematical theorem: "same multiplication table ⇒ isomorphic"
       
+      const Z2 = ZmodAdd(2);
       const Z2_copy = mkFiniteGroup({
         eq: (x: number, y: number) => x === y,
         op: (x: number, y: number) => (x + y) % 2,

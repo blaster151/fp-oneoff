@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { hom } from "../../../structures/group/Hom.js";
+import { hom } from "../Hom";
 import { firstIsomorphism } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
 

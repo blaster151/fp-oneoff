@@ -1,5 +1,5 @@
 import { strict as A } from "assert";
-import { hom } from "../../../structures/group/Hom.js";
+import { hom } from "../Hom";
 import { imageSubgroup } from "../Image";
 import { kernelNormalSubgroup } from "../Kernel";
 import { modHom, Zmod } from "../examples/cyclic";

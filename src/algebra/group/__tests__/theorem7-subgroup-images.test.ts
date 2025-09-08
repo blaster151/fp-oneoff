@@ -1,6 +1,6 @@
 import { ZmodAdd } from "../examples";
 import { makeSubgroup } from "../SubgroupOps";
-import { inclusion as inclusionHom } from "../../../structures/group/Isomorphism.js";
+import { inclusion as inclusionHom } from "../Isomorphism";
 import { analyzeGroupHom } from "../analyzeHom";
 
 describe("Theorem 7: Subgroups as Images of Homomorphisms", () => {
