@@ -39,7 +39,7 @@ describe("GroupHom factorization through quotient (Smith §2.7 Thm 9)", () => {
     for (const a of Z8.elems) for (const b of Z8.elems) {
       const lhs = Q.op(pi(a), pi(b));
       const rhs = pi(Z8.op(a,b));
-      A.equal(Z8.show!(lhs.rep), Z8.show!(rhs.rep));
+      A.equal(String(lhs.rep), String(rhs.rep));
     }
 
     // iota is a homomorphism
