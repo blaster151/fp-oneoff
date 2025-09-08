@@ -23,7 +23,7 @@ export function secondIsomorphism<A>(G: Group<A>, A_sub: Subgroup<A>, N_norm: Su
   const AN = makeSubgroup(G, AN_elems, `${(A_sub as any).label ?? "A"}${(N_norm as any).label ?? "N"}`);
 
   // π : G → G/N
-  const pi = canonicalProjection(G, N_norm);
+  const pi = canonicalProjection(G as any, N_norm as any);
   // i : A → G (inclusion)
   const i: GroupHom<A,A> = groupHom(A_sub, G, (a:A)=>a, "incl");
 

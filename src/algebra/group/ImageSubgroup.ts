@@ -125,14 +125,14 @@ export function imageSize<A, B>(f: GroupHom<unknown, unknown, A, B>): number {
 /**
  * Checks if a homomorphism is surjective by comparing image size to target size.
  */
-export function isSurjective<A, B>(f: GroupHom<A, B>): boolean {
+export function isSurjective<A, B>(f: GroupHom<unknown, unknown, A, B>): boolean {
   return imageSize(f) === f.target.elems.length;
 }
 
 /**
  * Creates a surjective homomorphism by restricting the codomain to the image.
  */
-export function makeSurjective<A, B>(f: GroupHom<A, B>): GroupHom<A, B> {
+export function makeSurjective<A, B>(f: GroupHom<unknown, unknown, A, B>): GroupHom<unknown, unknown, A, B> {
   const img = imageSubgroup(f);
   return {
     source: f.source,

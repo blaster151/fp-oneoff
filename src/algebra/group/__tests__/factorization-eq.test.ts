@@ -3,7 +3,7 @@ import { GroupHom } from "../GroupHom";
 import { Eq } from "../../../types/eq.js";
 import { modHom, Zmod } from "../examples/cyclic";
 
-const eqZ4: Eq<number> = { eq: (a,b)=> (a%4)===(b%4) };
+const eqZ4: Eq<number> = (a: number, b: number) => (a%4)===(b%4);
 
 describe("Factorization with Eq", () => {
   it("respects iota∘pi = f", () => {

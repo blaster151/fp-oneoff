@@ -16,7 +16,7 @@ export interface ThirdIsoResult<A> {
 /** Third Isomorphism via θ : G/K → G/N, θ([g]_K) = [g]_N and First Iso */
 export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Subgroup<A>): ThirdIsoResult<A> {
   // π_K : G → G/K
-  const piK = canonicalProjection(G, K_norm);
+  const piK = canonicalProjection(G as any, K_norm as any);
   const Q = piK.target; // G/K
 
   // N/K as a subgroup of G/K: elements are {[n]_K | n∈N}
@@ -29,7 +29,7 @@ export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Su
   (NmodK as any).label = `${(N_norm as any).label ?? "N"}/${(K_norm as any).label ?? "K"}`;
 
   // π_N : G → G/N
-  const piN = canonicalProjection(G, N_norm);
+  const piN = canonicalProjection(G as any, N_norm as any);
   const GmodN = piN.target;
 
   // θ : G/K → G/N, θ([g]_K) = [g]_N. Implement by picking a representative.

@@ -1,11 +1,11 @@
 import { strict as A } from "assert";
-import { EnhancedFiniteGroup } from "../EnhancedGroup";
-import { enhancedGroupHom } from "../EnhancedGroupHom";
+import { EnhancedGroup } from "../EnhancedGroup";
+import { EnhancedGroupHom } from "../EnhancedGroupHom";
 
 // Z8 under +
 const addMod = (n:number) => (a:number,b:number)=> (a+b)%n;
 const negMod = (n:number) => (a:number)=> (n - (a%n))%n;
-const Z8: EnhancedFiniteGroup<number> = {
+const Z8: EnhancedGroup<number> = {
   elems: Array.from({length:8}, (_,i)=>i),
   op: addMod(8),
   e: 0,
