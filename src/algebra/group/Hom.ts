@@ -71,6 +71,7 @@ export interface HomWitnesses<A,B> {
   
   // NEW: Image subgroup materialization
   imageSubgroup?: FiniteGroup<B>;
+  kernelSubgroup?: FiniteGroup<A>;
 }
 
 /** Compose homomorphisms (unchecked). */
@@ -251,12 +252,27 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
     name: f.name ? `im(${f.name})` : "im(f)"
   };
 
+  // Construct kernel subgroup
+  const kernelElems: A[] = [];
+  for (const g of G.elems) {
+    if (eqH(f.map(g), H.id)) kernelElems.push(g);
+  }
+  const kernelSubgroup: FiniteGroup<A> = {
+    elems: kernelElems,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: f.name ? `ker(${f.name})` : "ker(f)"
+  };
+
   const witnesses: HomWitnesses<A,B> = {
     isHom: hom,
     isMono,
     isEpi,
     isIso,
-    imageSubgroup
+    imageSubgroup,
+    kernelSubgroup
   };
   if (leftInv !== undefined) (witnesses as any).leftInverse = leftInv;
   if (rightInv !== undefined) (witnesses as any).rightInverse = rightInv;
