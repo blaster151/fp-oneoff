@@ -748,3 +748,64 @@ export function inclusionHom<A>(
     // - Should verify f(s⁻¹) = f(s)⁻¹ for all s ∈ S
   };
 }
+
+/**
+ * Theorem 8: Kernel of a Group Homomorphism is Normal
+ * 
+ * For any homomorphism f: G → H, the kernel ker(f) = {g ∈ G | f(g) = e_H} 
+ * is a normal subgroup of G.
+ * 
+ * This provides a canonical way to construct normal subgroups from any homomorphism,
+ * and bridges to the First Isomorphism Theorem.
+ */
+export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): import('./NormalSubgroup').NormalSubgroup<A> {
+  const G = f.source;
+  const H = f.target;
+  const eqH = eqOf(H);
+  
+  // Kernel predicate: { g ∈ G | f(g) = e_H }
+  const carrier = (g: A) => eqH(f.map(g), H.id);
+  
+  // TODO: Add runtime verification that f is actually a homomorphism
+  // - Should verify respectsOp, preservesId, preservesInv before trusting kernel
+  // - The mathematical proof assumes f is a homomorphism, but we should validate
+  
+  const include = (g: A) => g;
+  const N: import('./NormalSubgroup').Subgroup<A> = { carrier, include };
+  
+  // For kernels, normality follows abstractly from the homomorphism property
+  // The conjugation closure is computed via the predicate
+  const conjClosed = (g: A, n: A) => {
+    // g n g^{-1} ∈ ker f ⟺ f(g n g^{-1}) = e_H
+    // Since f is a homomorphism: f(g n g^{-1}) = f(g) f(n) f(g)^{-1}
+    // Since n ∈ ker f: f(n) = e_H, so f(g) e_H f(g)^{-1} = e_H
+    return carrier(G.op(g, G.op(n, G.inv(g))));
+  };
+  
+  return { ...N, conjClosed };
+}
+
+/**
+ * Image predicate for finite groups: { h ∈ H | ∃g ∈ G. f(g) = h }
+ * 
+ * For finite groups, we can enumerate all elements of G and check f(g) = h.
+ */
+export function imagePredicate<A, B>(
+  f: GroupHom<unknown, unknown, A, B>, 
+  G_elements?: A[]
+): (h: B) => boolean {
+  const H = f.target;
+  const eqH = eqOf(H);
+  
+  // If no elements provided, throw error (semi-decidable)
+  if (!G_elements) {
+    return (_h: B) => { 
+      throw new Error("imagePredicate requires G_elements for finite search strategy"); 
+    };
+  }
+  
+  // For finite G, enumerate all elements and check f(g) = h
+  return (h: B) => {
+    return G_elements.some(g => eqH(f.map(g), h));
+  };
+}

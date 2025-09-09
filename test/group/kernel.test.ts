@@ -1,14 +1,16 @@
 import { expect } from "vitest";
-import { GroupHom } from "../../src/algebra/group/GroupHom";
+import { kernel, imagePredicate, hom } from "../../src/algebra/group/Hom";
 import { modHom, Zmod } from "../../src/algebra/group/examples/cyclic";
 
 describe("Kernel of a group hom is a normal subgroup", () => {
   it("kernel(q_n : Z→Z_n) = nℤ and is normal", () => {
     const { Z, Zn, qn } = modHom(5);
-    const f = new GroupHom(Z, Zn, qn);
+    
+    // Create homomorphism using consolidated approach
+    const f = hom(Z, Zn, qn, "mod5");
 
     // Kernel predicate: multiples of 5
-    const ker = f.kernel();
+    const ker = kernel(f);
     const inKer = (k: number) => ker.carrier(k);
 
     expect(inKer(0)).toBe(true);
@@ -32,8 +34,10 @@ describe("Kernel of a group hom is a normal subgroup", () => {
 
   it("kernel(id_Zn) is {0} and normal", () => {
     const Zn = Zmod(7);
-    const id = new GroupHom(Zn, Zn, x => x);
-    const ker = id.kernel();
+    
+    // Create identity homomorphism using consolidated approach
+    const id = hom(Zn, Zn, x => x, "id");
+    const ker = kernel(id);
     for (let a = 0; a < 7; a++) {
       expect(ker.carrier(a)).toBe(a === 0);
     }
