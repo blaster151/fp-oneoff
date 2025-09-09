@@ -1,5 +1,7 @@
 import { EnhancedGroup } from "../../algebra/group/EnhancedGroup";
-import { EnhancedGroupHom, composeHom, idHom } from "../../algebra/group/EnhancedGroupHom";
+import { composeHom, idHom } from "../../algebra/group/Hom";
+import type { GroupHom } from "../../algebra/group/Hom";
+type EnhancedGroupHom<A, B> = GroupHom<unknown, unknown, A, B>;
 import { Category } from "../core/Category";
 
 // Objects are EnhancedGroup<A>; morphisms are EnhancedGroupHom<A,B>
@@ -14,12 +16,12 @@ export const GroupCategory: Category<GObj<any>, GMor<any, any>> = {
 
   // equality of morphisms for testing (extensional on all elems when available; fallback to sample)
   eqMor<A, B>(f: GMor<A, B>, g: GMor<A, B>): boolean {
-    const G = f.src;
+    const G = f.source;
     if (G.elems) {
-      return G.elems.every(a => f.dst.eq(f.run(a), g.run(a)));
+      return G.elems.every(a => f.target.eq(f.map(a), g.map(a)));
     }
     // coarse fallback: check identity + a few derived points
-    const samples: A[] = [G.e, G.inv(G.e)];
-    return samples.every(a => f.dst.eq(f.run(a), g.run(a)));
+    const samples: A[] = [G.id, G.inv(G.id)];
+    return samples.every(a => f.target.eq(f.map(a), g.map(a)));
   }
 };

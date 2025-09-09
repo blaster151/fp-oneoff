@@ -1,6 +1,14 @@
+/**
+ * @deprecated This simple GroupHom implementation is deprecated.
+ * Use the enhanced canonical implementation in ../../algebra/group/Hom.ts instead.
+ * 
+ * Migration: Replace `{ source, target, f, verify? }` with `createSimpleHom(source, target, map, { verify? })`
+ * from ../../algebra/group/Hom.ts
+ */
+
 import type { FiniteGroup } from "./Group";
 
-/** Group homomorphism */
+/** @deprecated Use GroupHom from ../../algebra/group/Hom.ts instead */
 export interface GroupHom<A, B> {
   source: FiniteGroup<A>;
   target: FiniteGroup<B>;

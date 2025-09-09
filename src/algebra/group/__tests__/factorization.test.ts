@@ -1,6 +1,6 @@
 import { strict as A } from "assert";
 import { EnhancedGroup } from "../EnhancedGroup";
-import { EnhancedGroupHom } from "../EnhancedGroupHom";
+import type { GroupHom as EnhancedGroupHom } from "../Hom";
 
 // Z8 under +
 const addMod = (n:number) => (a:number,b:number)=> (a+b)%n;

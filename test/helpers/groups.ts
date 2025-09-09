@@ -1,5 +1,6 @@
 import { EnhancedGroup } from "../../src/algebra/group/EnhancedGroup";
-import { EnhancedGroupHom, mkHom } from "../../src/algebra/group/EnhancedGroupHom";
+import { createEnhancedHom as mkHom } from "../../src/algebra/group/Hom";
+import type { GroupHom as EnhancedGroupHom } from "../../src/algebra/group/Hom";
 
 export function Zmod(n: number): EnhancedGroup<number> {
   const elems = Array.from({ length: n }, (_, i) => i);

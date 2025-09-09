@@ -3,7 +3,8 @@
 // and a homomorphism to its underlying function.
 
 import { EnhancedGroup } from "../../algebra/group/EnhancedGroup";
-import { EnhancedGroupHom } from "../../algebra/group/EnhancedGroupHom";
+import type { GroupHom } from "../../algebra/group/Hom";
+type EnhancedGroupHom<A, B> = GroupHom<unknown, unknown, A, B>;
 import { Functor } from "../core/Category";
 import { GroupCategory, GObj, GMor } from "./GroupCategory";
 import { SetCategory, SetObj, SetMor } from "./SetCategory";
@@ -20,5 +21,5 @@ export const U: ForgetfulGrpToSet = {
     // Convert to Set from elems if finite, otherwise create abstract set representation
     return G.elems ? new Set(G.elems) : new Set([G.e]); // fallback for infinite case
   },
-  onMor: <A,B>(f: EnhancedGroupHom<A,B>) => f.run        // underlying function
+  onMor: <A,B>(f: EnhancedGroupHom<A,B>) => f.map        // underlying function
 };

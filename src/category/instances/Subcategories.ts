@@ -1,6 +1,7 @@
 // Traceability: Smith §2.9(c–d) — trivial, finite, restricted categories of groups.
 import { EnhancedGroup } from "../../algebra/group/EnhancedGroup";
-import { EnhancedGroupHom, mkHom } from "../../algebra/group/EnhancedGroupHom";
+import { createEnhancedHom as mkHom } from "../../algebra/group/Hom";
+import type { GroupHom as EnhancedGroupHom } from "../../algebra/group/Hom";
 import { Category } from "../core/Category";
 import { GroupCategory } from "./GroupCategory";
 

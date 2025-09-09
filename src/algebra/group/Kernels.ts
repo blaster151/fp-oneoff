@@ -4,7 +4,8 @@
 // there exists unique u:K→ker(f) with i∘u = g.
 
 import { EnhancedGroup } from "./EnhancedGroup";
-import { EnhancedGroupHom, mkHom } from "./EnhancedGroupHom";
+import { createEnhancedHom as mkHom } from "./Hom";
+import type { GroupHom as EnhancedGroupHom } from "./Hom";
 
 export function kernel<A,B>(f: EnhancedGroupHom<A,B>): {
   K: EnhancedGroup<A>,

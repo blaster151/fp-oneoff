@@ -2,7 +2,8 @@
 // Trace: Smith §2.3 (pairing), §2.9 (category framing).
 
 import { EnhancedGroup } from "./EnhancedGroup";
-import { EnhancedGroupHom, mkHom } from "./EnhancedGroupHom";
+import { createEnhancedHom as mkHom } from "./Hom";
+import type { GroupHom as EnhancedGroupHom } from "./Hom";
 
 export function product<A,B>(G: EnhancedGroup<A>, H: EnhancedGroup<B>): {
   P: EnhancedGroup<[A,B]>,
