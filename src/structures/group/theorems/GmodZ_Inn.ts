@@ -4,7 +4,15 @@ import { isIsomorphism } from "../Isomorphism";
 import { center } from "../center/Center";
 import { quotientGroup } from "../builders/Quotient";
 import { conjugation } from "../automorphisms/Conjugation";
+import { secondIsomorphismTheorem, thirdIsomorphismTheorem } from "../../../algebra/group/Hom";
 
+/**
+ * Theorem: G/Z(G) ≅ Inn(G) where Z(G) is the center and Inn(G) is the inner automorphism group.
+ * 
+ * This is a special case of the First Isomorphism Theorem applied to the conjugation action.
+ * The new Second and Third Isomorphism Theorems could be used to analyze subgroup relationships
+ * in the center and inner automorphism group structure.
+ */
 export function GmodZ_iso_Inn<A>(G: FiniteGroup<A>): {
   Z: FiniteGroup<A>;
   Q: FiniteGroup<{rep:A}>;
@@ -48,4 +56,43 @@ export function GmodZ_iso_Inn<A>(G: FiniteGroup<A>): {
   // isIsomorphism checks hom + bijection onto the subgroup of inner autos represented by tables.
   const isIso = isIsomorphism(Q, phi.target as any, phi.f);
   return { Z, Q, phi, isIso: isIso !== null };
+}
+
+/**
+ * Helper function demonstrating how the new Second and Third Isomorphism Theorems
+ * could be used to analyze the center and inner automorphism group structure.
+ * 
+ * This is a conceptual example showing how the new isomorphism theorems could
+ * be applied to analyze subgroup relationships in the context of G/Z(G) ≅ Inn(G).
+ */
+export function analyzeCenterWithIsomorphismTheorems<A>(G: FiniteGroup<A>): {
+  center: FiniteGroup<A>;
+  secondIsoData?: any;
+  thirdIsoData?: any;
+} {
+  const Z = center(G);
+  
+  // Example: If we had a subgroup A and wanted to analyze A·Z vs A∩Z
+  // This would use the Second Isomorphism Theorem
+  const result: any = { center: Z };
+  
+  // For demonstration, let's show how we could use the Second Isomorphism Theorem
+  // if we had a specific subgroup A to analyze
+  if (G.elems.length <= 8) { // Only for small groups to avoid complexity
+    try {
+      // Example: analyze the relationship between a cyclic subgroup and the center
+      // This is just a demonstration - in practice you'd have specific subgroups
+      const cyclicSubgroup = [G.id]; // Trivial case for demonstration
+      const centerElements = Z.elems;
+      
+      if (cyclicSubgroup.length > 0 && centerElements.length > 0) {
+        const secondIso = secondIsomorphismTheorem(G, cyclicSubgroup, centerElements, "Center Analysis");
+        result.secondIsoData = secondIso.witnesses?.secondIsoData;
+      }
+    } catch (e) {
+      // Ignore errors in demonstration
+    }
+  }
+  
+  return result;
 }

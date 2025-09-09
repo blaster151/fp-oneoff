@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Zn, checkGroup } from "../Group";
 import { isNormal, quotientGroup, projToQuotient } from "../Quotient";
 import { hom } from "../GrpCat";
+import { secondIsomorphismTheorem, thirdIsomorphismTheorem } from "../../../algebra/group/Hom";
 
 describe("Quotient Z/≡8", () => {
   it("Z8 via quotient matches Zn(8)", () => {
@@ -54,5 +55,59 @@ describe("Z6 / ker(mod3) ≅ im(mod3)", () => {
       const sameCoset = Q.eq({rep:x},{rep:y});
       if (sameCoset) expect(Z3.eq(f.f(x), f.f(y))).toBe(true);
     }
+  });
+});
+
+describe("Second and Third Isomorphism Theorems on Z6", () => {
+  it("Second Isomorphism Theorem: A={0,2,4}, N={0,3}", () => {
+    const Z6 = Zn(6);
+    const A_elements = [0, 2, 4]; // subgroup of order 3
+    const N_elements = [0, 3];    // normal subgroup of order 2
+    
+    const secondIso = secondIsomorphismTheorem(Z6, A_elements, N_elements, "Z6 Second Iso");
+    
+    // Verify witness data
+    expect(secondIso.witnesses?.secondIsoData).toBeDefined();
+    const data = secondIso.witnesses!.secondIsoData!;
+    
+    // A·N should be all of Z6 (since gcd(2,3)=1)
+    expect(data.product.elems.sort()).toEqual([0, 1, 2, 3, 4, 5]);
+    
+    // A∩N should be {0} (trivial intersection)
+    expect(data.intersection.elems.sort()).toEqual([0]);
+    
+    // Verify subgroup properties
+    expect(data.subgroup.elems.sort()).toEqual([0, 2, 4]);
+    expect(data.normalSubgroup.elems.sort()).toEqual([0, 3]);
+  });
+
+  it("Third Isomorphism Theorem: K={0,3}, N={0,2,4} (invalid - K not subset of N)", () => {
+    const Z6 = Zn(6);
+    const K_elements = [0, 3];    // normal subgroup of order 2
+    const N_elements = [0, 2, 4]; // normal subgroup of order 3, but K not subset of N
+    
+    expect(() => thirdIsomorphismTheorem(Z6, K_elements, N_elements))
+      .toThrow("Third Isomorphism Theorem requires K ⊆ N");
+  });
+
+  it("Third Isomorphism Theorem: K={0}, N={0,3} (valid - K subset of N)", () => {
+    const Z6 = Zn(6);
+    const K_elements = [0];       // trivial normal subgroup
+    const N_elements = [0, 3];    // normal subgroup of order 2, K ⊆ N
+    
+    const thirdIso = thirdIsomorphismTheorem(Z6, K_elements, N_elements, "Z6 Third Iso");
+    
+    // Verify witness data
+    expect(thirdIso.witnesses?.thirdIsoData).toBeDefined();
+    const data = thirdIso.witnesses!.thirdIsoData!;
+    
+    // Verify subgroup properties
+    expect(data.innerNormal.elems.sort()).toEqual([0]);
+    expect(data.outerNormal.elems.sort()).toEqual([0, 3]);
+    
+    // Verify K ⊆ N
+    expect(data.innerNormal.elems.every(k => 
+      data.outerNormal.elems.some(n => Z6.eq(k, n))
+    )).toBe(true);
   });
 });
