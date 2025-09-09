@@ -31,6 +31,10 @@ export function analyzeCenterWithIsomorphismTheorems<A>(G: FiniteGroup<A>): {
   const hasNonTrivialCenter = centerSize > 1;
   
   // Check if we can apply isomorphism theorems (basic structural checks)
+  // TODO: These thresholds are heuristic and may need mathematical verification
+  // - Is 12 the right upper bound for Second Isomorphism Theorem applications?
+  // - Is 6 the right lower bound for Third Isomorphism Theorem applications?
+  // - Should we check for actual subgroup relationships rather than just size?
   const canApplySecondIso = groupSize <= 12 && centerSize > 1; // Small groups with non-trivial center
   const canApplyThirdIso = groupSize >= 6 && centerSize > 1; // Groups with potential nested normal subgroups
   

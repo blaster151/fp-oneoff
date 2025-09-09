@@ -717,3 +717,34 @@ export function thirdIsomorphismTheorem<T>(
   
   return thirdIso;
 }
+
+/**
+ * Theorem 7: Subgroups as Images of Homomorphisms
+ * 
+ * For any subgroup S ≤ H, there exists a homomorphism f: G → H whose image is exactly S.
+ * The proof is: take G = S, and let f be the inclusion S ↪ H.
+ * 
+ * This is the clean converse to Theorem 6 (which says every homomorphism image is a subgroup).
+ * Together, they give a bidirectional bridge: subgroups ↔ homomorphism images.
+ */
+export function inclusionHom<A>(
+  H: FiniteGroup<A>, 
+  S: FiniteGroup<A>, 
+  name?: string
+): GroupHom<unknown, unknown, A, A> {
+  // TODO: Add validation that S is actually a subgroup of H
+  // - Check that S.elems ⊆ H.elems
+  // - Verify that S.op, S.id, S.inv are compatible with H
+  // - This is a critical validation that needs to be implemented
+  
+  return {
+    name: name ?? `incl_${S.name ?? "S"}→${H.name ?? "H"}`,
+    source: S,
+    target: H,
+    map: (s: A) => s, // Inclusion map: s ↦ s
+    // TODO: Add proper witness data showing this is indeed a homomorphism
+    // - Should verify f(s₁ ∘ s₂) = f(s₁) ∘ f(s₂) for all s₁, s₂ ∈ S
+    // - Should verify f(e_S) = e_H
+    // - Should verify f(s⁻¹) = f(s)⁻¹ for all s ∈ S
+  };
+}

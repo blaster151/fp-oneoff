@@ -63,6 +63,10 @@ export function analyzeInnerAutomorphismsWithIsomorphismTheorems<A>(G: FiniteGro
   const hasNonTrivialInnerAutos = innerAutoSize > 1;
   
   // Check if we can apply isomorphism theorems (basic structural checks)
+  // TODO: These thresholds are heuristic and may need mathematical verification
+  // - Are these the right size bounds for inner automorphism analysis?
+  // - Should we check for actual normal subgroup relationships?
+  // - The relationship between inner automorphisms and center needs mathematical verification
   const canApplySecondIso = groupSize <= 12 && centerSize > 1; // Small groups with non-trivial center
   const canApplyThirdIso = groupSize >= 6 && centerSize > 1; // Groups with potential nested normal subgroups
   

@@ -126,6 +126,10 @@ export function analyzeAutomorphismGroupWithIsomorphismTheorems<A>(G: FiniteGrou
   const hasNonTrivialAutos = autSize > 1;
   
   // Check if we can apply isomorphism theorems (basic structural checks)
+  // TODO: These thresholds are heuristic and may need mathematical verification
+  // - Is 8 the right upper bound for automorphism group analysis?
+  // - The relationship between automorphism groups and center needs mathematical verification
+  // - Should we check for actual subgroup relationships rather than just size?
   const canApplySecondIso = groupSize <= 8 && centerSize > 1; // Small groups with non-trivial center
   const canApplyThirdIso = groupSize >= 6 && centerSize > 1; // Groups with potential nested normal subgroups
   
