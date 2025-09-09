@@ -1,5 +1,14 @@
+/**
+ * @deprecated This EnhancedGroupHom implementation is deprecated.
+ * Use the enhanced canonical implementation in ./Hom.ts instead.
+ * 
+ * Migration: Replace `mkHom(src, dst, run)` with `createEnhancedHom(src, dst, run)`
+ * from ./Hom.ts
+ */
+
 import { EnhancedGroup } from "./EnhancedGroup";
 
+/** @deprecated Use GroupHom from ./Hom.ts instead */
 export interface EnhancedGroupHom<A, B> {
   readonly src: EnhancedGroup<A>;
   readonly dst: EnhancedGroup<B>;

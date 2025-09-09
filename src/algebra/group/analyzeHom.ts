@@ -30,7 +30,7 @@ export function analyzeGroupHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom
   const imageSubgroup: Subgroup<B> = {
     name: (f as any).label ? `im(${(f as any).label})` : "im(f)",
     elems: imageElems,
-    op: H.op, id: (H as any).e ?? (H as any).id, inv: H.inv, eq: H.eq,
+    op: H.op, id: (H as any).e ?? (H as any).id, inv: H.inv, eq: H.eq ?? ((a: B, b: B) => a === b),
   };
 
   const kernelElems: A[] = [];
@@ -40,7 +40,7 @@ export function analyzeGroupHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom
   const kernelSubgroup: Subgroup<A> = {
     name: (f as any).label ? `ker(${(f as any).label})` : "ker(f)",
     elems: kernelElems,
-    op: G.op, id: (G as any).e ?? (G as any).id, inv: G.inv, eq: G.eq,
+    op: G.op, id: (G as any).e ?? (G as any).id, inv: G.inv, eq: G.eq ?? ((a: A, b: A) => a === b),
   };
 
   (f as any).witnesses = { preservesId, preservesInv, preservesOp, imageSubgroup, kernelSubgroup } as GroupHomWitnesses<A,B>;

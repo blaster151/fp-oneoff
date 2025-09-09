@@ -1,9 +1,17 @@
+/**
+ * @deprecated This class-based GroupHom implementation is deprecated.
+ * Use the enhanced canonical implementation in ./Hom.ts instead.
+ * 
+ * Migration: Replace `new GroupHom(G, H, map)` with `createClassHom(G, H, map)`
+ * from ./Hom.ts
+ */
+
 import { FiniteGroup } from "./Group";
 import { Subgroup, NormalSubgroup, isNormal } from "./NormalSubgroup";
 import { Eq } from "../../types/eq.js";
 import { QuotientGroup } from "./QuotientGroup";
 
-/** Group homomorphism witness with law checker. */
+/** @deprecated Use GroupHom from ./Hom.ts instead */
 export class GroupHom<G, H> {
   constructor(
     readonly G: FiniteGroup<G>,

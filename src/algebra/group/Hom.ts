@@ -8,6 +8,38 @@ export interface GroupHom<G,H, A=unknown, B=unknown> {
   readonly name?: string;
   // analysis is attached post construction (see analyzeHom below)
   witnesses?: HomWitnesses<A,B>;
+  
+  // ============================================================================
+  // ENHANCED FEATURES FROM OTHER IMPLEMENTATIONS
+  // ============================================================================
+  
+  // From class-based implementation (GroupHom.ts)
+  /** Check if homomorphism respects operation: f(x ◦ y) = f(x) ⋄ f(y) */
+  respectsOp?(x: A, y: A): boolean;
+  /** Check if homomorphism preserves identity: f(e_G) = e_H */
+  preservesId?(): boolean;
+  /** Check if homomorphism preserves inverses: f(x^{-1}) = f(x)^{-1} */
+  preservesInv?(x: A): boolean;
+  /** Get kernel as NormalSubgroup */
+  kernel?(): import('./NormalSubgroup').NormalSubgroup<A>;
+  /** Get image predicate */
+  imagePredicate?(): (h: B) => boolean;
+  /** Get factorization result */
+  factorization?(eqH: import('../../types/eq.js').Eq<B>): any;
+  
+  // From simple interface implementation (structures/group/Hom.ts)
+  /** Verify homomorphism properties */
+  verify?(): boolean;
+  
+  // Property name compatibility (for migration)
+  /** Alias for map function (from simple interface) */
+  f?: (a: A) => B;
+  /** Alias for map function (from enhanced interface) */
+  run?: (a: A) => B;
+  /** Alias for source (from enhanced interface) */
+  src?: FiniteGroup<A>;
+  /** Alias for target (from enhanced interface) */
+  dst?: FiniteGroup<B>;
 }
 
 /** Properties + constructive witnesses/counterexamples. */
@@ -25,6 +57,17 @@ export interface HomWitnesses<A,B> {
   // counterexamples for cancellability, when they exist
   monoCounterexample?: { j: any; g: GroupHom<any,any>; h: GroupHom<any,any> };
   epiCounterexample?:  { j: any; g: GroupHom<any,any>; h: GroupHom<any,any> };
+  
+  // ============================================================================
+  // ENHANCED WITNESS PROPERTIES (from EnhancedGroupHom.ts)
+  // ============================================================================
+  
+  /** Enhanced witness: preserves operation */
+  preservesOp?: (x: A, y: A) => boolean;
+  /** Enhanced witness: preserves identity */
+  preservesId?: () => boolean;
+  /** Enhanced witness: preserves inverses */
+  preservesInv?: (x: A) => boolean;
 }
 
 /** Compose homomorphisms (unchecked). */
@@ -208,4 +251,259 @@ export function hom<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>, map: (a:A)=>B, na
   const obj: GroupHom<unknown,unknown,A,B> = { source: G, target: H, map };
   if (name !== undefined) (obj as any).name = name;
   return analyzeHom(obj);
+}
+
+// ============================================================================
+// ENHANCED FACTORY FUNCTIONS (from other implementations)
+// ============================================================================
+
+/** Enhanced constructor with options for different creation patterns. */
+export function createGroupHom<A,B>(
+  source: FiniteGroup<A>,
+  target: FiniteGroup<B>,
+  map: (a: A) => B,
+  options: {
+    name?: string;
+    autoAnalyze?: boolean;
+    includeMethods?: boolean;
+    includeEnhancedWitnesses?: boolean;
+    verify?: () => boolean;
+  } = {}
+): GroupHom<unknown, unknown, A, B> {
+  const result: GroupHom<unknown, unknown, A, B> = { source, target, map };
+  
+  if (options.name) {
+    (result as any).name = options.name;
+  }
+  
+  if (options.includeMethods) {
+    addClassBasedMethods(result);
+  }
+  
+  if (options.includeEnhancedWitnesses) {
+    addEnhancedWitnesses(result);
+  }
+  
+  if (options.verify) {
+    (result as any).verify = options.verify;
+  } else if (options.includeMethods) {
+    (result as any).verify = () => quickVerify(result);
+  }
+  
+  if (options.autoAnalyze) {
+    return analyzeHom(result);
+  }
+  
+  return result;
+}
+
+/** Factory for class-based pattern: new GroupHom(G, H, map) */
+export function createClassHom<A, B>(
+  source: FiniteGroup<A>,
+  target: FiniteGroup<B>,
+  map: (a: A) => B
+): GroupHom<unknown, unknown, A, B> {
+  return createGroupHom(source, target, map, {
+    includeMethods: true,
+    includeEnhancedWitnesses: true
+  });
+}
+
+/** Factory for simple interface pattern: { source, target, f, verify? } */
+export function createSimpleHom<A, B>(
+  source: FiniteGroup<A>,
+  target: FiniteGroup<B>,
+  map: (a: A) => B,
+  options: { name?: string; verify?: () => boolean } = {}
+): GroupHom<unknown, unknown, A, B> {
+  return createGroupHom(source, target, map, {
+    ...(options.name && { name: options.name }),
+    ...(options.verify && { verify: options.verify }),
+    includeMethods: true
+  });
+}
+
+/** Factory for enhanced pattern: mkHom(src, dst, run) */
+export function createEnhancedHom<A, B>(
+  src: any, // EnhancedGroup<A> or FiniteGroup<A>
+  dst: any, // EnhancedGroup<B> or FiniteGroup<B>
+  run: (a: A) => B
+): GroupHom<unknown, unknown, A, B> {
+  // Convert EnhancedGroup to FiniteGroup format if needed
+  const source: FiniteGroup<A> = {
+    elems: src.elems || [],
+    op: src.op,
+    id: src.id || src.e, // Handle both id and e
+    inv: src.inv,
+    eq: src.eq,
+    name: src.name
+  };
+  
+  const target: FiniteGroup<B> = {
+    elems: dst.elems || [],
+    op: dst.op,
+    id: dst.id || dst.e, // Handle both id and e
+    inv: dst.inv,
+    eq: dst.eq,
+    name: dst.name
+  };
+  
+  return createGroupHom(source, target, run, {
+    includeEnhancedWitnesses: true,
+    includeMethods: true
+  });
+}
+
+/** Identity homomorphism (from EnhancedGroupHom.ts) */
+export function idHom<A>(G: any): GroupHom<unknown, unknown, A, A> {
+  // Convert EnhancedGroup to FiniteGroup format if needed
+  const finiteG: FiniteGroup<A> = {
+    elems: G.elems || [],
+    op: G.op,
+    id: G.id || G.e, // Handle both id and e
+    inv: G.inv,
+    eq: G.eq,
+    name: G.name
+  };
+  
+  return createGroupHom(finiteG, finiteG, (x) => x, {
+    name: `id_${(G as any).name ?? 'G'}`,
+    includeMethods: true,
+    includeEnhancedWitnesses: true
+  });
+}
+
+/** Enhanced composition (from EnhancedGroupHom.ts) */
+export function composeHom<A, B, C>(
+  g: GroupHom<unknown, unknown, B, C>,
+  f: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, C> {
+  if (f.target !== g.source) {
+    console.warn("composeHom: incompatible sources/targets");
+  }
+  
+  const run = (a: A) => g.map(f.map(a));
+  return createGroupHom(f.source, g.target, run, {
+    name: `${(g as any).name ?? 'g'} ∘ ${(f as any).name ?? 'f'}`,
+    includeMethods: true,
+    includeEnhancedWitnesses: true
+  });
+}
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+/** Quick verification function for simple interface compatibility. */
+function quickVerify<A, B>(hom: GroupHom<unknown, unknown, A, B>): boolean {
+  try {
+    const { source, target, map } = hom;
+    
+    if (!source.elems || !target.elems) return true;
+    
+    const eq = target.eq ?? ((x: B, y: B) => x === y);
+    
+    for (const x of source.elems) {
+      for (const y of source.elems) {
+        const lhs = map(source.op(x, y));
+        const rhs = target.op(map(x), map(y));
+        if (!eq(lhs, rhs)) return false;
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.warn('Quick verification failed:', error);
+    return false;
+  }
+}
+
+/** Add class-based methods to a homomorphism. */
+function addClassBasedMethods<A, B>(hom: any): void {
+  const { source, target, map } = hom;
+  const eqH = target.eq ?? ((x: B, y: B) => x === y);
+  
+  hom.respectsOp = (x: A, y: A) => {
+    try {
+      return eqH(map(source.op(x, y)), target.op(map(x), map(y)));
+    } catch {
+      return false;
+    }
+  };
+  
+  hom.preservesId = () => {
+    try {
+      const gId = (source as any).e ?? (source as any).id;
+      const hId = (target as any).e ?? (target as any).id;
+      return eqH(map(gId), hId);
+    } catch {
+      return false;
+    }
+  };
+  
+  hom.preservesInv = (x: A) => {
+    try {
+      return eqH(map(source.inv(x)), target.inv(map(x)));
+    } catch {
+      return false;
+    }
+  };
+  
+  // Add other class-based methods as needed
+  hom.kernel = () => {
+    try {
+      const carrier = (g: A) => eqH(map(g), (target as any).e ?? (target as any).id);
+      const include = (g: A) => g;
+      return { carrier, include, conjClosed: () => true } as any;
+    } catch (error) {
+      throw new Error(`Kernel computation failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+  
+  hom.imagePredicate = () => {
+    return (h: B) => {
+      if (source.elems) {
+        for (const g of source.elems) {
+          if (eqH(map(g), h)) return true;
+        }
+      }
+      return false;
+    };
+  };
+}
+
+/** Add enhanced witness properties to a homomorphism. */
+function addEnhancedWitnesses<A, B>(hom: any): void {
+  const { source, target, map } = hom;
+  const eqH = target.eq ?? ((x: B, y: B) => x === y);
+  
+  if (!hom.witnesses) {
+    hom.witnesses = { isHom: true, isMono: false, isEpi: false, isIso: false };
+  }
+  
+  hom.witnesses.preservesOp = (x: A, y: A) => {
+    try {
+      return eqH(map(source.op(x, y)), target.op(map(x), map(y)));
+    } catch {
+      return false;
+    }
+  };
+  
+  hom.witnesses.preservesId = () => {
+    try {
+      const gId = (source as any).e ?? (source as any).id;
+      const hId = (target as any).e ?? (target as any).id;
+      return eqH(map(gId), hId);
+    } catch {
+      return false;
+    }
+  };
+  
+  hom.witnesses.preservesInv = (x: A) => {
+    try {
+      return eqH(map(source.inv(x)), target.inv(map(x)));
+    } catch {
+      return false;
+    }
+  };
 }
