@@ -8,7 +8,7 @@ export function makeSubgroup<A>(G: Group<A>, elems: A[], name?: string): Subgrou
   const eq = G.eq ?? eqDefault;
   const uniq: A[] = [];
   for (const x of elems) if (!uniq.some(y => eq(x,y))) uniq.push(x);
-  const result: Subgroup<A> = { elems: uniq, op: G.op, id: (G as any).e ?? (G as any).id, inv: G.inv, eq: G.eq };
+  const result: Subgroup<A> = { elems: uniq, op: G.op, id: (G as any).e ?? (G as any).id, inv: G.inv, eq: G.eq ?? eqDefault };
   if (name) (result as any).label = name;
   return result;
 }

@@ -317,8 +317,8 @@ export function createSimpleHom<A, B>(
   options: { name?: string; verify?: () => boolean } = {}
 ): GroupHom<unknown, unknown, A, B> {
   return createGroupHom(source, target, map, {
-    name: options.name,
-    verify: options.verify,
+    ...(options.name && { name: options.name }),
+    ...(options.verify && { verify: options.verify }),
     includeMethods: true
   });
 }
