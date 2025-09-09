@@ -1,5 +1,6 @@
 import { Group } from "./structures";
 import { Eq } from "../../types/eq.js";
+import { eqOf } from "./Group";
 
 /** A congruence ≈ on a group G: an equivalence relation compatible with op. */
 export interface Congruence<G> {
@@ -13,7 +14,7 @@ export interface Congruence<G> {
 export function congruenceFromHom<G, H>(
   G: Group<G>, H: Group<H>, f: (g: G) => H
 ): Congruence<G> {
-  const eqH = H.eq;
+  const eqH = eqOf(H);
   const eqv: Eq<G> = (x, y) => eqH(f(x), f(y));
   const comp = (x: G, x1: G, y: G, y1: G) => {
     return eqH(f(G.op(x, y)), f(G.op(x1, y1)));

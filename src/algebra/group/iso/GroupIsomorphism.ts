@@ -1,4 +1,4 @@
-import { GroupHom } from "../GroupHom";
+import { GroupHom } from "../Hom";
 import { FiniteGroup } from "../Group";
 import { isoLaws } from "../../../laws/Witness";
 
@@ -8,7 +8,7 @@ import { isoLaws } from "../../../laws/Witness";
  * An isomorphism is a homomorphism with an inverse that satisfies
  * the round-trip laws: inverse(map(a)) === a and map(inverse(b)) === b
  */
-export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
+export class GroupIsomorphism<A, B> extends GroupHom<unknown, unknown, A, B> {
   constructor(
     G: FiniteGroup<A>,
     H: FiniteGroup<B>,
@@ -28,7 +28,7 @@ export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
     
     // For finite groups, check all elements
     if (G.elements) {
-      return G.elements.every(a => eqA(inverse(map(a)), a));
+      return G.elements.every((a: any) => eqA(inverse(map(a)), a));
     }
     
     // For infinite groups, this is a promise that the caller must verify
@@ -46,7 +46,7 @@ export class GroupIsomorphism<A, B> extends GroupHom<A, B> {
     
     // For finite groups, check all elements
     if (H.elements) {
-      return H.elements.every(b => eqB(map(inverse(b)), b));
+      return H.elements.every((b: any) => eqB(map(inverse(b)), b));
     }
     
     // For infinite groups, this is a promise that the caller must verify

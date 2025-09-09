@@ -22,7 +22,7 @@ const C2: Group<number> = {
 const mod2: GroupHom<number, number> = {
   src: C4,
   dst: C2,
-  map: (a) => a % 2,
+  map: (a: any) => a % 2,
   respectsOp: () => C4.elements!.every(x =>
     C4.elements!.every(y =>
       C2.eq(mod2.map(C4.op(x,y)), C2.op(mod2.map(x), mod2.map(y)))

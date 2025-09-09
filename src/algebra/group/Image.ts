@@ -1,12 +1,12 @@
 import { FiniteGroup } from "./Group";
-import { GroupHom } from "./structures";
+import { GroupHom } from "./Hom";
 
 /** The subgroup im(f) ⊆ H as an induced finite group. */
 export function imageSubgroup<G,H>(
-  hom: GroupHom<G,H>,
+  hom: GroupHom<unknown,unknown,G,H>,
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<H> {
-  const { source: G, target: HH, f } = hom;
+  const { source: G, target: HH, map: f } = hom;
   if (!G || !G.elems) throw new Error("Source group missing or invalid");
   const elems: H[] = [];
   for (const g of G.elems) {
@@ -20,6 +20,6 @@ export function imageSubgroup<G,H>(
     inv: HH.inv
   };
   if (HH.eq) (result as any).eq = HH.eq;
-  (result as any).name = `im(${hom.name || 'f'})`;
+  (result as any).name = `im(${(hom as any).label || 'f'})`;
   return result;
 }

@@ -10,7 +10,7 @@ const Z8: EnhancedGroup<number> = {
   op: addMod(8),
   e: 0,
   inv: negMod(8),
-  show: x => `${x} (mod 8)`
+  show: (x: any) => `${x} (mod 8)`
 };
 
 // f: Z8 → Z4 by reduction mod 4
@@ -19,7 +19,7 @@ const Z4: EnhancedFiniteGroup<number> = {
   op: addMod(4),
   e: 0,
   inv: negMod(4),
-  show: x => `${x} (mod 4)`
+  show: (x: any) => `${x} (mod 4)`
 };
 const mod4 = (x:number)=> x % 4;
 
@@ -29,6 +29,7 @@ describe("GroupHom factorization through quotient (Smith §2.7 Thm 9)", () => {
     const { quotient: Q, pi, iota, law_compose_equals_f } = f.factorization();
 
     // Witness: iota∘pi = f
+    if (Z8.elems === undefined) throw new Error("Z8.elems is undefined");
     for (const g of Z8.elems) A.ok(law_compose_equals_f(g));
 
     // Size checks: |Q| should equal size of image of f

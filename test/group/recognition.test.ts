@@ -11,12 +11,12 @@ const C3: Group<number> = {
 };
 const C3toC3_double: GroupHom<number,number> = {
   src: C3, dst: C3,
-  map: a => (2*a)%3,
+  map: (a: any) => (2*a)%3,
   respectsOp: () => true,
 };
 const C3toTrivial: GroupHom<number,number> = {
   src: C3, dst: { ...C3, elements: [0] },
-  map: _ => 0,
+  map: (_: any) => 0,
   respectsOp: () => true,
 };
 

@@ -1,5 +1,5 @@
 import { ZmodAdd } from "../examples";
-import { hom as groupHom } from "../../../structures/group/Hom.js";
+import { hom as groupHom } from "../Hom";
 import { analyzeGroupHom } from "../analyzeHom";
 import { firstIsomorphism } from "../FirstIso";
 import { quotientGroup } from "../Quotient";
@@ -41,7 +41,7 @@ describe("First Isomorphism Theorem (finite examples)", () => {
     // For every coset c, for all x in c.set, f(x) should equal f(c.rep)
     for (const coset of Q.elems) {
       for (const x of coset.set) {
-        expect(f.f(x)).toBe(f.f(coset.rep));
+        expect(f.map(x)).toBe(f.map(coset.rep));
       }
     }
   });

@@ -99,8 +99,8 @@ export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
     id: e,
     inv
   };
-  if ((G as any).name || (N as any).name) {
-    (result as any).label = `${(G as any).name ?? "G"}/${(N as any).name ?? "N"}`;
+  if ((G as any).label || (N as any).label) {
+    (result as any).label = `${(G as any).label ?? "G"}/${(N as any).label ?? "N"}`;
   }
   return result;
 }

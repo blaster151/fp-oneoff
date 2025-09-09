@@ -109,7 +109,9 @@ export function analyzeRingHom<A,B>(f: RingHom<A,B>): RingHom<A,B> {
   for (const J of probes) {
     const homsJR = allRingHoms(J, R);
     for (let i=0;i<homsJR.length;i++) for (let j=i+1;j<homsJR.length;j++) {
-      const g = homsJR[i], h = homsJR[j];
+      const g = homsJR[i];
+      const h = homsJR[j];
+      if (g === undefined || h === undefined) throw new Error("Array access out of bounds");
       const fog = (x:any)=> f.map(g.map(x));
       const foh = (x:any)=> f.map(h.map(x));
       if (equalPointwise(J.elems, eqS, fog, foh) && !equalPointwise(J.elems, eqR, g.map, h.map)) { isMono = false; break outerMono; }
@@ -122,7 +124,9 @@ export function analyzeRingHom<A,B>(f: RingHom<A,B>): RingHom<A,B> {
   for (const K of probes) {
     const homsSK = allRingHoms(S, K);
     for (let i=0;i<homsSK.length;i++) for (let j=i+1;j<homsSK.length;j++) {
-      const g = homsSK[i], h = homsSK[j];
+      const g = homsSK[i];
+      const h = homsSK[j];
+      if (g === undefined || h === undefined) throw new Error("Array access out of bounds");
       const gof = (x:any)=> g.map(f.map(x));
       const hof = (x:any)=> h.map(f.map(x));
       if (equalPointwise(R.elems, req(K), gof, hof) && !equalPointwise(S.elems, req(K), g.map, h.map)) { isEpi = false; break outerEpi; }

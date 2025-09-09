@@ -64,6 +64,6 @@ export function Product<A,B>(G: FiniteGroup<A>, H: FiniteGroup<B>): FiniteGroup<
       const [x2,y2] = pair2;
       return eqG(x1,x2) && eqH(y1,y2);
     },
-    name: `(${G.name ?? 'G'})×(${H.name ?? 'H'})`
+    name: `(${(G as any).label ?? 'G'})×(${(H as any).label ?? 'H'})`
   };
 }

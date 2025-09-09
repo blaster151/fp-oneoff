@@ -1,4 +1,5 @@
-import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
+import { Group, GroupIso, Subgroup } from "./structures";
+import { GroupHom } from "./Hom";
 import { canonicalProjection, firstIsomorphism } from "./FirstIso";
 import { analyzeGroupHom } from "./analyzeHom";
 import { quotientGroup, Coset, leftCoset } from "./Quotient";
@@ -33,7 +34,7 @@ export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Su
   const GmodN = piN.target;
 
   // θ : G/K → G/N, θ([g]_K) = [g]_N. Implement by picking a representative.
-  const theta: GroupHom<Coset<A>, Coset<A>> = {
+  const theta: GroupHom<unknown, unknown, Coset<A>, Coset<A>> = {
     name: "theta",
     source: Q,
     target: GmodN,

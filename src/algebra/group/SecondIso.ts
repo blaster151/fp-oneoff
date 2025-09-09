@@ -1,8 +1,9 @@
-import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
+import { Group, GroupIso, Subgroup } from "./structures";
+import { GroupHom } from "./Hom";
 import { canonicalProjection, firstIsomorphism } from "./FirstIso";
 import { analyzeGroupHom } from "./analyzeHom";
-import { hom as groupHom } from "../../structures/group/Hom.js";
-import { compose as composeHom } from "../../structures/group/GrpCat.js";
+import { hom as groupHom } from "./Hom";
+import { compose as composeHom } from "./Hom";
 import { productSet, intersectionSubgroup, makeSubgroup } from "./SubgroupOps";
 import { quotientGroup } from "./Quotient";
 
@@ -25,7 +26,7 @@ export function secondIsomorphism<A>(G: Group<A>, A_sub: Subgroup<A>, N_norm: Su
   // π : G → G/N
   const pi = canonicalProjection(G as any, N_norm as any);
   // i : A → G (inclusion)
-  const i: GroupHom<A,A> = groupHom(A_sub, G, (a:A)=>a, "incl");
+  const i: GroupHom<unknown,unknown,A,A> = groupHom(A_sub, G, (a:A)=>a, "incl");
 
   // ψ = π ∘ i : A → G/N
   const psi = analyzeGroupHom(composeHom(pi, i, "psi"));

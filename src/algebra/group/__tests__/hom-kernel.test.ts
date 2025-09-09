@@ -32,17 +32,17 @@ describe("kernel of a group hom", () => {
     for (const a of ker!.elems) {
       for (const b of ker!.elems) {
         const ab = ker!.op(a, b);
-        expect(ker!.elems.some(x => ker!.eq ? ker!.eq(x, ab) : x === ab)).toBe(true);
+        expect(ker!.elems.some((x: any) => ker!.eq ? ker!.eq(x, ab) : x === ab)).toBe(true);
       }
     }
     
     // Check identity is present (should be 0 for Z4)
-    expect(ker!.elems.some(x => ker!.eq ? ker!.eq(x, 0) : x === 0)).toBe(true);
+    expect(ker!.elems.some((x: any) => ker!.eq ? ker!.eq(x, 0) : x === 0)).toBe(true);
     
     // Check inverses are present
     for (const a of ker!.elems) {
       const invA = ker!.inv(a);
-      expect(ker!.elems.some(x => ker!.eq ? ker!.eq(x, invA) : x === invA)).toBe(true);
+      expect(ker!.elems.some((x: any) => ker!.eq ? ker!.eq(x, invA) : x === invA)).toBe(true);
     }
   });
 

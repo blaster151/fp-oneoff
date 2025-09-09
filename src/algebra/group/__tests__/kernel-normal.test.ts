@@ -1,14 +1,16 @@
 import { expect } from "vitest";
-import { GroupHom } from "../GroupHom";
+import { GroupHom } from "../Hom";
+import { kernelIsNormal } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
+import { hom } from "../Hom";
 
 describe("Kernel of a group hom is a normal subgroup", () => {
   it("kernel(q_n : Z→Z_n) = nℤ and is normal", () => {
     const { Z, Zn, qn } = modHom(5);
-    const f = new GroupHom(Z, Zn, qn);
+    const f = hom(Z, Zn, qn);
 
     // Kernel predicate: multiples of 5
-    const ker = f.kernel();
+    const ker = kernelIsNormal(f);
     const inKer = (k: number) => ker.carrier(k);
 
     expect(inKer(0)).toBe(true);

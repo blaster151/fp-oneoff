@@ -1,4 +1,5 @@
-import { Group, GroupHom } from "../FirstIso";
+import { GroupHom } from "../Hom";
+import { Group } from "../structures";
 
 /**
  * Finite pushout (demo): given mono-like inclusions f:H->G, g:H->K and a known finite ambient group U
@@ -8,23 +9,23 @@ import { Group, GroupHom } from "../FirstIso";
  * NOTE: This is a pragmatic finite constructor suitable for tests/demos, not a general free-product implementation.
  */
 export function pushoutFinite<H,G,K,U>(
-  f: GroupHom<H,G>,
-  g: GroupHom<H,K>,
-  embedG: GroupHom<G,U>,
-  embedK: GroupHom<K,U>
+  f: GroupHom<unknown,unknown,H,G>,
+  g: GroupHom<unknown,unknown,H,K>,
+  embedG: GroupHom<unknown,unknown,G,U>,
+  embedK: GroupHom<unknown,unknown,K,U>
 ): { P: Group<U>; inG: (x: G)=>U; inK: (y: K)=>U } {
-  const Ugrp = embedG.dst; // also embedK.dst
+  const Ugrp = embedG.target; // also embedK.target
   if (!Ugrp.elements) throw new Error("pushoutFinite: need finite ambient U.");
 
   // Generate the subgroup ⟨embedG(G) ∪ embedK(K)⟩ inside U
   const gens: U[] = [];
-  for (const x of f.src.elements ?? []) {
+  for (const x of f.source.elements ?? []) {
     gens.push(Ugrp.op(embedG.map(f.map(x as any as H) as any as G), Ugrp.e)); // f(h) in G ⊂ U
     gens.push(Ugrp.op(embedK.map(g.map(x as any as H) as any as K), Ugrp.e)); // g(h) in K ⊂ U
   }
   // Also include whole images of G, K as generators when finite:
-  for (const x of (embedG.src.elements ?? [])) gens.push(embedG.map(x));
-  for (const y of (embedK.src.elements ?? [])) gens.push(embedK.map(y));
+  for (const x of (embedG.source.elements ?? [])) gens.push(embedG.map(x));
+  for (const y of (embedK.source.elements ?? [])) gens.push(embedK.map(y));
 
   // Saturate subgroup under products/inverses until closure (finite BFS)
   const uniq: U[] = [];

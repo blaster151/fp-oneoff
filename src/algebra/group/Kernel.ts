@@ -1,12 +1,12 @@
 import { FiniteGroup } from "./Group";
-import { GroupHom } from "./structures";
+import { GroupHom } from "./Hom";
 
 /** The kernel ker(f) = { g ∈ G | f(g) = e_H }. */
 export function kernelNormalSubgroup<G,H>(
-  hom: GroupHom<G,H>,
+  hom: GroupHom<unknown,unknown,G,H>,
   eqH: (a:H,b:H)=>boolean
 ): FiniteGroup<G> {
-  const { source: G, target: HH, f } = hom;
+  const { source: G, target: HH, map: f } = hom;
   if (!G || !G.elems) throw new Error("Source group missing or invalid");
   const elems = G.elems.filter(g => eqH(f(g), HH.id));
   return {
@@ -14,6 +14,6 @@ export function kernelNormalSubgroup<G,H>(
     op: G.op,
     id: G.id,
     inv: G.inv,
-    name: `ker(${hom.name || 'f'})`
+    name: `ker(${(hom as any).label || 'f'})`
   };
 }

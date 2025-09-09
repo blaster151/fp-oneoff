@@ -1,8 +1,9 @@
 import { expect } from "vitest";
-import { hom } from "../../../structures/group/Hom.js";
+import { hom } from "../Hom";
 import { isCongruence, congruenceFromHom } from "../Congruence";
 import { factorThroughQuotient } from "../FirstIso";
 import { modHom, Zmod } from "../examples/cyclic";
+import { eqOf } from "../Group";
 
 describe("Theorem 9 Proof Machinery: Congruences and Factorization", () => {
   it("kernel-pair congruence from homomorphism satisfies all congruence properties", () => {
@@ -34,23 +35,23 @@ describe("Theorem 9 Proof Machinery: Congruences and Factorization", () => {
     // Test that π is surjective (every coset has a preimage)
     const testWindow = Array.from({ length: 9 }, (_, i) => i - 4);
     for (const g of testWindow) {
-      const coset = pi(g);
+      const coset = pi.map(g);
       // π(g) should be a valid coset
       expect(coset).toBeDefined();
       expect(coset.rep).toBe(g);
     }
     
     // Test that ι is well-defined (same coset gives same image)
-    const coset1 = pi(0);
-    const coset2 = pi(4); // 0 and 4 should be in same coset (both ≡ 0 mod 4)
-    expect(quotient.eq(coset1, coset2)).toBe(true);
-    expect(Zn.eq(iota(coset1), iota(coset2))).toBe(true);
+    const coset1 = pi.map(0);
+    const coset2 = pi.map(4); // 0 and 4 should be in same coset (both ≡ 0 mod 4)
+    expect(eqOf(quotient)(coset1, coset2)).toBe(true);
+    expect(eqOf(Zn)(iota.map(coset1), iota.map(coset2))).toBe(true);
     
     // Test composition: ι ∘ π = f
     for (const g of testWindow) {
-      const composed = iota(pi(g));
+      const composed = iota.map(pi.map(g));
       const direct = qn(g);
-      expect(Zn.eq(composed, direct)).toBe(true);
+      expect(eqOf(Zn)(composed, direct)).toBe(true);
     }
   });
 

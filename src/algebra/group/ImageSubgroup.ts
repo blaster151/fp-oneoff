@@ -45,14 +45,14 @@ export function imageSubgroup<A, B>(f: GroupHom<unknown, unknown, A, B>): ImageS
     inv: H.inv as (a: B) => B
   };
   if (H.eq) (imageGroup as any).eq = H.eq;
-  (imageGroup as any).name = `Im(${f.name ?? 'f'})`;
+  (imageGroup as any).name = `Im(${(f as any).label ?? 'f'})`;
   
   // Create the inclusion homomorphism from image to target
   const inclusion: GroupHom<unknown, unknown, B, B> = {
     source: imageGroup,
     target: H as FiniteGroup<B>,
     map: (b: B) => b, // identity map
-    name: `incl: Im(${f.name ?? 'f'}) → ${H.name ?? 'H'}`
+    name: `incl: Im(${(f as any).label ?? 'f'}) → ${(H as any).label ?? 'H'}`
   };
   
   return {
@@ -138,6 +138,6 @@ export function makeSurjective<A, B>(f: GroupHom<unknown, unknown, A, B>): Group
     source: f.source,
     target: img.image,
     map: f.map,
-    name: f.name ? `${f.name}_surj` : 'surj'
+    name: (f as any).label ? `${(f as any).label}_surj` : 'surj'
   };
 }
