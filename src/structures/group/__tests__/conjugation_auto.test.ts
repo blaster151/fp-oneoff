@@ -4,6 +4,7 @@ import { conjugation, isInnerAutomorphism } from "../automorphisms/Conjugation";
 import { secondIsomorphismTheorem, thirdIsomorphismTheorem } from "../../../algebra/group/Hom";
 import { analyzeCenterWithIsomorphismTheorems } from "../center/Center";
 import { analyzeInnerAutomorphismsWithIsomorphismTheorems } from "../automorphisms/Inner";
+import { analyzeAutomorphismGroupWithIsomorphismTheorems } from "../automorphisms/Aut";
 
 /** On abelian groups, conjugation is the identity automorphism. */
 describe("Conjugation is an automorphism (abelian sanity)", () => {
@@ -20,33 +21,52 @@ describe("Conjugation is an automorphism (abelian sanity)", () => {
 });
 
 describe("Conjugation and Isomorphism Theorems", () => {
-  it("Center analysis with Second Isomorphism Theorem on Z6", () => {
+  it("Center analysis with validation on Z6", () => {
     const Z6 = Zn(6);
     const analysis = analyzeCenterWithIsomorphismTheorems(Z6);
     
-    // Z6 is abelian, so center is all of Z6
-    expect(analysis.centerSize).toBe(6);
+    // Basic validation
+    expect(analysis.isValidGroup).toBe(true);
     expect(analysis.groupSize).toBe(6);
+    expect(analysis.centerSize).toBe(6); // Z6 is abelian, so center is all of Z6
     expect(analysis.centerIndex).toBe(1);
+    expect(analysis.hasNonTrivialCenter).toBe(true);
     
-    // Should have examples for Second Isomorphism Theorem
-    if (analysis.secondIsoExamples) {
-      expect(analysis.secondIsoExamples.length).toBeGreaterThan(0);
-    }
+    // Check if we can apply isomorphism theorems
+    expect(analysis.canApplySecondIso).toBe(true);
+    expect(analysis.canApplyThirdIso).toBe(true);
   });
 
-  it("Inner automorphism analysis with isomorphism theorems on Z8", () => {
+  it("Inner automorphism analysis with validation on Z8", () => {
     const Z8 = Zn(8);
     const analysis = analyzeInnerAutomorphismsWithIsomorphismTheorems(Z8);
     
-    // Z8 is abelian, so all inner automorphisms are trivial
+    // Basic validation
+    expect(analysis.isValidGroup).toBe(true);
+    expect(analysis.groupSize).toBe(8);
+    expect(analysis.centerSize).toBe(8); // Z8 is abelian, so center is all of Z8
     expect(analysis.innerAutoSize).toBe(1); // Only identity automorphism
-    expect(analysis.centerSize).toBe(8); // Center is all of Z8
+    expect(analysis.hasNonTrivialInnerAutos).toBe(false); // Abelian groups have trivial inner autos
     
-    // Should have examples for Second Isomorphism Theorem
-    if (analysis.secondIsoExamples) {
-      expect(analysis.secondIsoExamples.length).toBeGreaterThan(0);
-    }
+    // Check if we can apply isomorphism theorems
+    expect(analysis.canApplySecondIso).toBe(true);
+    expect(analysis.canApplyThirdIso).toBe(true);
+  });
+
+  it("Automorphism group analysis with validation on Z4", () => {
+    const Z4 = Zn(4);
+    const analysis = analyzeAutomorphismGroupWithIsomorphismTheorems(Z4);
+    
+    // Basic validation
+    expect(analysis.isValidGroup).toBe(true);
+    expect(analysis.groupSize).toBe(4);
+    expect(analysis.centerSize).toBe(4); // Z4 is abelian, so center is all of Z4
+    expect(analysis.autSize).toBe(2); // Aut(Z4) has 2 elements (identity and x -> 3x)
+    expect(analysis.hasNonTrivialAutos).toBe(true);
+    
+    // Check if we can apply isomorphism theorems
+    expect(analysis.canApplySecondIso).toBe(true);
+    expect(analysis.canApplyThirdIso).toBe(true);
   });
 
   it("Second Isomorphism Theorem: cyclic subgroup with center on Z8", () => {

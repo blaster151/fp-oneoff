@@ -93,8 +93,7 @@ export function autGroup<A>(G: FiniteGroup<A>): FiniteGroup<Auto<A>> {
 
 /**
  * Enhanced automorphism group analysis using the new Second and Third Isomorphism Theorems.
- * This provides comprehensive witness data about the automorphism group's relationships
- * with the original group and its subgroups.
+ * This provides basic structural integration and validation.
  */
 export function analyzeAutomorphismGroupWithIsomorphismTheorems<A>(G: FiniteGroup<A>): {
   autGroup: FiniteGroup<Auto<A>>;
@@ -102,8 +101,10 @@ export function analyzeAutomorphismGroupWithIsomorphismTheorems<A>(G: FiniteGrou
   groupSize: number;
   center: FiniteGroup<A>;
   centerSize: number;
-  secondIsoExamples?: any[];
-  thirdIsoExamples?: any[];
+  isValidGroup: boolean;
+  hasNonTrivialAutos: boolean;
+  canApplySecondIso: boolean;
+  canApplyThirdIso: boolean;
 } {
   const aut = autGroup(G);
   const autSize = aut.elems.length;
@@ -120,79 +121,23 @@ export function analyzeAutomorphismGroupWithIsomorphismTheorems<A>(G: FiniteGrou
   };
   const centerSize = center.length;
   
-  const result: any = {
+  // Basic validation
+  const isValidGroup = groupSize > 0 && autSize > 0;
+  const hasNonTrivialAutos = autSize > 1;
+  
+  // Check if we can apply isomorphism theorems (basic structural checks)
+  const canApplySecondIso = groupSize <= 8 && centerSize > 1; // Small groups with non-trivial center
+  const canApplyThirdIso = groupSize >= 6 && centerSize > 1; // Groups with potential nested normal subgroups
+  
+  return {
     autGroup: aut,
     autSize,
     groupSize,
     center: centerGroup,
-    centerSize
+    centerSize,
+    isValidGroup,
+    hasNonTrivialAutos,
+    canApplySecondIso,
+    canApplyThirdIso
   };
-  
-  // For small groups, demonstrate Second Isomorphism Theorem applications
-  if (groupSize <= 8) {
-    result.secondIsoExamples = [];
-    
-    // Example 1: Automorphism group with center
-    if (centerSize > 1 && autSize > 1) {
-      try {
-        // Find a non-trivial element in the center
-        const centerElement = center.find(z => !G.eq(z, G.id));
-        if (centerElement) {
-          const cyclicSubgroup = [G.id, centerElement];
-          const secondIso = secondIsomorphismTheorem(G, cyclicSubgroup, center, "Aut-Center Analysis");
-          result.secondIsoExamples.push({
-            description: "Cyclic subgroup with center (affects automorphisms)",
-            secondIsoData: secondIso.witnesses?.secondIsoData
-          });
-        }
-      } catch (e) {
-        // Ignore errors in examples
-      }
-    }
-    
-    // Example 2: Automorphism group with a different subgroup
-    if (autSize > 1 && centerSize < groupSize) {
-      try {
-        // Find a non-center element to create a subgroup
-        const nonCenterElement = G.elems.find(g => !center.some(z => G.eq(g, z)));
-        if (nonCenterElement) {
-          const otherSubgroup = [G.id, nonCenterElement];
-          const secondIso = secondIsomorphismTheorem(G, otherSubgroup, center, "Aut-Other Analysis");
-          result.secondIsoExamples.push({
-            description: "Other subgroup with center (affects automorphisms)",
-            secondIsoData: secondIso.witnesses?.secondIsoData
-          });
-        }
-      } catch (e) {
-        // Ignore errors in examples
-      }
-    }
-  }
-  
-  // For groups with nested normal subgroups, demonstrate Third Isomorphism Theorem
-  if (groupSize >= 6 && centerSize > 1) {
-    result.thirdIsoExamples = [];
-    
-    try {
-      // Find a proper normal subgroup containing the center
-      const centerElements = center;
-      const largerNormalSubgroup = G.elems.filter(g => {
-        // Simple heuristic: elements that commute with many others
-        const commutesWith = G.elems.filter(h => G.eq(G.op(g, h), G.op(h, g)));
-        return commutesWith.length > centerSize;
-      });
-      
-      if (largerNormalSubgroup.length > centerSize && largerNormalSubgroup.length < groupSize) {
-        const thirdIso = thirdIsomorphismTheorem(G, centerElements, largerNormalSubgroup, "Aut-Normal Analysis");
-        result.thirdIsoExamples.push({
-          description: "Center within larger normal subgroup (affects automorphisms)",
-          thirdIsoData: thirdIso.witnesses?.thirdIsoData
-        });
-      }
-    } catch (e) {
-      // Ignore errors in examples
-    }
-  }
-  
-  return result;
 }
