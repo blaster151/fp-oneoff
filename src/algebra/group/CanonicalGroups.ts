@@ -7,7 +7,7 @@ import { Group } from "./structures";
 
 // Klein four-group (V₄) - the unique non-cyclic group of order 4
 export const KleinFour: Group<string> = {
-  label: "Klein Four-Group",
+  name: "Klein Four-Group",
   elems: ["e", "a", "b", "c"],
   eq: (x: string, y: string) => x === y,
   op: (x: string, y: string) => {
@@ -31,7 +31,7 @@ export function CyclicCanonical(n: number): Group<number> {
   }
   
   return {
-    label: `C${n}`,
+    name: `C${n}`,
     elems: Array.from({ length: n }, (_, i) => i),
     op: (a: number, b: number) => (a + b) % n,
     id: 0,
@@ -57,7 +57,7 @@ export function DihedralCanonical(n: number): Group<string> {
   }
   
   return {
-    label: `D${n}`,
+    name: `D${n}`,
     elems,
     op: (x: string, y: string) => {
       // Parse elements
