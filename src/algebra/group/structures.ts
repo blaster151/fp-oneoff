@@ -4,7 +4,7 @@ export interface Group<A> {
   name?: string;
   elems: A[];
   op: (a: A, b: A) => A;
-  e: A;
+  id: A;
   inv: (a: A) => A;
   eq?: (a: A, b: A) => boolean;
 }

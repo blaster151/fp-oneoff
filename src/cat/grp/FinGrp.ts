@@ -1,7 +1,7 @@
 // src/cat/grp/FinGrp.ts
 export interface FinGroup<A> {
   carrier: A[];
-  e: A;
+  id: A;
   op: (a: A, b: A) => A;
   inv: (a: A) => A;
   eq: (a: A, b: A) => boolean;

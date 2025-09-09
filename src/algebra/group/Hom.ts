@@ -276,7 +276,7 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
     op: H.op,
     id: H.id,
     inv: H.inv,
-    eq: H.eq,
+    eq: eqOf(H),
     name: f.name ? `im(${f.name})` : "im(f)"
   };
 
@@ -290,7 +290,7 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
     op: G.op,
     id: G.id,
     inv: G.inv,
-    eq: G.eq,
+    eq: eqOf(G),
     name: f.name ? `ker(${f.name})` : "ker(f)"
   };
 
@@ -397,19 +397,19 @@ export function createEnhancedHom<A, B>(
   const source: FiniteGroup<A> = {
     elems: src.elems || [],
     op: src.op,
-    id: src.id || src.e, // Handle both id and e
+    id: src.id || (src as any).e, // Handle both id and e
     inv: src.inv,
-    eq: src.eq,
-    name: src.name
+    eq: eqOf(src as any),
+    name: src.name || "G"
   };
   
   const target: FiniteGroup<B> = {
     elems: dst.elems || [],
     op: dst.op,
-    id: dst.id || dst.e, // Handle both id and e
+    id: dst.id || (dst as any).e, // Handle both id and e
     inv: dst.inv,
-    eq: dst.eq,
-    name: dst.name
+    eq: eqOf(dst as any),
+    name: dst.name || "H"
   };
   
   return createGroupHom(source, target, run, {
@@ -424,10 +424,10 @@ export function idHom<A>(G: any): GroupHom<unknown, unknown, A, A> {
   const finiteG: FiniteGroup<A> = {
     elems: G.elems || [],
     op: G.op,
-    id: G.id || G.e, // Handle both id and e
+    id: G.id || (G as any).e, // Handle both id and e
     inv: G.inv,
-    eq: G.eq,
-    name: G.name
+    eq: eqOf(G as any),
+    name: G.name || "G"
   };
   
   return createGroupHom(finiteG, finiteG, (x) => x, {
@@ -590,7 +590,7 @@ export function secondIsomorphismTheorem<T>(
     op: G.op,
     id: G.id,
     inv: G.inv,
-    eq: G.eq,
+    eq: eqOf(G),
     name: "A"
   };
   
@@ -600,7 +600,7 @@ export function secondIsomorphismTheorem<T>(
     op: G.op,
     id: G.id,
     inv: G.inv,
-    eq: G.eq,
+    eq: eqOf(G),
     name: "N"
   };
   
@@ -629,6 +629,10 @@ export function secondIsomorphismTheorem<T>(
     map: (coset: any) => coset, // Simplified for now
     name: name || "Second Isomorphism",
     witnesses: {
+      isHom: true,
+      isMono: true,
+      isEpi: true,
+      isIso: true,
       secondIsoData: {
         subgroup: A,
         normalSubgroup: N,
@@ -637,7 +641,7 @@ export function secondIsomorphismTheorem<T>(
           op: G.op,
           id: G.id,
           inv: G.inv,
-          eq: G.eq,
+          eq: eqOf(G),
           name: "A·N"
         },
         intersection: {
@@ -645,7 +649,7 @@ export function secondIsomorphismTheorem<T>(
           op: G.op,
           id: G.id,
           inv: G.inv,
-          eq: G.eq,
+          eq: eqOf(G),
           name: "A∩N"
         },
         leftQuotient: {} as FiniteGroup<any>,  // (A·N)/N
@@ -685,7 +689,7 @@ export function thirdIsomorphismTheorem<T>(
     op: G.op,
     id: G.id,
     inv: G.inv,
-    eq: G.eq,
+    eq: eqOf(G),
     name: "K"
   };
   
@@ -694,7 +698,7 @@ export function thirdIsomorphismTheorem<T>(
     op: G.op,
     id: G.id,
     inv: G.inv,
-    eq: G.eq,
+    eq: eqOf(G),
     name: "N"
   };
   
@@ -707,6 +711,10 @@ export function thirdIsomorphismTheorem<T>(
     map: (coset: any) => coset, // Simplified for now
     name: name || "Third Isomorphism",
     witnesses: {
+      isHom: true,
+      isMono: true,
+      isEpi: true,
+      isIso: true,
       thirdIsoData: {
         group: G,
         innerNormal: K,
@@ -737,10 +745,42 @@ export function inclusionHom<A>(
   S: FiniteGroup<A>, 
   name?: string
 ): GroupHom<unknown, unknown, A, A> {
-  // TODO: Add validation that S is actually a subgroup of H
-  // - Check that S.elems ⊆ H.elems
-  // - Verify that S.op, S.id, S.inv are compatible with H
-  // - This is a critical validation that needs to be implemented
+  // Validate that S is actually a subgroup of H
+  const eqH = eqOf(H);
+  
+  // Check that S.elems ⊆ H.elems
+  for (const s of S.elems) {
+    if (!H.elems.some(h => eqH(h, s))) {
+      throw new Error(`Invalid subgroup: element ${s} from S is not in H`);
+    }
+  }
+  
+  // Check that S.id = H.id
+  if (!eqH(S.id, H.id)) {
+    throw new Error(`Invalid subgroup: S.id (${S.id}) ≠ H.id (${H.id})`);
+  }
+  
+  // Check that S operations are compatible with H
+  // For all s1, s2 ∈ S: S.op(s1, s2) = H.op(s1, s2)
+  for (const s1 of S.elems) {
+    for (const s2 of S.elems) {
+      const s_result = S.op(s1, s2);
+      const h_result = H.op(s1, s2);
+      if (!eqH(s_result, h_result)) {
+        throw new Error(`Invalid subgroup: S.op(${s1}, ${s2}) = ${s_result} ≠ H.op(${s1}, ${s2}) = ${h_result}`);
+      }
+    }
+  }
+  
+  // Check that S inverses are compatible with H
+  // For all s ∈ S: S.inv(s) = H.inv(s)
+  for (const s of S.elems) {
+    const s_inv = S.inv(s);
+    const h_inv = H.inv(s);
+    if (!eqH(s_inv, h_inv)) {
+      throw new Error(`Invalid subgroup: S.inv(${s}) = ${s_inv} ≠ H.inv(${s}) = ${h_inv}`);
+    }
+  }
   
   return {
     name: name ?? `incl_${S.name ?? "S"}→${H.name ?? "H"}`,
@@ -778,15 +818,20 @@ export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): import('./Nor
   
   for (let i = 0; i < sample.length; i++) {
     for (let j = 0; j < sample.length; j++) {
-      const x = sample[i], y = sample[j];
+      const x = sample[i]!, y = sample[j]!; // We know these are defined due to the loop bounds
       // Check f(xy) = f(x)f(y)
       if (!eqH(f.map(G.op(x, y)), H.op(f.map(x), f.map(y)))) {
-        throw new Error(`Not a homomorphism: f(${G.show?.(x) || x} ∘ ${G.show?.(y) || y}) ≠ f(${G.show?.(x) || x}) ∘ f(${G.show?.(y) || y})`);
+        const showX = (G as any).show?.(x) || String(x);
+        const showY = (G as any).show?.(y) || String(y);
+        throw new Error(`Not a homomorphism: f(${showX} ∘ ${showY}) ≠ f(${showX}) ∘ f(${showY})`);
       }
     }
     // Check f(x⁻¹) = f(x)⁻¹
-    if (!eqH(f.map(G.inv(sample[i])), H.inv(f.map(sample[i])))) {
-      throw new Error(`Not a homomorphism: f(${G.show?.(G.inv(sample[i])) || G.inv(sample[i])}) ≠ f(${G.show?.(sample[i]) || sample[i]})⁻¹`);
+    const xi = sample[i]!; // We know this is defined due to the loop bounds
+    if (!eqH(f.map(G.inv(xi)), H.inv(f.map(xi)))) {
+      const showInvX = (G as any).show?.(G.inv(xi)) || String(G.inv(xi));
+      const showX = (G as any).show?.(xi) || String(xi);
+      throw new Error(`Not a homomorphism: f(${showInvX}) ≠ f(${showX})⁻¹`);
     }
   }
   

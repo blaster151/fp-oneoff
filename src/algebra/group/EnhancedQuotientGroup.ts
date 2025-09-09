@@ -7,7 +7,7 @@ import { Equiv, EnhancedCongruence } from "./EnhancedCongruence";
 export interface EnhancedFiniteGroup<G> {
   readonly elems: readonly G[];
   readonly op: (a:G,b:G)=>G;
-  readonly e: G;
+  readonly id: G;
   readonly inv: (a:G)=>G;
   // Optional stringifier for nicer debugging
   show?: (a:G)=>string;
@@ -27,7 +27,7 @@ export function enhancedQuotientGroup<G>(
   G: EnhancedFiniteGroup<G>,
   cong: EnhancedCongruence<G>
 ): EnhancedQuotient<G> {
-  const { elems, op, e, inv } = G;
+  const { elems, op, id, inv } = G;
   const eq = cong.eq;
 
   // Partition elems into classes via simple union-find by scanning
@@ -60,7 +60,7 @@ export function enhancedQuotientGroup<G>(
 
   const qop = (a: Q, b: Q): Q => lift(op(a.rep, b.rep));
   const qinv = (a: Q): Q => lift(inv(a.rep));
-  const qe   = lift(e);
+  const qid   = lift(id);
 
   const qelems: Q[] = Array.from(new Set(reps)).map(rep => ({ rep }));
 
@@ -70,7 +70,7 @@ export function enhancedQuotientGroup<G>(
     Group: {
       elems: qelems,
       op: qop,
-      e: qe,
+      id: qid,
       inv: qinv,
       show: a => G.show ? `[${G.show(a.rep)}]` : `[?]`,
     }

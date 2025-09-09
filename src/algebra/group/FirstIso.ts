@@ -1,99 +1,76 @@
-import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
-import { Coset, quotientGroup, leftCoset, isNormal } from "./Quotient";
-
-function eqDefault<T>(a:T,b:T){ return Object.is(a,b); }
-
-// Helper: canonical projection π: G → G/N, g ↦ [g]
-export function canonicalProjection<A>(G: Group<A>, N: Subgroup<A>) : GroupHom<A, Coset<A>> {
-  const Q = quotientGroup(G, N); // assumes normal; caller should ensure
-  return {
-    name: "π",
-    source: G,
-    target: Q,
-    map: (g: A) => leftCoset(G, N, g)
-  };
-}
-
-export interface GroupHomWitnesses<A,B> {
-  preservesOp: boolean;
-  preservesId: boolean;
-  preservesInv: boolean;
-  imageSubgroup?: Subgroup<B>;
-  kernelSubgroup?: Subgroup<A>;
-}
-
-export interface AnalyzedHom<A,B> extends GroupHom<A,B> {
-  witnesses?: GroupHomWitnesses<A,B>;
-}
+import { Group, GroupHom } from "./structures";
+import { congruenceFromHom } from "./Congruence";
+import { QuotientGroup, Coset } from "./QuotientGroup";
 
 /**
- * First Isomorphism Theorem:
- * Given hom f: G→H with kernel K and image Im, build iso φ: G/K ≅ Im.
- *
- * Pre: f.witnesses populated with kernelSubgroup & imageSubgroup.
- *      (Use your existing analyzeGroupHom to compute them.)
+ * Given a hom f: G→H, build:
+ *  - the congruence ≈_f (x≈y ⇔ f(x)=f(y))
+ *  - the quotient group Q = G/≈_f
+ *  - the canonical hom Φ: Q → im(f) (as a subgroup predicate of H)
+ * For finite examples we verify Φ is an isomorphism by exhaustive check.
  */
-export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B> {
-  if (!f.witnesses?.kernelSubgroup || !f.witnesses?.imageSubgroup) {
-    throw new Error("firstIsomorphism: f must be analyzed to supply kernel and image.");
-  }
-  const G = f.source;
-  const H = f.target;
-  const K = f.witnesses.kernelSubgroup;
-  const Im = f.witnesses.imageSubgroup;
+export function firstIsomorphismData<G, H>(
+  F: GroupHom<G, H>
+) {
+  const { source: G, target: H, map: f } = F;
 
-  // Kernels are normal (mathematical fact); we can double-check computationally:
-  if (!isNormal(G, K)) {
-    throw new Error("Kernel is expected to be normal in G, but isNormal(G,ker f) returned false.");
-  }
+  // 1) congruence
+  const cong = congruenceFromHom(G, H, f);
 
-  // Domain: quotient G/K, codomain: Im ⊆ H
-  const Q = quotientGroup(G, K);
+  // 2) quotient
+  const Q = QuotientGroup(cong);
 
-  // φ([g]) = f(g). We'll implement it by using the representative.
-  const to: GroupHom<Coset<A>, B> = {
-    name: "φ",
-    source: Q,
-    target: Im,
-    map: (c: Coset<A>) => f.map(c.rep) // well-defined because c.rep differs by n∈K ⇒ f(c.rep n)=f(c.rep)
+  // 3) image predicate (extensible; for tests we pass finite carrier)
+  const inImage = (h: H, support: G[]): boolean =>
+    support.some(g => {
+      const eqH = H.eq ?? ((a: H, b: H) => a === b);
+      return eqH(f(g), h);
+    });
+
+  // 4) canonical hom Φ([g]) = f(g)
+  const phi = (c: Coset<G>) => f(c.rep);
+
+  // homomorphism laws hold by definition; we can provide a checker
+  const respectsOp = (a: Coset<G>, b: Coset<G>) => {
+    const eqH = H.eq ?? ((a: H, b: H) => a === b);
+    return eqH(phi(Q.Group.op(a, b)), H.op(phi(a), phi(b)));
   };
 
-  // ψ: Im → G/K is the inverse on the nose: pick any g with f(g)=h and send to [g].
-  // Since Im is small/finite, we can choose canonical g per image element.
-  // Build a lookup representative g for each h∈Im.
-  const eqH = H.eq ?? eqDefault<B>;
-  const chooseRep = new Map<B, A>();
-  for (const g of G.elems) {
-    const h = f.map(g);
-    if (Im.elems.some(x => eqH(x,h)) && ![...chooseRep.keys()].some(x => eqH(x,h))) {
-      chooseRep.set(h, g);
+  // For finite groups, we can also check injectivity and surjectivity
+  const checkIsomorphism = (support: G[]) => {
+    if (!Q.Group.elems || !H.elems) {
+      return { injective: null, surjective: null, bijective: null };
     }
-  }
-  const from: GroupHom<B, Coset<A>> = {
-    name: "ψ",
-    source: Im,
-    target: Q,
-    map: (h: B) => {
-      // find chosen preimage; Im elements are guaranteed to be in the map's range
-      for (const [k,v] of chooseRep.entries()) {
-        if (eqH(k,h)) return leftCoset(G, K, v);
+
+    // Check injectivity: if φ([g₁]) = φ([g₂]) then [g₁] = [g₂]
+    let injective = true;
+    for (const c1 of Q.Group.elems) {
+      for (const c2 of Q.Group.elems) {
+        const eqH = H.eq ?? ((a: H, b: H) => a === b);
+        if (eqH(phi(c1), phi(c2)) && !Q.eqCoset(c1, c2)) {
+          injective = false;
+          break;
+        }
       }
-      // Fallback (shouldn't happen): search
-      const g = G.elems.find(x => eqH(f.map(x), h));
-      if (!g) throw new Error("ψ: element not in image?");
-      return leftCoset(G, K, g);
+      if (!injective) break;
     }
+
+    // Check surjectivity onto image: every element in im(f) has a preimage
+    const imageElements = support.map(f);
+    let surjective = true;
+    for (const h of imageElements) {
+      const hasPreimage = Q.Group.elems.some(c => {
+        const eqH = H.eq ?? ((a: H, b: H) => a === b);
+        return eqH(phi(c), h);
+      });
+      if (!hasPreimage) {
+        surjective = false;
+        break;
+      }
+    }
+
+    return { injective, surjective, bijective: injective && surjective };
   };
 
-  // Optionally compute inverse checks on finite carriers
-  const eqQ = Q.eq!;
-  const eqIm = Im.eq ?? eqDefault;
-
-  const leftInverse =
-    Q.elems.every(q => eqQ(from.map(to.map(q)), q));
-
-  const rightInverse =
-    Im.elems.every(h => eqIm(to.map(from.map(h)), h));
-
-  return { source: Q, target: Im, to, from, leftInverse, rightInverse };
+  return { cong, quotient: Q, phi, respectsOp, inImage, checkIsomorphism };
 }

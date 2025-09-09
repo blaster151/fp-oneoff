@@ -1,6 +1,6 @@
 // Minimal finite group interface + helpers (value-level equality via eq)
 export interface FiniteGroup<T> {
-  elements: T[];
+  elems: T[];
   id: T;
   op: (a: T, b: T) => T;
   inv: (a: T) => T;
@@ -23,7 +23,7 @@ export function unionByEq<T>(xs: T[], ys: T[], eq: (a: T, b: T) => boolean): T[]
 
 // Quick law checks (used in tests)
 export function checkGroupLaws<T>(G: FiniteGroup<T>): { ok: boolean; msg?: string } {
-  const { elements: E, id, op, inv, eq } = G;
+  const { elems: E, id, op, inv, eq } = G;
   // closure + associativity
   for (const a of E) for (const b of E) {
     const ab = op(a, b);
