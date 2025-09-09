@@ -26,13 +26,16 @@ export const KleinFour: Group<string> = {
   name: "Klein Four-Group"
 };
 
+// Also add label for compatibility with existing codebase patterns
+(KleinFour as any).label = "Klein Four-Group";
+
 // Cyclic group Cₙ (standard form)
 export function CyclicCanonical(n: number): Group<number> {
   if (n <= 0 || !Number.isInteger(n)) {
     throw new Error(`CyclicCanonical: n must be a positive integer`);
   }
   
-  return {
+  const group = {
     elems: Array.from({ length: n }, (_, i) => i),
     op: (a: number, b: number) => (a + b) % n,
     id: 0,
@@ -40,6 +43,10 @@ export function CyclicCanonical(n: number): Group<number> {
     eq: (a: number, b: number) => a === b,
     name: `C${n}`
   };
+  
+  // Add label for compatibility with existing codebase patterns
+  (group as any).label = `C${n}`;
+  return group;
 }
 
 // Dihedral group Dₙ (standard form)
@@ -58,7 +65,7 @@ export function DihedralCanonical(n: number): Group<string> {
     elems.push(`sr${i}`);
   }
   
-  return {
+  const group = {
     elems,
     op: (x: string, y: string) => {
       // Parse elements
@@ -99,6 +106,10 @@ export function DihedralCanonical(n: number): Group<string> {
     eq: (a: string, b: string) => a === b,
     name: `D${n}`
   };
+  
+  // Add label for compatibility with existing codebase patterns
+  (group as any).label = `D${n}`;
+  return group;
 }
 
 /**
