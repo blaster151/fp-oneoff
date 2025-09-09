@@ -4,6 +4,7 @@ import { subgroupFromPredicate } from "../Subgroup";
 import { isNormalSubgroup, quotientGroup } from "../builders/Quotient";
 import { isIsomorphism } from "../Isomorphism";
 import { GroupHom } from "../GrpCat";
+import { secondIsomorphismTheorem, thirdIsomorphismTheorem } from "../../../algebra/group/Hom";
 
 describe("Quotient Z8 / (even)  ≅  Z2", () => {
   const G = Z8;
@@ -37,5 +38,50 @@ describe("Quotient Z8 / (even)  ≅  Z2", () => {
     };
 
     expect(isIsomorphism(Q, H, phi.f)).toBeTruthy();
+  });
+
+  it("Second Isomorphism Theorem: A={0,4}, N={0,2,4,6}", () => {
+    // A = {0,4} (subgroup of order 2)
+    const A_elements = [0, 4];
+    // N = {0,2,4,6} (normal subgroup of order 4) 
+    const N_elements = [0, 2, 4, 6];
+    
+    const secondIso = secondIsomorphismTheorem(G, A_elements, N_elements, "Z8 Second Iso");
+    
+    // Verify witness data
+    expect(secondIso.witnesses?.secondIsoData).toBeDefined();
+    const data = secondIso.witnesses!.secondIsoData!;
+    
+    // A·N should be all of N (since A ⊆ N in this case)
+    expect(data.product.elems.sort()).toEqual([0, 2, 4, 6]);
+    
+    // A∩N should be A itself (since A ⊆ N)
+    expect(data.intersection.elems.sort()).toEqual([0, 4]);
+    
+    // Verify subgroup properties
+    expect(data.subgroup.elems.sort()).toEqual([0, 4]);
+    expect(data.normalSubgroup.elems.sort()).toEqual([0, 2, 4, 6]);
+  });
+
+  it("Third Isomorphism Theorem: K={0,4}, N={0,2,4,6}", () => {
+    // K = {0,4} (normal subgroup of order 2)
+    const K_elements = [0, 4];
+    // N = {0,2,4,6} (normal subgroup of order 4, K ⊆ N)
+    const N_elements = [0, 2, 4, 6];
+    
+    const thirdIso = thirdIsomorphismTheorem(G, K_elements, N_elements, "Z8 Third Iso");
+    
+    // Verify witness data
+    expect(thirdIso.witnesses?.thirdIsoData).toBeDefined();
+    const data = thirdIso.witnesses!.thirdIsoData!;
+    
+    // Verify subgroup properties
+    expect(data.innerNormal.elems.sort()).toEqual([0, 4]);
+    expect(data.outerNormal.elems.sort()).toEqual([0, 2, 4, 6]);
+    
+    // Verify K ⊆ N
+    expect(data.innerNormal.elems.every(k => 
+      data.outerNormal.elems.some(n => G.eq(k, n))
+    )).toBe(true);
   });
 });

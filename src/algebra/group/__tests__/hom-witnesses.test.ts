@@ -45,4 +45,55 @@ describe("Group homomorphism witnesses (mono/epi/iso)", () => {
     const id = hom(C2xC2, C2xC2, ([a,b]) => [a,b], "id");
     expect(id.witnesses?.isIso).toBe(true);
   });
+
+  test("image subgroup materialization: C4 → C2 (mod 2)", () => {
+    const f = hom(C4, C2, x => x % 2, "mod2");
+    expect(f.witnesses?.imageSubgroup).toBeDefined();
+    expect(f.witnesses?.imageSubgroup?.elems).toEqual([0, 1]);
+    expect(f.witnesses?.imageSubgroup?.name).toBe("im(mod2)");
+    expect(f.witnesses?.imageSubgroup?.id).toBe(0);
+  });
+
+  test("image subgroup for isomorphism: C2 → C2 identity", () => {
+    const f = hom(C2, C2, x => x, "id");
+    expect(f.witnesses?.imageSubgroup).toBeDefined();
+    expect(f.witnesses?.imageSubgroup?.elems).toEqual([0, 1]);
+    expect(f.witnesses?.imageSubgroup?.name).toBe("im(id)");
+  });
+
+  test("image subgroup for injection: C2 → C4", () => {
+    const f = hom(C2, C4, x => (2 * x) % 4, "incl");
+    expect(f.witnesses?.imageSubgroup).toBeDefined();
+    expect(f.witnesses?.imageSubgroup?.elems).toEqual([0, 2]);
+    expect(f.witnesses?.imageSubgroup?.name).toBe("im(incl)");
+  });
+
+  test("kernel subgroup materialization: C4 → C2 (mod 2)", () => {
+    const f = hom(C4, C2, x => x % 2, "mod2");
+    expect(f.witnesses?.kernelSubgroup).toBeDefined();
+    expect(f.witnesses?.kernelSubgroup?.elems).toEqual([0, 2]);
+    expect(f.witnesses?.kernelSubgroup?.name).toBe("ker(mod2)");
+    expect(f.witnesses?.kernelSubgroup?.id).toBe(0);
+  });
+
+  test("kernel subgroup for isomorphism: C2 → C2 identity", () => {
+    const f = hom(C2, C2, x => x, "id");
+    expect(f.witnesses?.kernelSubgroup).toBeDefined();
+    expect(f.witnesses?.kernelSubgroup?.elems).toEqual([0]);
+    expect(f.witnesses?.kernelSubgroup?.name).toBe("ker(id)");
+  });
+
+  test("kernel subgroup for injection: C2 → C4", () => {
+    const f = hom(C2, C4, x => (2 * x) % 4, "incl");
+    expect(f.witnesses?.kernelSubgroup).toBeDefined();
+    expect(f.witnesses?.kernelSubgroup?.elems).toEqual([0]);
+    expect(f.witnesses?.kernelSubgroup?.name).toBe("ker(incl)");
+  });
+
+  test("kernel subgroup for trivial homomorphism", () => {
+    const f = hom(C4, C2, _x => 0, "trivial");
+    expect(f.witnesses?.kernelSubgroup).toBeDefined();
+    expect(f.witnesses?.kernelSubgroup?.elems).toEqual([0, 1, 2, 3]);
+    expect(f.witnesses?.kernelSubgroup?.name).toBe("ker(trivial)");
+  });
 });

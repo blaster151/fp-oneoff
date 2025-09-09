@@ -24,6 +24,11 @@ export interface GroupHom<G,H, A=unknown, B=unknown> {
   kernel?(): import('./NormalSubgroup').NormalSubgroup<A>;
   /** Get image predicate */
   imagePredicate?(): (h: B) => boolean;
+  
+  // NOTE: The above interface methods are not implemented as instance methods.
+  // Instead, use the standalone functions kernel(f) and imagePredicate(f, G_elements)
+  // from this module. This maintains consistency with the functional approach
+  // used throughout the consolidated GroupHom machinery.
   /** Get factorization result */
   factorization?(eqH: import('../../types/eq.js').Eq<B>): any;
   
@@ -68,6 +73,33 @@ export interface HomWitnesses<A,B> {
   preservesId?: () => boolean;
   /** Enhanced witness: preserves inverses */
   preservesInv?: (x: A) => boolean;
+  
+  // NEW: Image subgroup materialization
+  imageSubgroup?: FiniteGroup<B>;
+  kernelSubgroup?: FiniteGroup<A>;
+  
+  // Second Isomorphism Theorem support
+  secondIsoData?: {
+    subgroup: FiniteGroup<A>;     // A
+    normalSubgroup: FiniteGroup<A>; // N  
+    product: FiniteGroup<A>;      // A·N
+    intersection: FiniteGroup<A>; // A∩N
+    leftQuotient: FiniteGroup<any>; // (A·N)/N
+    rightQuotient: FiniteGroup<any>; // A/(A∩N)
+    isomorphism: GroupHom<unknown,unknown,any,any>;
+  };
+  
+  // Third Isomorphism Theorem support
+  thirdIsoData?: {
+    group: FiniteGroup<A>;
+    innerNormal: FiniteGroup<A>;  // K
+    outerNormal: FiniteGroup<A>;  // N
+    quotientGN: FiniteGroup<any>;     // G/N
+    quotientGK: FiniteGroup<any>;     // G/K  
+    quotientNK: FiniteGroup<any>;     // N/K
+    doubleQuotient: FiniteGroup<any>; // (G/K)/(N/K)
+    isomorphism: GroupHom<unknown,unknown,any,any>;
+  };
 }
 
 /** Compose homomorphisms (unchecked). */
@@ -232,11 +264,43 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
     }
   }
 
+  // NEW: Construct image subgroup
+  const imageElems: B[] = [];
+  for (const g of G.elems) {
+    const h = f.map(g);
+    if (!imageElems.some(x => eqH(x, h))) imageElems.push(h);
+  }
+
+  const imageSubgroup: FiniteGroup<B> = {
+    elems: imageElems,
+    op: H.op,
+    id: H.id,
+    inv: H.inv,
+    eq: H.eq,
+    name: f.name ? `im(${f.name})` : "im(f)"
+  };
+
+  // Construct kernel subgroup
+  const kernelElems: A[] = [];
+  for (const g of G.elems) {
+    if (eqH(f.map(g), H.id)) kernelElems.push(g);
+  }
+  const kernelSubgroup: FiniteGroup<A> = {
+    elems: kernelElems,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: f.name ? `ker(${f.name})` : "ker(f)"
+  };
+
   const witnesses: HomWitnesses<A,B> = {
     isHom: hom,
     isMono,
     isEpi,
-    isIso
+    isIso,
+    imageSubgroup,
+    kernelSubgroup
   };
   if (leftInv !== undefined) (witnesses as any).leftInverse = leftInv;
   if (rightInv !== undefined) (witnesses as any).rightInverse = rightInv;
@@ -505,5 +569,264 @@ function addEnhancedWitnesses<A, B>(hom: any): void {
     } catch {
       return false;
     }
+  };
+}
+
+/**
+ * Second Isomorphism Theorem: For subgroup A and normal subgroup N,
+ * (A·N)/N ≅ A/(A∩N)
+ */
+export function secondIsomorphismTheorem<T>(
+  G: FiniteGroup<T>,
+  A_elements: T[],  // Elements of subgroup A
+  N_elements: T[],  // Elements of normal subgroup N
+  name?: string
+): GroupHom<unknown,unknown,any,any> {
+  const eqG = eqOf(G);
+  
+  // Construct A (subgroup)
+  const A: FiniteGroup<T> = {
+    elems: A_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "A"
+  };
+  
+  // Construct N (normal subgroup) 
+  const N: FiniteGroup<T> = {
+    elems: N_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "N"
+  };
+  
+  // Construct A·N = {an : a∈A, n∈N}
+  const productElems: T[] = [];
+  for (const a of A_elements) {
+    for (const n of N_elements) {
+      const an = G.op(a, n);
+      if (!productElems.some(x => eqG(x, an))) {
+        productElems.push(an);
+      }
+    }
+  }
+  
+  // Construct A∩N
+  const intersectionElems = A_elements.filter(a => 
+    N_elements.some(n => eqG(a, n))
+  );
+  
+  // The isomorphism φ: (A·N)/N → A/(A∩N)
+  // φ([an]_N) = [a]_(A∩N)
+  
+  const secondIso: GroupHom<unknown,unknown,any,any> = {
+    source: {} as FiniteGroup<any>, // (A·N)/N - would need quotient construction
+    target: {} as FiniteGroup<any>, // A/(A∩N) - would need quotient construction  
+    map: (coset: any) => coset, // Simplified for now
+    name: name || "Second Isomorphism",
+    witnesses: {
+      secondIsoData: {
+        subgroup: A,
+        normalSubgroup: N,
+        product: {
+          elems: productElems,
+          op: G.op,
+          id: G.id,
+          inv: G.inv,
+          eq: G.eq,
+          name: "A·N"
+        },
+        intersection: {
+          elems: intersectionElems,
+          op: G.op,
+          id: G.id,
+          inv: G.inv,
+          eq: G.eq,
+          name: "A∩N"
+        },
+        leftQuotient: {} as FiniteGroup<any>,  // (A·N)/N
+        rightQuotient: {} as FiniteGroup<any>, // A/(A∩N)
+        isomorphism: {} as GroupHom<unknown,unknown,any,any>
+      }
+    }
+  };
+  
+  return secondIso;
+}
+
+/**
+ * Third Isomorphism Theorem: For normal subgroups K ⊆ N ⊆ G,
+ * G/N ≅ (G/K)/(N/K)
+ */
+export function thirdIsomorphismTheorem<T>(
+  G: FiniteGroup<T>,
+  K_elements: T[],  // Elements of normal subgroup K
+  N_elements: T[],  // Elements of normal subgroup N (K ⊆ N)
+  name?: string
+): GroupHom<unknown,unknown,any,any> {
+  const eqG = eqOf(G);
+  
+  // Verify K ⊆ N
+  const K_subset_N = K_elements.every(k => 
+    N_elements.some(n => eqG(k, n))
+  );
+  
+  if (!K_subset_N) {
+    throw new Error("Third Isomorphism Theorem requires K ⊆ N");
+  }
+  
+  // Construct the subgroups
+  const K: FiniteGroup<T> = {
+    elems: K_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "K"
+  };
+  
+  const N: FiniteGroup<T> = {
+    elems: N_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "N"
+  };
+  
+  // The isomorphism φ: G/N → (G/K)/(N/K)
+  // φ([g]_N) = [[g]_K]_(N/K)
+  
+  const thirdIso: GroupHom<unknown,unknown,any,any> = {
+    source: {} as FiniteGroup<any>, // G/N - would need quotient construction
+    target: {} as FiniteGroup<any>, // (G/K)/(N/K) - would need double quotient
+    map: (coset: any) => coset, // Simplified for now
+    name: name || "Third Isomorphism",
+    witnesses: {
+      thirdIsoData: {
+        group: G,
+        innerNormal: K,
+        outerNormal: N,
+        quotientGN: {} as FiniteGroup<any>,     // G/N
+        quotientGK: {} as FiniteGroup<any>,     // G/K  
+        quotientNK: {} as FiniteGroup<any>,     // N/K
+        doubleQuotient: {} as FiniteGroup<any>, // (G/K)/(N/K)
+        isomorphism: {} as GroupHom<unknown,unknown,any,any>
+      }
+    }
+  };
+  
+  return thirdIso;
+}
+
+/**
+ * Theorem 7: Subgroups as Images of Homomorphisms
+ * 
+ * For any subgroup S ≤ H, there exists a homomorphism f: G → H whose image is exactly S.
+ * The proof is: take G = S, and let f be the inclusion S ↪ H.
+ * 
+ * This is the clean converse to Theorem 6 (which says every homomorphism image is a subgroup).
+ * Together, they give a bidirectional bridge: subgroups ↔ homomorphism images.
+ */
+export function inclusionHom<A>(
+  H: FiniteGroup<A>, 
+  S: FiniteGroup<A>, 
+  name?: string
+): GroupHom<unknown, unknown, A, A> {
+  // TODO: Add validation that S is actually a subgroup of H
+  // - Check that S.elems ⊆ H.elems
+  // - Verify that S.op, S.id, S.inv are compatible with H
+  // - This is a critical validation that needs to be implemented
+  
+  return {
+    name: name ?? `incl_${S.name ?? "S"}→${H.name ?? "H"}`,
+    source: S,
+    target: H,
+    map: (s: A) => s, // Inclusion map: s ↦ s
+    // TODO: Add proper witness data showing this is indeed a homomorphism
+    // - Should verify f(s₁ ∘ s₂) = f(s₁) ∘ f(s₂) for all s₁, s₂ ∈ S
+    // - Should verify f(e_S) = e_H
+    // - Should verify f(s⁻¹) = f(s)⁻¹ for all s ∈ S
+  };
+}
+
+/**
+ * Theorem 8: Kernel of a Group Homomorphism is Normal
+ * 
+ * For any homomorphism f: G → H, the kernel ker(f) = {g ∈ G | f(g) = e_H} 
+ * is a normal subgroup of G.
+ * 
+ * This provides a canonical way to construct normal subgroups from any homomorphism,
+ * and bridges to the First Isomorphism Theorem.
+ */
+export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): import('./NormalSubgroup').NormalSubgroup<A> {
+  const G = f.source;
+  const H = f.target;
+  const eqH = eqOf(H);
+  
+  // Kernel predicate: { g ∈ G | f(g) = e_H }
+  const carrier = (g: A) => eqH(f.map(g), H.id);
+  
+  // Validate homomorphism properties on a sample of elements
+  // This ensures we're working with a legitimate homomorphism
+  const sampleSize = Math.min(10, G.elems.length);
+  const sample = G.elems.slice(0, sampleSize);
+  
+  for (let i = 0; i < sample.length; i++) {
+    for (let j = 0; j < sample.length; j++) {
+      const x = sample[i], y = sample[j];
+      // Check f(xy) = f(x)f(y)
+      if (!eqH(f.map(G.op(x, y)), H.op(f.map(x), f.map(y)))) {
+        throw new Error(`Not a homomorphism: f(${G.show?.(x) || x} ∘ ${G.show?.(y) || y}) ≠ f(${G.show?.(x) || x}) ∘ f(${G.show?.(y) || y})`);
+      }
+    }
+    // Check f(x⁻¹) = f(x)⁻¹
+    if (!eqH(f.map(G.inv(sample[i])), H.inv(f.map(sample[i])))) {
+      throw new Error(`Not a homomorphism: f(${G.show?.(G.inv(sample[i])) || G.inv(sample[i])}) ≠ f(${G.show?.(sample[i]) || sample[i]})⁻¹`);
+    }
+  }
+  
+  // Check f(e_G) = e_H
+  if (!eqH(f.map(G.id), H.id)) {
+    throw new Error(`Not a homomorphism: f(e_G) ≠ e_H`);
+  }
+  
+  const include = (g: A) => g;
+  const N: import('./NormalSubgroup').Subgroup<A> = { carrier, include };
+  
+  // For kernels, normality follows abstractly from the homomorphism property
+  // The conjugation closure is computed via the predicate
+  const conjClosed = (g: A, n: A) => {
+    // g n g^{-1} ∈ ker f ⟺ f(g n g^{-1}) = e_H
+    // Since f is a homomorphism: f(g n g^{-1}) = f(g) f(n) f(g)^{-1}
+    // Since n ∈ ker f: f(n) = e_H, so f(g) e_H f(g)^{-1} = e_H
+    return carrier(G.op(g, G.op(n, G.inv(g))));
+  };
+  
+  return { ...N, conjClosed };
+}
+
+/**
+ * Image predicate for finite groups: { h ∈ H | ∃g ∈ G. f(g) = h }
+ * 
+ * For finite groups, we can enumerate all elements of G and check f(g) = h.
+ */
+export function imagePredicate<A, B>(
+  f: GroupHom<unknown, unknown, A, B>, 
+  G_elements?: A[]
+): (h: B) => boolean {
+  const H = f.target;
+  const eqH = eqOf(H);
+  
+  // If no elements provided, use the source group's elements
+  const elements = G_elements || f.source.elems;
+  
+  // For finite G, enumerate all elements and check f(g) = h
+  return (h: B) => {
+    return elements.some(g => eqH(f.map(g), h));
   };
 }

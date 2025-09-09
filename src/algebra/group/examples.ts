@@ -7,7 +7,7 @@ export function ZmodAdd(n: number): Group<number> {
     name: `Z_${n}`,
     elems,
     op: (a,b) => mod(a+b),
-    id: 0,
+    e: 0,
     inv: a => mod(-a),
     eq: (a,b) => a === b
   };
