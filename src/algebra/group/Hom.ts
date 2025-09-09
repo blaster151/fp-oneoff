@@ -68,6 +68,9 @@ export interface HomWitnesses<A,B> {
   preservesId?: () => boolean;
   /** Enhanced witness: preserves inverses */
   preservesInv?: (x: A) => boolean;
+  
+  // NEW: Image subgroup materialization
+  imageSubgroup?: FiniteGroup<B>;
 }
 
 /** Compose homomorphisms (unchecked). */
@@ -232,11 +235,28 @@ export function analyzeHom<A,B>(f: GroupHom<unknown,unknown,A,B>): GroupHom<unkn
     }
   }
 
+  // NEW: Construct image subgroup
+  const imageElems: B[] = [];
+  for (const g of G.elems) {
+    const h = f.map(g);
+    if (!imageElems.some(x => eqH(x, h))) imageElems.push(h);
+  }
+
+  const imageSubgroup: FiniteGroup<B> = {
+    elems: imageElems,
+    op: H.op,
+    id: H.id,
+    inv: H.inv,
+    eq: H.eq,
+    name: f.name ? `im(${f.name})` : "im(f)"
+  };
+
   const witnesses: HomWitnesses<A,B> = {
     isHom: hom,
     isMono,
     isEpi,
-    isIso
+    isIso,
+    imageSubgroup
   };
   if (leftInv !== undefined) (witnesses as any).leftInverse = leftInv;
   if (rightInv !== undefined) (witnesses as any).rightInverse = rightInv;
