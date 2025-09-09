@@ -360,7 +360,7 @@ export function createGroupHom<A, B>(
   };
   
   if (options.name) {
-    result.name = options.name;
+    (result as any).name = options.name;
   }
   
   if (options.includeMethods) {

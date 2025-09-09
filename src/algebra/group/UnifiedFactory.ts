@@ -10,7 +10,7 @@
  * Provides unified creation patterns while maintaining all existing functionality.
  */
 
-import type { UnifiedGroupHom } from './UnifiedGroupHom';
+import type { GroupHom } from './Hom';
 import type { FiniteGroup } from './Group';
 import type { EnhancedGroup } from './EnhancedGroup';
 import { analyzeBasic } from './UnifiedAnalysis';
@@ -81,7 +81,7 @@ export function createGroupHom<A, B>(
   target: FiniteGroup<B>,
   map: (a: A) => B,
   options: CreateGroupHomOptions = {}
-): UnifiedGroupHom<unknown, unknown, A, B> {
+): GroupHom<unknown, unknown, A, B> {
   try {
     // Validate inputs
     if (!source || !target || typeof map !== 'function') {
@@ -89,7 +89,7 @@ export function createGroupHom<A, B>(
     }
 
     // Create base homomorphism
-    const result: UnifiedGroupHom<unknown, unknown, A, B> = {
+    const result: GroupHom<unknown, unknown, A, B> = {
       source,
       target,
       map
@@ -97,7 +97,7 @@ export function createGroupHom<A, B>(
 
     // Add name if provided
     if (options.name) {
-      result.name = options.name;
+      (result as any).name = options.name;
     }
 
     // Add methods if requested (from class-based implementation)
@@ -112,10 +112,10 @@ export function createGroupHom<A, B>(
 
     // Add custom verify function if provided (from simple interface)
     if (options.verify) {
-      result.verify = options.verify;
+      (result as any).verify = options.verify;
     } else if (options.includeMethods) {
       // Add default verify function
-      result.verify = () => quickVerify(result);
+      (result as any).verify = () => quickVerify(result);
     }
 
     // Auto-analyze if requested
@@ -149,7 +149,7 @@ export function hom<A, B>(
   target: FiniteGroup<B>,
   map: (a: A) => B,
   name?: string
-): UnifiedGroupHom<unknown, unknown, A, B> {
+): GroupHom<unknown, unknown, A, B> {
   return createGroupHom(source, target, map, {
     name,
     autoAnalyze: true // Maintain original behavior
@@ -170,7 +170,7 @@ export function createClassHom<A, B>(
   source: FiniteGroup<A>,
   target: FiniteGroup<B>,
   map: (a: A) => B
-): UnifiedGroupHom<unknown, unknown, A, B> {
+): GroupHom<unknown, unknown, A, B> {
   return createGroupHom(source, target, map, {
     includeMethods: true,
     includeEnhancedWitnesses: true
@@ -192,7 +192,7 @@ export function createSimpleHom<A, B>(
   target: FiniteGroup<B>,
   map: (a: A) => B,
   options: LegacyCreateOptions = {}
-): UnifiedGroupHom<unknown, unknown, A, B> {
+): GroupHom<unknown, unknown, A, B> {
   return createGroupHom(source, target, map, {
     name: options.name,
     verify: options.verify,
@@ -211,10 +211,10 @@ export function createSimpleHom<A, B>(
  * ```
  */
 export function createEnhancedHom<A, B>(
-  src: EnhancedGroup<A>,
-  dst: EnhancedGroup<B>,
+  src: FiniteGroup<A>,
+  dst: FiniteGroup<B>,
   run: (a: A) => B
-): UnifiedGroupHom<unknown, unknown, A, B> {
+): GroupHom<unknown, unknown, A, B> {
   return createGroupHom(src, dst, run, {
     includeEnhancedWitnesses: true,
     includeMethods: true
@@ -238,9 +238,9 @@ export function createEnhancedHom<A, B>(
  * ```
  */
 export function compose<A, B, C>(
-  g: UnifiedGroupHom<unknown, unknown, B, C>,
-  f: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, C> {
+  g: GroupHom<unknown, unknown, B, C>,
+  f: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, C> {
   try {
     return {
       source: f.source,
@@ -257,7 +257,7 @@ export function compose<A, B, C>(
  * Check the homomorphism law f(a*b)=f(a)*f(b) by brute force.
  * From /src/algebra/group/Hom.ts
  */
-export function isHomomorphism<A, B>(f: UnifiedGroupHom<unknown, unknown, A, B>): boolean {
+export function isHomomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): boolean {
   try {
     const G = f.source, H = f.target;
     const eqH = H.eq ?? ((x: B, y: B) => x === y);
@@ -354,14 +354,14 @@ function allFunctions<X, Y>(Dom: ReadonlyArray<X>, Cod: ReadonlyArray<Y>): Array
 export function allGroupHoms<J, A>(
   J: FiniteGroup<J>,
   G: FiniteGroup<A>
-): Array<UnifiedGroupHom<unknown, unknown, J, A>> {
+): Array<GroupHom<unknown, unknown, J, A>> {
   try {
     const eqG = G.eq ?? ((x: A, y: A) => x === y);
     const fs = allFunctions(J.elems, G.elems);
-    const homs: Array<UnifiedGroupHom<unknown, unknown, J, A>> = [];
+    const homs: Array<GroupHom<unknown, unknown, J, A>> = [];
     
     for (const f of fs) {
-      const cand: UnifiedGroupHom<unknown, unknown, J, A> = { source: J, target: G, map: f };
+      const cand: GroupHom<unknown, unknown, J, A> = { source: J, target: G, map: f };
       if (isHomomorphism(cand)) homs.push(cand);
     }
     
@@ -388,7 +388,7 @@ export function allGroupHoms<J, A>(
  * const id = idHom(G);
  * ```
  */
-export function idHom<A>(G: FiniteGroup<A>): UnifiedGroupHom<unknown, unknown, A, A> {
+export function idHom<A>(G: FiniteGroup<A>): GroupHom<unknown, unknown, A, A> {
   return createGroupHom(G, G, (x) => x, {
     name: `id_${(G as any).name ?? 'G'}`,
     includeMethods: true,
@@ -406,9 +406,9 @@ export function idHom<A>(G: FiniteGroup<A>): UnifiedGroupHom<unknown, unknown, A
  * ```
  */
 export function composeHom<A, B, C>(
-  g: UnifiedGroupHom<unknown, unknown, B, C>,
-  f: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, C> {
+  g: GroupHom<unknown, unknown, B, C>,
+  f: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, C> {
   try {
     if (f.target !== g.source) {
       console.warn("composeHom: incompatible sources/targets");
@@ -432,7 +432,7 @@ export function composeHom<A, B, C>(
 /**
  * Quick verification function for simple interface compatibility.
  */
-function quickVerify<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>): boolean {
+function quickVerify<A, B>(hom: GroupHom<unknown, unknown, A, B>): boolean {
   try {
     const { source, target, map } = hom;
     
@@ -458,7 +458,7 @@ function quickVerify<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>): boolea
 /**
  * Add class-based methods to a homomorphism.
  */
-function addClassBasedMethods<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>): void {
+function addClassBasedMethods<A, B>(hom: any): void {
   const { source, target, map } = hom;
   const eqH = target.eq ?? ((x: B, y: B) => x === y);
   
@@ -514,7 +514,7 @@ function addClassBasedMethods<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>
 /**
  * Add enhanced witness properties to a homomorphism.
  */
-function addEnhancedWitnesses<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>): void {
+function addEnhancedWitnesses<A, B>(hom: any): void {
   const { source, target, map } = hom;
   const eqH = target.eq ?? ((x: B, y: B) => x === y);
   
@@ -569,27 +569,4 @@ export const createHom = hom;
 // EXPORTS
 // ============================================================================
 
-export {
-  // Main factory
-  createGroupHom,
-  
-  // Pattern-specific factories
-  hom,
-  createClassHom,
-  createSimpleHom,
-  createEnhancedHom,
-  
-  // Utility functions (CRITICAL - used in 60+ files)
-  compose,
-  isHomomorphism,
-  equalPointwise,
-  allGroupHoms,
-  
-  // Enhanced utilities
-  idHom,
-  composeHom,
-  
-  // Legacy aliases
-  createLegacyHom,
-  createHom
-};
+// All functions are already exported above with their declarations

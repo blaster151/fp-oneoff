@@ -10,7 +10,7 @@
  * Provides three analysis levels with performance optimization and backward compatibility.
  */
 
-import type { UnifiedGroupHom } from './UnifiedGroupHom';
+import type { GroupHom } from './Hom';
 import type { FiniteGroup } from './Group';
 import type { NormalSubgroup } from './NormalSubgroup';
 import type { Eq } from '../../types/eq.js';
@@ -32,8 +32,8 @@ export interface UnifiedWitnesses<A, B> {
   isIso: boolean;                // has two-sided inverse
   
   // Structure-level data (from interface-based implementation)
-  leftInverse?: UnifiedGroupHom<any, any>;
-  rightInverse?: UnifiedGroupHom<any, any>;
+  leftInverse?: GroupHom<any, any>;
+  rightInverse?: GroupHom<any, any>;
   
   // Enhanced witness properties (from EnhancedGroupHom)
   preservesOp?: (x: A, y: A) => boolean;
@@ -41,8 +41,8 @@ export interface UnifiedWitnesses<A, B> {
   preservesInv?: (x: A) => boolean;
   
   // Counterexamples (from interface-based implementation)
-  monoCounterexample?: { j: any; g: UnifiedGroupHom<any, any>; h: UnifiedGroupHom<any, any> };
-  epiCounterexample?: { j: any; g: UnifiedGroupHom<any, any>; h: UnifiedGroupHom<any, any> };
+  monoCounterexample?: { j: any; g: GroupHom<any, any>; h: GroupHom<any, any> };
+  epiCounterexample?: { j: any; g: GroupHom<any, any>; h: GroupHom<any, any> };
   
   // Advanced features (from class-based implementation)
   kernel?: NormalSubgroup<A>;
@@ -68,7 +68,7 @@ export interface FactorizationResult<A, B> {
  * Check the homomorphism law f(a*b)=f(a)*f(b) by brute force.
  * From /src/algebra/group/Hom.ts
  */
-function isHomomorphism<A, B>(f: UnifiedGroupHom<unknown, unknown, A, B>): boolean {
+function isHomomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): boolean {
   const G = f.source, H = f.target, eqH = eqOf(H);
   for (const a of G.elems) for (const b of G.elems) {
     const lhs = f.map(G.op(a, b));
@@ -149,13 +149,13 @@ function allFunctions<X, Y>(Dom: ReadonlyArray<X>, Cod: ReadonlyArray<Y>): Array
 function allGroupHoms<J, A>(
   J: FiniteGroup<J>, 
   G: FiniteGroup<A>
-): Array<UnifiedGroupHom<unknown, unknown, J, A>> {
+): Array<GroupHom<unknown, unknown, J, A>> {
   const eqG = eqOf(G);
   const fs = allFunctions(J.elems, G.elems);
-  const homs: Array<UnifiedGroupHom<unknown, unknown, J, A>> = [];
+  const homs: Array<GroupHom<unknown, unknown, J, A>> = [];
   
   for (const f of fs) {
-    const cand: UnifiedGroupHom<unknown, unknown, J, A> = { source: J, target: G, map: f };
+    const cand: GroupHom<unknown, unknown, J, A> = { source: J, target: G, map: f };
     if (isHomomorphism(cand)) homs.push(cand);
   }
   
@@ -170,9 +170,9 @@ function allGroupHoms<J, A>(
  * From /src/algebra/group/Hom.ts
  */
 function compose<A, B, C>(
-  g: UnifiedGroupHom<unknown, unknown, B, C>, 
-  f: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, C> {
+  g: GroupHom<unknown, unknown, B, C>, 
+  f: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, C> {
   return {
     source: f.source,
     target: g.target,
@@ -202,7 +202,7 @@ function compose<A, B, C>(
  * }
  * ```
  */
-export function quickVerify<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>): boolean {
+export function quickVerify<A, B>(hom: GroupHom<unknown, unknown, A, B>): boolean {
   try {
     const { source, target, map } = hom;
     
@@ -248,8 +248,8 @@ export function quickVerify<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>):
  * ```
  */
 export function analyzeBasic<A, B>(
-  hom: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, B> {
+  hom: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, B> {
   try {
     const G = hom.source, H = hom.target;
     const eqH = eqOf(H), eqG = eqOf(G);
@@ -257,8 +257,8 @@ export function analyzeBasic<A, B>(
     const isHom = isHomomorphism(hom);
 
     // Find a two-sided inverse hom if it exists (by table search)
-    let leftInv: UnifiedGroupHom<B, A> | undefined;
-    let rightInv: UnifiedGroupHom<B, A> | undefined;
+    let leftInv: GroupHom<B, A> | undefined;
+    let rightInv: GroupHom<B, A> | undefined;
     let isIso = false;
 
     // Enumerate all homs H->G
@@ -374,8 +374,8 @@ export function analyzeBasic<A, B>(
  * ```
  */
 export function analyzeComplete<A, B>(
-  hom: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, B> {
+  hom: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, B> {
   try {
     // Start with basic analysis
     const basicAnalyzed = analyzeBasic(hom);
@@ -410,7 +410,7 @@ export function analyzeComplete<A, B>(
  * Generate enhanced witness properties from EnhancedGroupHom implementation.
  */
 function generateEnhancedWitnesses<A, B>(
-  hom: UnifiedGroupHom<unknown, unknown, A, B>
+  hom: GroupHom<unknown, unknown, A, B>
 ): Partial<UnifiedWitnesses<A, B>> {
   const { source, target, map } = hom;
   const eqH = target.eq ?? ((x: B, y: B) => x === y);
@@ -451,7 +451,7 @@ function generateEnhancedWitnesses<A, B>(
 /**
  * Add class-based methods to the homomorphism.
  */
-function addClassBasedMethods<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>): void {
+function addClassBasedMethods<A, B>(hom: any): void {
   const { source, target, map } = hom;
   const eqH = target.eq ?? ((x: B, y: B) => x === y);
   
@@ -536,8 +536,8 @@ function addClassBasedMethods<A, B>(hom: UnifiedGroupHom<unknown, unknown, A, B>
  * @returns Enhanced homomorphism with witnesses
  */
 export function analyzeHom<A, B>(
-  f: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, B> {
+  f: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, B> {
   return analyzeBasic(f);
 }
 
@@ -548,14 +548,14 @@ export function analyzeHom<A, B>(
 /**
  * Cache for expensive computations.
  */
-const analysisCache = new WeakMap<UnifiedGroupHom<any, any>, UnifiedWitnesses<any, any>>();
+const analysisCache = new WeakMap<GroupHom<any, any>, UnifiedWitnesses<any, any>>();
 
 /**
  * Cached version of analyzeBasic for performance.
  */
 export function analyzeBasicCached<A, B>(
-  hom: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, B> {
+  hom: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, B> {
   const cached = analysisCache.get(hom);
   if (cached) {
     hom.witnesses = cached;
@@ -574,8 +574,8 @@ export function analyzeBasicCached<A, B>(
  * Cached version of analyzeComplete for performance.
  */
 export function analyzeCompleteCached<A, B>(
-  hom: UnifiedGroupHom<unknown, unknown, A, B>
-): UnifiedGroupHom<unknown, unknown, A, B> {
+  hom: GroupHom<unknown, unknown, A, B>
+): GroupHom<unknown, unknown, A, B> {
   const cached = analysisCache.get(hom);
   if (cached) {
     hom.witnesses = cached;
