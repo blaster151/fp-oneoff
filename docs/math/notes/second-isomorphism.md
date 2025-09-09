@@ -1,13 +1,10 @@
 # Second Isomorphism Theorem (Groups)
 
-Let \(A \le G\) and \(N \trianglelefteq G\). Then \(AN\) is a subgroup of \(G\), \(A\cap N \trianglelefteq A\), and
-\[
-(AN)/N \;\cong\; A/(A\cap N).
-\]
+Let A ≤ G and N ⊴ G. Then AN is a subgroup of G, A∩N ⊴ A, and
+(A N)/N ≅ A/(A∩N).
 
-**Construction used in code.** Inclusion \(i:A\hookrightarrow G\), projection \(π:G\to G/N\), then apply the First Isomorphism Theorem to \(ψ = π∘i\):
-\[
-A/(A\cap N) \;\cong\; \mathrm{im}(ψ) = \{\,aN \mid a\in A\,\} \;=\; (AN)/N.
-\]
+**Construction used in code.**
+Inclusion i:A↪G, projection π:G→G/N, then apply the First Isomorphism Theorem to ψ = π∘i:
+A/(A∩N) ≅ im(ψ) = {aN | a∈A} = (AN)/N.
 
-**Files:** `SecondIso.ts`, tests in `second-iso.spec.ts`.
+**Files:** SecondIso.ts, tests in second-iso.spec.ts.

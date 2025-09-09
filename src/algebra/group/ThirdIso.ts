@@ -1,6 +1,5 @@
-import { Group, GroupIso, Subgroup } from "./structures";
-import { GroupHom } from "./Hom";
-import { canonicalProjection, firstIsomorphism } from "./FirstIso";
+import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
+import { canonicalProjection } from "./FirstIso";
 import { analyzeGroupHom } from "./analyzeHom";
 import { quotientGroup, Coset, leftCoset } from "./Quotient";
 
@@ -17,7 +16,7 @@ export interface ThirdIsoResult<A> {
 /** Third Isomorphism via θ : G/K → G/N, θ([g]_K) = [g]_N and First Iso */
 export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Subgroup<A>): ThirdIsoResult<A> {
   // π_K : G → G/K
-  const piK = canonicalProjection(G as any, K_norm as any);
+  const piK = canonicalProjection(G, K_norm);
   const Q = piK.target; // G/K
 
   // N/K as a subgroup of G/K: elements are {[n]_K | n∈N}
@@ -26,23 +25,23 @@ export function thirdIsomorphism<A>(G: Group<A>, N_norm: Subgroup<A>, K_norm: Su
   // de-dupe
   const NK_unique: Coset<A>[] = [];
   for (const c of NK_elems) if (!NK_unique.some(d => eqQ(c,d))) NK_unique.push(c);
-  const NmodK: Subgroup<Coset<A>> = { elems: NK_unique, op: Q.op, id: (Q as any).e ?? (Q as any).id, inv: Q.inv, eq: Q.eq };
-  (NmodK as any).label = `${(N_norm as any).label ?? "N"}/${(K_norm as any).label ?? "K"}`;
+  const NmodK: Subgroup<Coset<A>> = { name: `${N_norm.name ?? "N"}/${K_norm.name ?? "K"}`, elems: NK_unique, op: Q.op, e: Q.e, inv: Q.inv, eq: Q.eq };
 
   // π_N : G → G/N
-  const piN = canonicalProjection(G as any, N_norm as any);
+  const piN = canonicalProjection(G, N_norm);
   const GmodN = piN.target;
 
   // θ : G/K → G/N, θ([g]_K) = [g]_N. Implement by picking a representative.
-  const theta: GroupHom<unknown, unknown, Coset<A>, Coset<A>> = {
+  const theta: GroupHom<Coset<A>, Coset<A>> = {
     name: "theta",
     source: Q,
     target: GmodN,
-    f: (c: Coset<A>) => piN.f(c.rep)
+    map: (c: Coset<A>) => piN.map(c.rep)
   };
 
   // Analyze θ, then First Iso ⇒ (G/K)/(N/K) ≅ G/N
   const thetaAnalyzed = analyzeGroupHom(theta);
+  const { firstIsomorphism } = require("./FirstIso");
   const iso = firstIsomorphism(thetaAnalyzed as any);
 
   // Also expose (G/K)/(N/K) explicitly to compare sizes
