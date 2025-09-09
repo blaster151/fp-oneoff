@@ -72,6 +72,29 @@ export interface HomWitnesses<A,B> {
   // NEW: Image subgroup materialization
   imageSubgroup?: FiniteGroup<B>;
   kernelSubgroup?: FiniteGroup<A>;
+  
+  // Second Isomorphism Theorem support
+  secondIsoData?: {
+    subgroup: FiniteGroup<A>;     // A
+    normalSubgroup: FiniteGroup<A>; // N  
+    product: FiniteGroup<A>;      // A·N
+    intersection: FiniteGroup<A>; // A∩N
+    leftQuotient: FiniteGroup<any>; // (A·N)/N
+    rightQuotient: FiniteGroup<any>; // A/(A∩N)
+    isomorphism: GroupHom<unknown,unknown,any,any>;
+  };
+  
+  // Third Isomorphism Theorem support
+  thirdIsoData?: {
+    group: FiniteGroup<A>;
+    innerNormal: FiniteGroup<A>;  // K
+    outerNormal: FiniteGroup<A>;  // N
+    quotientGN: FiniteGroup<any>;     // G/N
+    quotientGK: FiniteGroup<any>;     // G/K  
+    quotientNK: FiniteGroup<any>;     // N/K
+    doubleQuotient: FiniteGroup<any>; // (G/K)/(N/K)
+    isomorphism: GroupHom<unknown,unknown,any,any>;
+  };
 }
 
 /** Compose homomorphisms (unchecked). */
@@ -542,4 +565,155 @@ function addEnhancedWitnesses<A, B>(hom: any): void {
       return false;
     }
   };
+}
+
+/**
+ * Second Isomorphism Theorem: For subgroup A and normal subgroup N,
+ * (A·N)/N ≅ A/(A∩N)
+ */
+export function secondIsomorphismTheorem<T>(
+  G: FiniteGroup<T>,
+  A_elements: T[],  // Elements of subgroup A
+  N_elements: T[],  // Elements of normal subgroup N
+  name?: string
+): GroupHom<unknown,unknown,any,any> {
+  const eqG = eqOf(G);
+  
+  // Construct A (subgroup)
+  const A: FiniteGroup<T> = {
+    elems: A_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "A"
+  };
+  
+  // Construct N (normal subgroup) 
+  const N: FiniteGroup<T> = {
+    elems: N_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "N"
+  };
+  
+  // Construct A·N = {an : a∈A, n∈N}
+  const productElems: T[] = [];
+  for (const a of A_elements) {
+    for (const n of N_elements) {
+      const an = G.op(a, n);
+      if (!productElems.some(x => eqG(x, an))) {
+        productElems.push(an);
+      }
+    }
+  }
+  
+  // Construct A∩N
+  const intersectionElems = A_elements.filter(a => 
+    N_elements.some(n => eqG(a, n))
+  );
+  
+  // The isomorphism φ: (A·N)/N → A/(A∩N)
+  // φ([an]_N) = [a]_(A∩N)
+  
+  const secondIso: GroupHom<unknown,unknown,any,any> = {
+    source: {} as FiniteGroup<any>, // (A·N)/N - would need quotient construction
+    target: {} as FiniteGroup<any>, // A/(A∩N) - would need quotient construction  
+    map: (coset: any) => coset, // Simplified for now
+    name: name || "Second Isomorphism",
+    witnesses: {
+      secondIsoData: {
+        subgroup: A,
+        normalSubgroup: N,
+        product: {
+          elems: productElems,
+          op: G.op,
+          id: G.id,
+          inv: G.inv,
+          eq: G.eq,
+          name: "A·N"
+        },
+        intersection: {
+          elems: intersectionElems,
+          op: G.op,
+          id: G.id,
+          inv: G.inv,
+          eq: G.eq,
+          name: "A∩N"
+        },
+        leftQuotient: {} as FiniteGroup<any>,  // (A·N)/N
+        rightQuotient: {} as FiniteGroup<any>, // A/(A∩N)
+        isomorphism: {} as GroupHom<unknown,unknown,any,any>
+      }
+    }
+  };
+  
+  return secondIso;
+}
+
+/**
+ * Third Isomorphism Theorem: For normal subgroups K ⊆ N ⊆ G,
+ * G/N ≅ (G/K)/(N/K)
+ */
+export function thirdIsomorphismTheorem<T>(
+  G: FiniteGroup<T>,
+  K_elements: T[],  // Elements of normal subgroup K
+  N_elements: T[],  // Elements of normal subgroup N (K ⊆ N)
+  name?: string
+): GroupHom<unknown,unknown,any,any> {
+  const eqG = eqOf(G);
+  
+  // Verify K ⊆ N
+  const K_subset_N = K_elements.every(k => 
+    N_elements.some(n => eqG(k, n))
+  );
+  
+  if (!K_subset_N) {
+    throw new Error("Third Isomorphism Theorem requires K ⊆ N");
+  }
+  
+  // Construct the subgroups
+  const K: FiniteGroup<T> = {
+    elems: K_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "K"
+  };
+  
+  const N: FiniteGroup<T> = {
+    elems: N_elements,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    eq: G.eq,
+    name: "N"
+  };
+  
+  // The isomorphism φ: G/N → (G/K)/(N/K)
+  // φ([g]_N) = [[g]_K]_(N/K)
+  
+  const thirdIso: GroupHom<unknown,unknown,any,any> = {
+    source: {} as FiniteGroup<any>, // G/N - would need quotient construction
+    target: {} as FiniteGroup<any>, // (G/K)/(N/K) - would need double quotient
+    map: (coset: any) => coset, // Simplified for now
+    name: name || "Third Isomorphism",
+    witnesses: {
+      thirdIsoData: {
+        group: G,
+        innerNormal: K,
+        outerNormal: N,
+        quotientGN: {} as FiniteGroup<any>,     // G/N
+        quotientGK: {} as FiniteGroup<any>,     // G/K  
+        quotientNK: {} as FiniteGroup<any>,     // N/K
+        doubleQuotient: {} as FiniteGroup<any>, // (G/K)/(N/K)
+        isomorphism: {} as GroupHom<unknown,unknown,any,any>
+      }
+    }
+  };
+  
+  return thirdIso;
 }
