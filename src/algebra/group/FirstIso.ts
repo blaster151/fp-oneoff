@@ -1,218 +1,99 @@
-import { GroupHom } from "./Hom";
-import { eqOf, FiniteGroup } from "./Group";
+import { Group, GroupHom, GroupIso, Subgroup } from "./structures";
+import { Coset, quotientGroup, leftCoset, isNormal } from "./Quotient";
 
-// --- Kernel and image ---
+function eqDefault<T>(a:T,b:T){ return Object.is(a,b); }
 
-export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): { set: (a: A) => boolean } {
-  const { source, target, map } = f;
+// Helper: canonical projection π: G → G/N, g ↦ [g]
+export function canonicalProjection<A>(G: Group<A>, N: Subgroup<A>) : GroupHom<A, Coset<A>> {
+  const Q = quotientGroup(G, N); // assumes normal; caller should ensure
   return {
-    set: (a: A) => eqOf(target)(map(a), target.id),
-  };
-}
-
-// Small helper to collect subset as actual array when finite:
-function subsetArray<T>(G: FiniteGroup<T>, pred: (x: T) => boolean): T[] | undefined {
-  if (!G.elems) return undefined;
-  return G.elems.filter(pred);
-}
-
-export function image<A, B>(f: GroupHom<unknown, unknown, A, B>): {
-  subgroup: FiniteGroup<B>;
-  include: (b: B) => boolean;
-  elements?: B[] | undefined;
-} {
-  const { target, source, map } = f;
-
-  // Closure witnesses are immediate from hom property; for finite, compute elements explicitly.
-  const elems = source.elems?.map(map);
-  const unique = elems
-    ? elems.filter((b: any, i: number) => elems.findIndex((bb: any) => eqOf(target)(bb, b)) === i)
-    : undefined;
-
-  // Induced operation = target operation restricted
-  const subgroup: FiniteGroup<B> = {
-    eq: eqOf(target),
-    op: target.op,
-    id: target.id,
-    inv: target.inv,
-    elems: unique || [],
-  };
-
-  const include = (b: B) =>
-    unique ? unique.some((bb: any) => eqOf(target)(bb, b)) : (() => { throw new Error("Non-finite image: use include only with finite groups."); })();
-
-  return { subgroup, include, elements: unique || undefined };
-}
-
-// --- Normal subgroup from kernel + quotient ---
-
-export interface NormalSubgroup<T> {
-  G: FiniteGroup<T>;
-  contains: (x: T) => boolean;
-}
-
-export function kernelIsNormal<A, B>(f: GroupHom<unknown, unknown, A, B>): NormalSubgroup<A> {
-  const K = kernel(f);
-  const { source: G } = f;
-  // In groups, ker(f) is always normal; no computation needed for the proof,
-  // but we keep a membership predicate for quotient construction.
-  return { G, contains: K.set };
-}
-
-// Naive right cosets implementation for finite groups:
-export type Coset<T> = { rep: T; members: T[] };
-
-export function quotientGroup<T>(G: FiniteGroup<T>, N: NormalSubgroup<T>): FiniteGroup<Coset<T>> {
-  if (!G.elems) throw new Error("quotientGroup: need finite enumeration for this demo.");
-
-  // Partition G.elems into cosets rep*N
-  const seen: boolean[] = G.elems.map(() => false);
-  const cosets: Coset<T>[] = [];
-
-  const idxOf = (x: T) => G.elems!.findIndex(y => eqOf(G)(x, y));
-
-  for (let i = 0; i < G.elems.length; i++) {
-    if (seen[i]) continue;
-    const g = G.elems[i]!;
-    // members = { g * n | n in N }
-    const members: T[] = [];
-    for (const x of G.elems) {
-      if (N.contains(G.op(G.inv(g), x))) {
-        // x in gN  ⇔  g^{-1}x ∈ N
-        members.push(x);
-        const j = idxOf(x);
-        if (j >= 0) seen[j] = true;
-      }
-    }
-    cosets.push({ rep: g, members });
-  }
-
-  const eqCoset = (a: Coset<T>, b: Coset<T>) =>
-    a.members.length === b.members.length &&
-    a.members.every(m => b.members.some(n => eqOf(G)(m, n)));
-
-  const opCoset = (a: Coset<T>, b: Coset<T>): Coset<T> => {
-    const rep = G.op(a.rep, b.rep);
-    // Find coset whose rep is in the same coset as rep
-    const belong = cosets.find(c => c.members.some(m => eqOf(G)(m, rep)));
-    if (!belong) throw new Error("Internal error: missing coset.");
-    return belong;
-  };
-
-  const eCoset = cosets.find(c => c.members.some(m => eqOf(G)(m, G.id)))!;
-  const invCoset = (c: Coset<T>) => {
-    const repInv = G.inv(c.rep);
-    const belong = cosets.find(k => k.members.some(m => eqOf(G)(m, repInv)))!;
-    return belong;
-  };
-
-  return {
-    eq: eqCoset,
-    op: opCoset,
-    id: eCoset,
-    inv: invCoset,
-    elems: cosets,
-  };
-}
-
-// --- First Isomorphism Theorem:  G/ker f  ≅  im f ---
-
-export interface GroupIso<X, Y> {
-  source: FiniteGroup<X>;
-  target: FiniteGroup<Y>;
-  to: (x: X) => Y;
-  from: (y: Y) => X;
-  leftInverse: () => boolean;  // from∘to = id
-  rightInverse: () => boolean; // to∘from = id
-}
-
-export function firstIsomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): {
-  quotient: FiniteGroup<Coset<A>>;
-  imageGrp: FiniteGroup<B>;
-  iso: GroupIso<Coset<A>, B>;
-} {
-  const K = kernelIsNormal(f);
-  const quotient = quotientGroup(f.source, K);
-  const { subgroup: imageGrp } = image(f);
-
-  // φ([g]) = f(g)
-  const to = (c: Coset<A>) => f.map(c.rep);
-
-  // For finite groups we can pick a canonical preimage rep for each image element
-  if (!imageGrp.elems || !f.source.elems) {
-    throw new Error("firstIsomorphism: need finite groups (elements arrays) for this executable demo.");
-  }
-
-  // Construct a section s : im(f) -> quo picking a representative in each preimage
-  const classOf = (a: A) => {
-    // find coset containing 'a'
-    return quotient.elems!.find(c => c.members.some(m => eqOf(f.source)(m, a)))!;
-  };
-
-  const from = (b: B): Coset<A> => {
-    // find any a with f(a)=b (guaranteed since b ∈ im f)
-    // We need to check against the actual image elements, not the full target group
-    if (!imageGrp.elems!.some(img => eqOf(f.target)(img, b))) {
-      throw new Error("Element not in image of f");
-    }
-    const a = f.source.elems!.find((x: any) => eqOf(f.target)(f.map(x), b));
-    if (!a) throw new Error("Internal error: element not in image.");
-    return classOf(a);
-  };
-
-  const leftInverse = () =>
-    quotient.elems!.every(c => {
-      const back = from(to(c));
-      return eqOf(quotient)(back, c);
-    });
-
-  const rightInverse = () =>
-    imageGrp.elems!.every(b => {
-      const forth = to(from(b));
-      return eqOf(f.target)(forth, b);
-    });
-
-  const iso: GroupIso<Coset<A>, B> = {
-    source: quotient,
-    target: imageGrp,
-    to,
-    from,
-    leftInverse,
-    rightInverse,
-  };
-
-  return { quotient, imageGrp, iso };
-}
-
-/** Create the canonical projection homomorphism G → G/N */
-export function canonicalProjection<A>(G: FiniteGroup<A>, N: NormalSubgroup<A>): any {
-  const quotient = quotientGroup(G, N);
-  return {
+    name: "π",
     source: G,
-    target: quotient,
-    f: (a: A) => ({ rep: a, members: [a] } as Coset<A>),
-    verify: () => true,
-    name: `π: ${(G as any).label ?? 'G'} → ${(quotient as any).label ?? 'G/N'}`
+    target: Q,
+    map: (g: A) => leftCoset(G, N, g)
   };
 }
 
-/** Factor a homomorphism through its quotient - returns the canonical factorization */
-export function factorThroughQuotient<A, B>(f: GroupHom<unknown, unknown, A, B>): {
-  quotient: FiniteGroup<Coset<A>>;
-  pi: GroupHom<unknown, unknown, A, Coset<A>>;
-  iota: GroupHom<unknown, unknown, Coset<A>, B>;
-} {
-  const K = kernelIsNormal(f);
-  const quotient = quotientGroup(f.source, K);
-  const pi = canonicalProjection(f.source, K);
-  
-  // iota: G/K → B, iota([a]_K) = f(a)
-  const iota: GroupHom<unknown, unknown, Coset<A>, B> = {
-    source: quotient,
-    target: f.target,
-    map: (c: Coset<A>) => f.map(c.rep),
-    respectsOp: () => true // This is well-defined since K = ker(f)
+export interface GroupHomWitnesses<A,B> {
+  preservesOp: boolean;
+  preservesId: boolean;
+  preservesInv: boolean;
+  imageSubgroup?: Subgroup<B>;
+  kernelSubgroup?: Subgroup<A>;
+}
+
+export interface AnalyzedHom<A,B> extends GroupHom<A,B> {
+  witnesses?: GroupHomWitnesses<A,B>;
+}
+
+/**
+ * First Isomorphism Theorem:
+ * Given hom f: G→H with kernel K and image Im, build iso φ: G/K ≅ Im.
+ *
+ * Pre: f.witnesses populated with kernelSubgroup & imageSubgroup.
+ *      (Use your existing analyzeGroupHom to compute them.)
+ */
+export function firstIsomorphism<A,B>(f: AnalyzedHom<A,B>): GroupIso<Coset<A>, B> {
+  if (!f.witnesses?.kernelSubgroup || !f.witnesses?.imageSubgroup) {
+    throw new Error("firstIsomorphism: f must be analyzed to supply kernel and image.");
+  }
+  const G = f.source;
+  const H = f.target;
+  const K = f.witnesses.kernelSubgroup;
+  const Im = f.witnesses.imageSubgroup;
+
+  // Kernels are normal (mathematical fact); we can double-check computationally:
+  if (!isNormal(G, K)) {
+    throw new Error("Kernel is expected to be normal in G, but isNormal(G,ker f) returned false.");
+  }
+
+  // Domain: quotient G/K, codomain: Im ⊆ H
+  const Q = quotientGroup(G, K);
+
+  // φ([g]) = f(g). We'll implement it by using the representative.
+  const to: GroupHom<Coset<A>, B> = {
+    name: "φ",
+    source: Q,
+    target: Im,
+    map: (c: Coset<A>) => f.map(c.rep) // well-defined because c.rep differs by n∈K ⇒ f(c.rep n)=f(c.rep)
   };
-  
-  return { quotient, pi: pi as any, iota: iota as any };
+
+  // ψ: Im → G/K is the inverse on the nose: pick any g with f(g)=h and send to [g].
+  // Since Im is small/finite, we can choose canonical g per image element.
+  // Build a lookup representative g for each h∈Im.
+  const eqH = H.eq ?? eqDefault<B>;
+  const chooseRep = new Map<B, A>();
+  for (const g of G.elems) {
+    const h = f.map(g);
+    if (Im.elems.some(x => eqH(x,h)) && ![...chooseRep.keys()].some(x => eqH(x,h))) {
+      chooseRep.set(h, g);
+    }
+  }
+  const from: GroupHom<B, Coset<A>> = {
+    name: "ψ",
+    source: Im,
+    target: Q,
+    map: (h: B) => {
+      // find chosen preimage; Im elements are guaranteed to be in the map's range
+      for (const [k,v] of chooseRep.entries()) {
+        if (eqH(k,h)) return leftCoset(G, K, v);
+      }
+      // Fallback (shouldn't happen): search
+      const g = G.elems.find(x => eqH(f.map(x), h));
+      if (!g) throw new Error("ψ: element not in image?");
+      return leftCoset(G, K, g);
+    }
+  };
+
+  // Optionally compute inverse checks on finite carriers
+  const eqQ = Q.eq!;
+  const eqIm = Im.eq ?? eqDefault;
+
+  const leftInverse =
+    Q.elems.every(q => eqQ(from.map(to.map(q)), q));
+
+  const rightInverse =
+    Im.elems.every(h => eqIm(to.map(from.map(h)), h));
+
+  return { source: Q, target: Im, to, from, leftInverse, rightInverse };
 }
