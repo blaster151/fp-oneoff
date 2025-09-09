@@ -66,12 +66,12 @@ export function quotientGroup<A>(G: Group<A>, N: Subgroup<A>): Group<Coset<A>> {
     return findCoset(gh);
   };
 
-  const e = findCoset(G.e);
+  const id = findCoset(G.id);
   const inv = (c: Coset<A>) => findCoset(G.inv(c.rep));
 
   return {
     name: `${G.name ?? "G"}/${N.name ?? "N"}`,
     elems: cos,
-    op, e, inv, eq
+    op, id, inv, eq
   };
 }

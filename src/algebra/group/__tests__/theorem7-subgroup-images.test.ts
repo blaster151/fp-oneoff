@@ -22,10 +22,23 @@ describe("Theorem 7: Subgroups as Images of Homomorphisms", () => {
       name: "⟨3⟩"
     };
     
-    // TODO: Add validation that S is actually a subgroup of Z6
-    // - Verify closure: 0+0=0, 0+3=3, 3+0=3, 3+3=0 (all in S)
-    // - Verify identity: 0 is in S
-    // - Verify inverses: 0⁻¹=0, 3⁻¹=3 (both in S)
+    // Validate that S is actually a subgroup of Z6
+    // Verify identity: 0 is in S
+    expect(S.elems).toContain(0);
+    
+    // Verify closure: for all a,b ∈ S, a+b ∈ S
+    for (const a of S.elems) {
+      for (const b of S.elems) {
+        const ab = Z6.op(a, b);
+        expect(S.elems).toContain(ab);
+      }
+    }
+    
+    // Verify inverses: for all a ∈ S, a⁻¹ ∈ S
+    for (const a of S.elems) {
+      const inv_a = Z6.inv(a);
+      expect(S.elems).toContain(inv_a);
+    }
     
     const incl = inclusionHom(Z6, S, "⟨3⟩ ↪ Z6");
     const analyzed = analyzeHom(incl);
@@ -49,10 +62,23 @@ describe("Theorem 7: Subgroups as Images of Homomorphisms", () => {
       name: "⟨4⟩"
     };
     
-    // TODO: Add validation that S is actually a subgroup of Z8
-    // - Verify closure: 0+0=0, 0+4=4, 4+0=4, 4+4=0 (all in S)
-    // - Verify identity: 0 is in S
-    // - Verify inverses: 0⁻¹=0, 4⁻¹=4 (both in S)
+    // Validate that S is actually a subgroup of Z8
+    // Verify identity: 0 is in S
+    expect(S.elems).toContain(0);
+    
+    // Verify closure: for all a,b ∈ S, a+b ∈ S
+    for (const a of S.elems) {
+      for (const b of S.elems) {
+        const ab = Z8.op(a, b);
+        expect(S.elems).toContain(ab);
+      }
+    }
+    
+    // Verify inverses: for all a ∈ S, a⁻¹ ∈ S
+    for (const a of S.elems) {
+      const inv_a = Z8.inv(a);
+      expect(S.elems).toContain(inv_a);
+    }
     
     const incl = inclusionHom(Z8, S, "⟨4⟩ ↪ Z8");
     const analyzed = analyzeHom(incl);
@@ -79,10 +105,21 @@ describe("Theorem 7: Subgroups as Images of Homomorphisms", () => {
     const incl = inclusionHom(Z4, S, "⟨2⟩ ↪ Z4");
     const analyzed = analyzeHom(incl);
     
-    // TODO: Verify that the inclusion is actually a homomorphism
-    // - Check that analyzed.witnesses?.isHom is true
-    // - This requires implementing proper homomorphism verification in analyzeHom
-    // - Should verify f(s₁ ∘ s₂) = f(s₁) ∘ f(s₂) for all s₁, s₂ ∈ S
+    // Verify that the inclusion is actually a homomorphism
+    // Check that analyzed.witnesses?.isHom is true
+    expect(analyzed.witnesses?.isHom).toBe(true);
+    
+    // Manually verify homomorphism property: f(s₁ ∘ s₂) = f(s₁) ∘ f(s₂) for all s₁, s₂ ∈ S
+    for (const s1 of S.elems) {
+      for (const s2 of S.elems) {
+        const s1s2 = S.op(s1, s2);  // s₁ ∘ s₂ in S
+        const f_s1s2 = incl.map(s1s2);  // f(s₁ ∘ s₂)
+        const f_s1 = incl.map(s1);  // f(s₁)
+        const f_s2 = incl.map(s2);  // f(s₂)
+        const f_s1_f_s2 = Z4.op(f_s1, f_s2);  // f(s₁) ∘ f(s₂) in Z4
+        expect(Z4.eq(f_s1s2, f_s1_f_s2)).toBe(true);
+      }
+    }
     
     expect(analyzed.witnesses?.imageSubgroup).toBeDefined();
     const imageElems = analyzed.witnesses!.imageSubgroup!.elems.sort();
@@ -103,15 +140,10 @@ describe("Theorem 7: Subgroups as Images of Homomorphisms", () => {
       name: "Not a subgroup"
     };
     
-    // TODO: This should throw an error or return a validation failure
-    // - The inclusionHom function should validate that S is actually a subgroup
-    // - Should check closure, identity, and inverse properties
-    // - Currently this will pass but shouldn't - need to implement validation
-    
-    const incl = inclusionHom(Z6, notSubgroup, "Invalid ↪ Z6");
-    const analyzed = analyzeHom(incl);
-    
-    // This test will currently pass but shouldn't - the validation is missing
-    expect(analyzed.witnesses?.imageSubgroup).toBeDefined();
+    // This should throw an error because notSubgroup is not actually a subgroup
+    // The inclusionHom function validates that S is actually a subgroup
+    expect(() => {
+      inclusionHom(Z6, notSubgroup, "Invalid ↪ Z6");
+    }).toThrow(/Invalid subgroup/);
   });
 });

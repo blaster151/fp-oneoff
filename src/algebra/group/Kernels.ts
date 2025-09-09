@@ -5,14 +5,14 @@
 
 import { EnhancedGroup } from "./EnhancedGroup";
 import { createEnhancedHom as mkHom } from "./Hom";
-import type { GroupHom as EnhancedGroupHom } from "./Hom";
+import type { GroupHom } from "./Hom";
 
-export function kernel<A,B>(f: EnhancedGroupHom<A,B>): {
+export function kernel<A,B>(f: GroupHom<unknown,unknown,A,B>): {
   K: EnhancedGroup<A>,
-  include: EnhancedGroupHom<A,A>,
-  isKernel: <K0>(K0: EnhancedGroup<K0>, g: EnhancedGroupHom<K0,A>) => {
-    mediating?: EnhancedGroupHom<K0,A>,
-    unique?: (u: EnhancedGroupHom<K0,A>) => boolean
+  include: GroupHom<unknown,unknown,A,A>,
+  isKernel: <K0>(K0: EnhancedGroup<K0>, g: GroupHom<unknown,unknown,K0,A>) => {
+    mediating?: GroupHom<unknown,unknown,K0,A>,
+    unique?: (u: GroupHom<unknown,unknown,K0,A>) => boolean
   }
 } {
   const G = f.src, H = f.dst;
@@ -20,8 +20,9 @@ export function kernel<A,B>(f: EnhancedGroupHom<A,B>): {
   const H_e = H.id;
 
   // Build kernel as subgroup: {a ∈ G | f(a) = e_H}
+  const eqH = H.eq || ((a: any, b: any) => a === b);
   const kernelElems = G.elems ? 
-    G.elems.filter(a => H.eq(f.run(a), H_e)) : 
+    G.elems.filter(a => eqH((f as any).run?.(a) ?? (f as any).map(a), H_e)) : 
     [G.id]; // fallback for infinite case
 
   const K: EnhancedGroup<A> = {
@@ -29,25 +30,26 @@ export function kernel<A,B>(f: EnhancedGroupHom<A,B>): {
     elems: kernelElems,
     eq: G.eq,
     op: G.op, // inherited from G (kernel is subgroup)
-    e: G.id,   // same identity
+    id: G.id,   // same identity
     inv: G.inv, // inherited inverse
     laws: (G as any).laws // inherit laws from G (if available)
   } as any;
 
-  const include: EnhancedGroupHom<A,A> = mkHom(K, G, (a:A) => a);
+  const include: GroupHom<unknown,unknown,A,A> = mkHom(K, G, (a:A) => a);
 
-  const isKernel = <K0>(K0: EnhancedGroup<K0>, g: EnhancedGroupHom<K0,A>) => {
+  const isKernel = <K0>(K0: EnhancedGroup<K0>, g: GroupHom<unknown,unknown,K0,A>) => {
     // condition: f ∘ g = const_e (g maps into kernel)
     if (!K0.elems) return {}; // can't verify for infinite case
     
-    const cond = K0.elems.every(k => H.eq(f.run(g.run(k)), H_e));
+    const cond = K0.elems.every(k => eqH((f as any).run?.((g as any).run?.(k) ?? (g as any).map(k)) ?? (f as any).map((g as any).run?.(k) ?? (g as any).map(k)), H_e));
     if (!cond) return {};
     
-    const mediating: EnhancedGroupHom<K0,A> = mkHom(K0, K, (k: K0) => g.run(k));
+    const mediating: GroupHom<unknown,unknown,K0,A> = mkHom(K0, K, (k: K0) => (g as any).run?.(k) ?? (g as any).map(k));
     
-    const unique = (u: EnhancedGroupHom<K0,A>) => {
+    const unique = (u: GroupHom<unknown,unknown,K0,A>) => {
       if (!K0.elems) return true;
-      return K0.elems.every(k => G.eq(u.run(k), mediating.run(k)));
+      const eqG = G.eq || ((a: any, b: any) => a === b);
+      return K0.elems.every(k => eqG((u as any).run?.(k) ?? (u as any).map(k), (mediating as any).run?.(k) ?? (mediating as any).map(k)));
     };
     
     return { mediating, unique };

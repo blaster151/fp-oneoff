@@ -2,10 +2,11 @@ import { EquivalenceWitness, makeEquivalence } from "../../../category/Equivalen
 
 // Define group morphisms (simplified version for this specific implementation)
 export interface Group<A> {
+  elems: A[];
   id: A;
   op: (x: A, y: A) => A;
   inv: (x: A) => A;
-  eq: (x: A, y: A) => boolean;
+  eq: (x: A, b: A) => boolean;
 }
 
 export interface Homomorphism<A, B> {

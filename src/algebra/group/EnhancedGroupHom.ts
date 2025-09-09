@@ -29,7 +29,7 @@ export function mkHom<A, B>(
   return {
     src, dst, run,
     preservesOp: (x, y) => dst.eq(run(src.op(x, y)), dst.op(run(x), run(y))),
-    preservesId: () => dst.eq(run(src.e), dst.e),
+    preservesId: () => dst.eq(run(src.id), dst.id),
     preservesInv: (x) => dst.eq(run(src.inv(x)), dst.inv(run(x))),
   };
 }
