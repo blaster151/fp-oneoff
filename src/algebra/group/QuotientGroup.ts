@@ -1,4 +1,4 @@
-import { FiniteGroup } from "./Group";
+import { Group } from "./structures";
 import { Congruence } from "./Congruence";
 
 /** A quotient group G/≈. Cosets represented by a chosen representative. */
@@ -12,30 +12,28 @@ export function QuotientGroup<G>(C: Congruence<G>) {
 
   const op = (a: Coset<G>, b: Coset<G>): Coset<G> => norm(G.op(a.rep, b.rep));
   const inv = (a: Coset<G>): Coset<G> => norm(G.inv(a.rep));
-  const e   = norm((G as any).e ?? (G as any).id);
+  const id = norm(G.id);
 
-  // Generate all equivalence classes
-  const classes = new Map<string, Coset<G>>();
-  for (const g of G.elems) {
-    let found = false;
-    for (const existing of classes.values()) {
-      if (eqv(g, existing.rep)) {
-        found = true;
-        break;
+  // For finite groups, we can enumerate coset representatives
+  const elems: Coset<G>[] = [];
+  if (G.elems) {
+    const representatives: G[] = [];
+    for (const g of G.elems) {
+      // Check if g is already represented by an existing coset
+      if (!representatives.some(rep => eqv(g, rep))) {
+        representatives.push(g);
+        elems.push(norm(g));
       }
     }
-    if (!found) {
-      classes.set(JSON.stringify(g), norm(g));
-    }
   }
-  const elems = Array.from(classes.values());
 
-  const Q: FiniteGroup<Coset<G>> = {
+  const Q: Group<Coset<G>> = {
     elems,
-    id: e,
-    op,
-    inv,
-    eq: eqCoset
+    id, 
+    op, 
+    inv, 
+    eq: eqCoset,
+    name: `${G.name ?? 'G'}/≈`
   };
 
   return { Group: Q, norm, eqCoset };
