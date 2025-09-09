@@ -1,4 +1,6 @@
-import { Group } from "./structures";
+import { FiniteGroup } from "./Group";
+
+type Group<T> = FiniteGroup<T>;
 
 /**
  * Registry of canonical representative groups
@@ -7,7 +9,6 @@ import { Group } from "./structures";
 
 // Klein four-group (V₄) - the unique non-cyclic group of order 4
 export const KleinFour: Group<string> = {
-  label: "Klein Four-Group",
   elems: ["e", "a", "b", "c"],
   eq: (x: string, y: string) => x === y,
   op: (x: string, y: string) => {
@@ -21,7 +22,8 @@ export const KleinFour: Group<string> = {
     return "e"; // fallback
   },
   id: "e",
-  inv: (x: string) => x // all elements are self-inverse
+  inv: (x: string) => x, // all elements are self-inverse
+  name: "Klein Four-Group"
 };
 
 // Cyclic group Cₙ (standard form)
@@ -31,12 +33,12 @@ export function CyclicCanonical(n: number): Group<number> {
   }
   
   return {
-    label: `C${n}`,
     elems: Array.from({ length: n }, (_, i) => i),
     op: (a: number, b: number) => (a + b) % n,
     id: 0,
     inv: (a: number) => (n - (a % n)) % n,
-    eq: (a: number, b: number) => a === b
+    eq: (a: number, b: number) => a === b,
+    name: `C${n}`
   };
 }
 
@@ -57,7 +59,6 @@ export function DihedralCanonical(n: number): Group<string> {
   }
   
   return {
-    label: `D${n}`,
     elems,
     op: (x: string, y: string) => {
       // Parse elements
@@ -95,7 +96,8 @@ export function DihedralCanonical(n: number): Group<string> {
         return `r${(n - i) % n}`;
       }
     },
-    eq: (a: string, b: string) => a === b
+    eq: (a: string, b: string) => a === b,
+    name: `D${n}`
   };
 }
 
