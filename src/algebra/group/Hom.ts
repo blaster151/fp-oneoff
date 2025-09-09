@@ -24,6 +24,11 @@ export interface GroupHom<G,H, A=unknown, B=unknown> {
   kernel?(): import('./NormalSubgroup').NormalSubgroup<A>;
   /** Get image predicate */
   imagePredicate?(): (h: B) => boolean;
+  
+  // NOTE: The above interface methods are not implemented as instance methods.
+  // Instead, use the standalone functions kernel(f) and imagePredicate(f, G_elements)
+  // from this module. This maintains consistency with the functional approach
+  // used throughout the consolidated GroupHom machinery.
   /** Get factorization result */
   factorization?(eqH: import('../../types/eq.js').Eq<B>): any;
   
@@ -766,9 +771,29 @@ export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): import('./Nor
   // Kernel predicate: { g ∈ G | f(g) = e_H }
   const carrier = (g: A) => eqH(f.map(g), H.id);
   
-  // TODO: Add runtime verification that f is actually a homomorphism
-  // - Should verify respectsOp, preservesId, preservesInv before trusting kernel
-  // - The mathematical proof assumes f is a homomorphism, but we should validate
+  // Validate homomorphism properties on a sample of elements
+  // This ensures we're working with a legitimate homomorphism
+  const sampleSize = Math.min(10, G.elems.length);
+  const sample = G.elems.slice(0, sampleSize);
+  
+  for (let i = 0; i < sample.length; i++) {
+    for (let j = 0; j < sample.length; j++) {
+      const x = sample[i], y = sample[j];
+      // Check f(xy) = f(x)f(y)
+      if (!eqH(f.map(G.op(x, y)), H.op(f.map(x), f.map(y)))) {
+        throw new Error(`Not a homomorphism: f(${G.show?.(x) || x} ∘ ${G.show?.(y) || y}) ≠ f(${G.show?.(x) || x}) ∘ f(${G.show?.(y) || y})`);
+      }
+    }
+    // Check f(x⁻¹) = f(x)⁻¹
+    if (!eqH(f.map(G.inv(sample[i])), H.inv(f.map(sample[i])))) {
+      throw new Error(`Not a homomorphism: f(${G.show?.(G.inv(sample[i])) || G.inv(sample[i])}) ≠ f(${G.show?.(sample[i]) || sample[i]})⁻¹`);
+    }
+  }
+  
+  // Check f(e_G) = e_H
+  if (!eqH(f.map(G.id), H.id)) {
+    throw new Error(`Not a homomorphism: f(e_G) ≠ e_H`);
+  }
   
   const include = (g: A) => g;
   const N: import('./NormalSubgroup').Subgroup<A> = { carrier, include };
@@ -797,15 +822,11 @@ export function imagePredicate<A, B>(
   const H = f.target;
   const eqH = eqOf(H);
   
-  // If no elements provided, throw error (semi-decidable)
-  if (!G_elements) {
-    return (_h: B) => { 
-      throw new Error("imagePredicate requires G_elements for finite search strategy"); 
-    };
-  }
+  // If no elements provided, use the source group's elements
+  const elements = G_elements || f.source.elems;
   
   // For finite G, enumerate all elements and check f(g) = h
   return (h: B) => {
-    return G_elements.some(g => eqH(f.map(g), h));
+    return elements.some(g => eqH(f.map(g), h));
   };
 }
