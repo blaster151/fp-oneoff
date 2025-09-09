@@ -16,22 +16,23 @@ export function kernel<A,B>(f: EnhancedGroupHom<A,B>): {
   }
 } {
   const G = f.src, H = f.dst;
-  const H_e = H.e;
+  if (!G || !H) throw new Error("Kernel: source and target groups must be defined");
+  const H_e = H.id;
 
   // Build kernel as subgroup: {a ∈ G | f(a) = e_H}
   const kernelElems = G.elems ? 
     G.elems.filter(a => H.eq(f.run(a), H_e)) : 
-    [G.e]; // fallback for infinite case
+    [G.id]; // fallback for infinite case
 
   const K: EnhancedGroup<A> = {
     carrier: "finite",
     elems: kernelElems,
     eq: G.eq,
     op: G.op, // inherited from G (kernel is subgroup)
-    e: G.e,   // same identity
+    e: G.id,   // same identity
     inv: G.inv, // inherited inverse
-    laws: G.laws // inherit laws from G
-  };
+    laws: (G as any).laws // inherit laws from G (if available)
+  } as any;
 
   const include: EnhancedGroupHom<A,A> = mkHom(K, G, (a:A) => a);
 
