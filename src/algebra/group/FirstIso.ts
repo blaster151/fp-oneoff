@@ -69,7 +69,7 @@ export function quotientGroup<T>(G: FiniteGroup<T>, N: NormalSubgroup<T>): Finit
   const seen: boolean[] = G.elems.map(() => false);
   const cosets: Coset<T>[] = [];
 
-  const idxOf = (x: T) => G.elems!.findIndex(y => G.eq(x, y));
+  const idxOf = (x: T) => G.elems!.findIndex(y => eqOf(G)(x, y));
 
   for (let i = 0; i < G.elems.length; i++) {
     if (seen[i]) continue;
@@ -89,20 +89,20 @@ export function quotientGroup<T>(G: FiniteGroup<T>, N: NormalSubgroup<T>): Finit
 
   const eqCoset = (a: Coset<T>, b: Coset<T>) =>
     a.members.length === b.members.length &&
-    a.members.every(m => b.members.some(n => G.eq(m, n)));
+    a.members.every(m => b.members.some(n => eqOf(G)(m, n)));
 
   const opCoset = (a: Coset<T>, b: Coset<T>): Coset<T> => {
     const rep = G.op(a.rep, b.rep);
     // Find coset whose rep is in the same coset as rep
-    const belong = cosets.find(c => c.members.some(m => G.eq(m, rep)));
+    const belong = cosets.find(c => c.members.some(m => eqOf(G)(m, rep)));
     if (!belong) throw new Error("Internal error: missing coset.");
     return belong;
   };
 
-  const eCoset = cosets.find(c => c.members.some(m => G.eq(m, G.id)))!;
+  const eCoset = cosets.find(c => c.members.some(m => eqOf(G)(m, G.id)))!;
   const invCoset = (c: Coset<T>) => {
     const repInv = G.inv(c.rep);
-    const belong = cosets.find(k => k.members.some(m => G.eq(m, repInv)))!;
+    const belong = cosets.find(k => k.members.some(m => eqOf(G)(m, repInv)))!;
     return belong;
   };
 
@@ -146,16 +146,16 @@ export function firstIsomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   // Construct a section s : im(f) -> quo picking a representative in each preimage
   const classOf = (a: A) => {
     // find coset containing 'a'
-    return quotient.elems!.find(c => c.members.some(m => f.source.eq(m, a)))!;
+    return quotient.elems!.find(c => c.members.some(m => eqOf(f.source)(m, a)))!;
   };
 
   const from = (b: B): Coset<A> => {
     // find any a with f(a)=b (guaranteed since b ∈ im f)
     // We need to check against the actual image elements, not the full target group
-    if (!imageGrp.elems!.some(img => f.target.eq(img, b))) {
+    if (!imageGrp.elems!.some(img => eqOf(f.target)(img, b))) {
       throw new Error("Element not in image of f");
     }
-    const a = f.source.elems!.find((x: any) => f.target.eq(f.map(x), b));
+    const a = f.source.elems!.find((x: any) => eqOf(f.target)(f.map(x), b));
     if (!a) throw new Error("Internal error: element not in image.");
     return classOf(a);
   };
@@ -163,13 +163,13 @@ export function firstIsomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): {
   const leftInverse = () =>
     quotient.elems!.every(c => {
       const back = from(to(c));
-      return quotient.eq(back, c);
+      return eqOf(quotient)(back, c);
     });
 
   const rightInverse = () =>
     imageGrp.elems!.every(b => {
       const forth = to(from(b));
-      return f.target.eq(forth, b);
+      return eqOf(f.target)(forth, b);
     });
 
   const iso: GroupIso<Coset<A>, B> = {
