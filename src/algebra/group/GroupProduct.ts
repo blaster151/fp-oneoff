@@ -43,17 +43,17 @@ export function product<A,B>(G: EnhancedGroup<A>, H: EnhancedGroup<B>): {
     }
   };
 
-  const π1: EnhancedGroupHom<[A,B],A> = mkHom(P, G, ([a,_]) => a);
-  const π2: EnhancedGroupHom<[A,B],B> = mkHom(P, H, ([_,b]) => b);
+  const π1: EnhancedGroupHom<[A,B],A> = mkHom(P, G, (pair: [A,B]) => pair[0]);
+  const π2: EnhancedGroupHom<[A,B],B> = mkHom(P, H, (pair: [A,B]) => pair[1]);
 
   const pair = <K>(K: EnhancedGroup<K>, f: EnhancedGroupHom<K,A>, g: EnhancedGroupHom<K,B>) => {
-    const mediating: EnhancedGroupHom<K,[A,B]> = mkHom(K, P, (k: K) => [f.run(k), g.run(k)]);
+    const mediating: EnhancedGroupHom<K,[A,B]> = mkHom(K, P, (k: K) => [f.run?.(k) ?? f.map(k), g.run?.(k) ?? g.map(k)]);
     
     const uniqueness = (h: EnhancedGroupHom<K,[A,B]>) => {
       // uniqueness: if π1∘h = f and π2∘h = g then h = mediating (pointwise on finite carriers)
       if (!K.elems) return true; // assume true for infinite case
       return K.elems.every(k => {
-        const lhs = h.run(k), rhs = mediating.run(k);
+        const lhs = h.run?.(k) ?? h.map(k), rhs = mediating.run?.(k) ?? mediating.map(k);
         return G.eq(lhs[0], rhs[0]) && H.eq(lhs[1], rhs[1]);
       });
     };
