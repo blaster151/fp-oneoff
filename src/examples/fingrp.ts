@@ -53,7 +53,7 @@ export const FinGrp: SmallCategory = {
     if (F.dst !== G.src) throw new Error("non-composable");
     const map: Record<string, Elem> = {};
     for (const x of F.src.elems) {
-      map[String(x)] = G.map[String(F.map[String(x)]!)]!;
+      map[String(x)] = G.map[String(F.map[String(x)])];
     }
     return { src: F.src, dst: G.dst, map } as Hom;
   },
@@ -75,7 +75,7 @@ export const FinGrp: SmallCategory = {
         if (isHom(h)) maps.push(h);
         return;
       }
-      const x = A.elems[i]!;
+      const x = A.elems[i];
       for (const y of B.elems) {
         current[String(x)] = y;
         assign(i + 1, current);
@@ -89,11 +89,11 @@ export const FinGrp: SmallCategory = {
       if (h.map[String(A.id)] !== B.id) return false;
       // operation preservation
       for (const x of A.elems) for (const y of A.elems) {
-        const xy = A.op[String(x)]![String(y)]!;
-        const fx = h.map[String(x)]!;
-        const fy = h.map[String(y)]!;
-        const fxy = h.map[String(xy)]!;
-        const fx_mul_fy = B.op[String(fx)]![String(fy)]!;
+        const xy = A.op[String(x)][String(y)];
+        const fx = h.map[String(x)];
+        const fy = h.map[String(y)];
+        const fxy = h.map[String(xy)];
+        const fx_mul_fy = B.op[String(fx)][String(fy)];
         if (fxy !== fx_mul_fy) return false;
       }
       return true;

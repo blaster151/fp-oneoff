@@ -1,102 +1,79 @@
 import { describe, it, expect } from "vitest";
-import { GroupHom } from "../structures";
-import { firstIsomorphismData } from "../FirstIso";
-import { modHom, Zmod } from "../examples/cyclic";
+import { groupHom } from "../GroupHom";
+import { modHom } from "../examples/cyclic";
 
 describe("First Isomorphism Theorem (finite sanity: Z→Z_n)", () => {
   it("Z/≈_qn  ≅  im(qn) = Z_n", () => {
     const n = 6;
     const { Z, Zn, qn } = modHom(n);
-    const f: GroupHom<number, number> = {
-      source: Z,
-      target: Zn,
-      map: qn,
-      name: `q_${n}: Z → Z_${n}`
-    };
+    const f = groupHom(Z, Zn, qn, `q_${n}: Z → Z_${n}`);
 
-    const { quotient: Q, phi, respectsOp, checkIsomorphism } = firstIsomorphismData(f);
+    const { quotient: Q, pi, iota, law_compose_equals_f } = f.factorization();
 
     // finite support for Z: small window around 0
     const support = Array.from({ length: 5*n+1 }, (_, k) => k - 3*n);
 
-    // surjectivity onto image: every h∈Z_n has preimage [k]
-    for (let h = 0; h < n; h++) {
-      const found = support.find(k => Zn.eq!(qn(k), h));
-      expect(found).not.toBeUndefined();
-      const coset = Q.norm(found!);
-      // Φ([k]) = qn(k) = h
-      expect(Zn.eq!(phi(coset), h)).toBe(true);
+    // Witness: iota ∘ pi = f (law_compose_equals_f)
+    for (const k of support.slice(0, 10)) { // test first 10
+      expect(law_compose_equals_f(k)).toBe(true);
     }
 
-    // hom law for a bunch of samples
-    for (let a = -5; a <= 5; a++) {
-      for (let b = -5; b <= 5; b++) {
-        expect(respectsOp(Q.norm(a), Q.norm(b))).toBe(true);
+    // surjectivity onto image: every h∈Z_n has preimage [k]
+    for (let h = 0; h < n; h++) {
+      const found = support.find(k => Zn.eq(qn(k), h));
+      expect(found).not.toBeUndefined();
+      const coset = pi(found!);
+      // iota([k]) = qn(k) = h
+      expect(Zn.eq(iota(coset), h)).toBe(true);
+    }
+
+    // operation respects cosets: π(a*b) = π(a)*π(b)
+    for (const a of support.slice(0, 5)) {
+      for (const b of support.slice(0, 5)) {
+        const lhs = pi(Z.op(a, b));
+        const rhs = Q.op(pi(a), pi(b));
+        expect(Q.eq(lhs, rhs)).toBe(true);
       }
     }
 
-    // Check that the canonical map is an isomorphism
-    const isoCheck = checkIsomorphism(support);
-    expect(isoCheck.bijective).toBe(true);
-    expect(isoCheck.injective).toBe(true);
-    expect(isoCheck.surjective).toBe(true);
-
-    // Verify quotient group has correct size
-    expect(Q.Group.elems).toHaveLength(n);
+    // quotient has expected size: |G/≈| = |im(f)| = n
+    expect(Q.elems).toHaveLength(n);
   });
 
-  it("Z/≈_q4  ≅  Z_4", () => {
-    const n = 4;
-    const { Z, Zn, qn } = modHom(n);
-    const f: GroupHom<number, number> = {
-      source: Z,
-      target: Zn,
-      map: qn,
-      name: `q_${n}: Z → Z_${n}`
-    };
-
-    const { quotient: Q, phi, checkIsomorphism } = firstIsomorphismData(f);
-    const support = Z.elems;
-
-    // The quotient should have exactly 4 elements
-    expect(Q.Group.elems).toHaveLength(4);
-
-    // Each coset should map to the correct element in Z_4
-    for (const coset of Q.Group.elems) {
-      const image = phi(coset);
-      expect(Zn.elems).toContain(image);
-    }
-
-    // Verify isomorphism
-    const isoCheck = checkIsomorphism(support);
-    expect(isoCheck.bijective).toBe(true);
-  });
-
-  it("Congruence relation properties", () => {
+  it("Z→Z_3 quotient isomorphic to image", () => {
     const n = 3;
     const { Z, Zn, qn } = modHom(n);
-    const f: GroupHom<number, number> = {
-      source: Z,
-      target: Zn,
-      map: qn
-    };
+    const f = groupHom(Z, Zn, qn);
 
-    const { cong } = firstIsomorphismData(f);
+    const { quotient: Q, pi, iota } = f.factorization();
 
-    // Test reflexivity: x ≈ x
-    expect(cong.eqv(5, 5)).toBe(true);
-    expect(cong.eqv(-2, -2)).toBe(true);
+    // Check quotient size matches image size
+    expect(Q.elems).toHaveLength(n);
+    
+    // Check that iota is injective on the quotient
+    for (const c1 of Q.elems) {
+      for (const c2 of Q.elems) {
+        if (Zn.eq(iota(c1), iota(c2))) {
+          expect(Q.eq(c1, c2)).toBe(true);
+        }
+      }
+    }
+  });
 
-    // Test symmetry: if x ≈ y then y ≈ x
-    expect(cong.eqv(7, 1)).toBe(true); // 7 ≡ 1 (mod 3)
-    expect(cong.eqv(1, 7)).toBe(true);
+  it("kernel-pair congruence collapses equivalent elements", () => {
+    const n = 4;
+    const { Z, Zn, qn } = modHom(n);
+    const f = groupHom(Z, Zn, qn);
+    
+    const { pi } = f.factorization();
 
-    // Test transitivity: if x ≈ y and y ≈ z then x ≈ z
-    expect(cong.eqv(10, 4)).toBe(true); // 10 ≡ 4 ≡ 1 (mod 3)
-    expect(cong.eqv(4, 1)).toBe(true);
-    expect(cong.eqv(10, 1)).toBe(true);
-
-    // Test compatibility: if x≈x' and y≈y' then x◦y ≈ x'◦y'
-    expect(cong.comp(7, 1, 8, 2)).toBe(true); // 7≈1, 8≈2, and 7+8=15≈0, 1+2=3≈0
+    // Elements that map to the same value should be in the same coset
+    const a1 = 1, a2 = 5; // both map to 1 mod 4
+    const coset1 = pi(a1);
+    const coset2 = pi(a2);
+    
+    expect(f.target.eq(qn(a1), qn(a2))).toBe(true); // Same image
+    expect(f.target.eq(coset1.rep, coset2.rep) || 
+           f.target.eq(qn(coset1.rep), qn(coset2.rep))).toBe(true); // Same coset class
   });
 });

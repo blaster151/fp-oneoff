@@ -1,74 +1,59 @@
-# Quotients from Congruences; Images from Homomorphisms (Smith §2.7, Thm 9)
+# Quotients, kernel pairs, and factorization (Smith §2.7, Thm 6–9)
 
-**Theorem.** For a homomorphism \(f:G→H\), the relation \(x≈y \iff f(x)=f(y)\) is a group **congruence**.
-The image of \(f\) is (isomorphic to) the quotient \(G/≈\).
-Conversely, every quotient \(G/≈\) arises as the image of some hom \(f\) from \(G\).
+**Thm 6 (Image subgroup).** For a homomorphism \(f:G\to H\), the set \(f[G]\) with the
+restricted operation is a subgroup of \(H\).
+
+**Thm 8 (Kernel).** The kernel \(K=\{x\in G \mid f(x)=e_H\}\) is a normal subgroup of \(G\).
+
+**Thm 9 (Image ≅ Quotient).**
+Define \(x \sim y \iff f(x)=f(y)\). This is a **congruence** on \(G\).
+Hence the quotient group \(G/{\sim}\) exists and \(f\) factors as
+\[
+  G \xrightarrow{\pi} G/{\sim} \xrightarrow{\iota} H
+\]
+with \(\iota\!\circ\!\pi=f\) and \(G/{\sim} \cong \mathrm{im}(f)\).
+Conversely, every quotient \(G/{\sim}\) arises as the image of the canonical
+projection \(f_\sim(g)=[g]\).
 
 **Operationalization.**
-- `congruenceFromHom(G,H,f)` builds the kernel-pair congruence.
-- `QuotientGroup(cong)` constructs \(G/≈\) with coset reps.
-- `firstIsomorphismData(F)` returns the canonical \(\Phi: G/≈_f → im(f)\) and law checks.
+- `Congruence`, `quotientGroup`, and `GroupHom.factorization()`.
+- Test: `iota ∘ pi = f`, `|G/≈| = |im(f)|`, homomorphism laws for `iota`.
 
-**Next unlock:** First Isomorphism Theorem as an explicit `GroupIso`.
+*Source:* Peter Smith, *Introduction to Category Theory*, §2.7.
 
-## Mathematical Background
+---
+**Proof sketch (Smith §2.7).**
+- Kernel-pair relation ≈ from f is an equivalence.
+- Compatibility with group operation ⇒ ≈ is a congruence.
+- Hence G/≈ is a group; im(f) ≅ G/≈.
+- Conversely, any quotient G/≈ arises as im(f_≈).
+Thus every hom f factors: G → G/≈ → H.
 
-### Congruence Relations
+👉 So the new raw material is basically the **operational law**:
+ *Any hom f can (and should) be represented canonically as quotient ∘ inclusion.*
 
-A **congruence** on a group G is an equivalence relation ≈ that is compatible with the group operation:
-- If x ≈ x' and y ≈ y', then x∘y ≈ x'∘y'
+---
 
-Given any homomorphism f: G → H, we can define a congruence by:
-- x ≈ y ⟺ f(x) = f(y)
+**Additions.**
+- `imageSubgroup(f)` realizes Thm 6 (im(f) is a subgroup).
+- `kernelNormalSubgroup(f)` realizes Thm 8 (ker(f) is normal).
+- Both now wired through `Eq` interface for structural equality, not `.show` hacks.
 
-This is called the **kernel-pair** congruence of f.
-
-### Quotient Groups
-
-Given a congruence ≈ on G, we can form the quotient group G/≈ where:
-- Elements are equivalence classes [g] = {h ∈ G : h ≈ g}
-- Operation: [g₁] ∘ [g₂] = [g₁ ∘ g₂]
-- Identity: [e]
-- Inverse: [g]⁻¹ = [g⁻¹]
-
-The compatibility property ensures this is well-defined.
-
-### First Isomorphism Theorem
-
-For any homomorphism f: G → H:
-1. The kernel-pair congruence x ≈ y ⟺ f(x) = f(y) is a group congruence
-2. There is a canonical isomorphism Φ: G/≈ → im(f) given by Φ([g]) = f(g)
-3. This isomorphism makes the following diagram commute:
-   ```
-   G ---f---> H
-   |          ^
-   |π         |inclusion
-   v          |
-   G/≈ --Φ--> im(f)
-   ```
+These make Thm 9's factorization canonical:  
+\[
+  f = \iota \circ \pi : G \to G/{\sim} \to H
+\]
+with \(\mathrm{im}(f)\) realized as a subgroup of \(H\) and \(\ker(f)\) as a normal subgroup of \(G\).
 
 ## Implementation Details
 
-### Files Created
-- `src/algebra/group/Congruence.ts` - Congruence relations and kernel-pair construction
-- `src/algebra/group/QuotientGroup.ts` - Quotient group construction G/≈
-- `src/algebra/group/FirstIso.ts` - First isomorphism theorem machinery
-- `src/algebra/group/__tests__/first-iso.test.ts` - Tests for Z → Z_n examples
+The factorization method now accepts an optional `Eq<H>` parameter:
+- `factorization(eqH?: Eq<H>)` uses custom equality for target group elements
+- Falls back to `target.eq` when no custom equality provided
+- Enables flexible congruence relations beyond string-based equality
 
-### Key Functions
-- `congruenceFromHom(G, H, f)` - Creates kernel-pair congruence
-- `QuotientGroup(cong)` - Constructs quotient group
-- `firstIsomorphismData(F)` - Complete first isomorphism theorem data
-
-### Example Usage
+Example usage:
 ```typescript
-import { firstIsomorphismData } from "./FirstIso";
-import { modHom } from "./examples/cyclic";
-
-const { Z, Zn, qn } = modHom(6);
-const f = { source: Z, target: Zn, map: qn };
-const { quotient: Q, phi, checkIsomorphism } = firstIsomorphismData(f);
-
-// Q.Group is isomorphic to Z_6
-// phi: Q.Group → Z_6 is the canonical isomorphism
+const eqZ4: Eq<number> = { eq: (a,b) => (a % 4) === (b % 4) };
+const { quotient, pi, iota, law_compose_equals_f } = f.factorization(eqZ4);
 ```

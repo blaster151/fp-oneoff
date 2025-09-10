@@ -10,13 +10,11 @@ describe("Kernel as equalizer in Grp", () => {
     // Kernel should contain elements that map to identity in H
     expect(K.elems).toContain(0);
     expect(K.elems).toContain(3);
-    expect(K.elems?.length).toBe(2);
+    expect(K.elems.length).toBe(2);
 
     // check inclusion: f∘i maps kernel elements to identity
-    if (K.elems) {
-      for (const a of K.elems) {
-        expect(f.run(include.run(a))).toBe(0);
-      }
+    for (const a of K.elems) {
+      expect(f.map(include.map(a))).toBe(0);
     }
 
     // universal property: any g:K→G with f∘g = const_e factors uniquely through K
@@ -37,20 +35,17 @@ describe("Kernel as equalizer in Grp", () => {
     // Kernel should be {0, 2} - the even elements
     expect(K.elems).toContain(0);
     expect(K.elems).toContain(2);
-    expect(K.elems?.length).toBe(2);
+    expect(K.elems.length).toBe(2);
 
     // Check that kernel is closed under group operation
-    if (K.elems) {
-      for (const a of K.elems) {
-        for (const b of K.elems) {
-          const product = K.op(a, b);
-          expect(K.elems.includes(product)).toBe(true);
-        }
+    for (const a of K.elems) {
+      for (const b of K.elems) {
+        const product = K.op(a, b);
+        expect(K.elems.includes(product)).toBe(true);
       }
     }
 
     // Check inclusion is a homomorphism
-    expect(include.preservesOp(0, 2)).toBe(true);
-    expect(include.preservesId()).toBe(true);
+    expect(include.witnesses?.isHom).toBe(true);
   });
 });

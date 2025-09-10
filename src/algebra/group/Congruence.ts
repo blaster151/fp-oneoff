@@ -1,25 +1,41 @@
 import { Group } from "./structures";
 
-export type Eq<G> = (x: G, y: G) => boolean;
+// Smith §2.7 Thm 9: kernel-pair relation from a hom is a congruence.
+// A congruence ≈ on a group (G,*,e) is an equivalence relation
+// compatible with * on both sides: x≈y ⇒ z*x≈z*y and x*z≈y*z.
 
-/** A congruence ≈ on a group G: an equivalence relation compatible with op. */
+export type Equiv<G> = (x: G, y: G) => boolean;
+
 export interface Congruence<G> {
-  readonly G: Group<G>;
-  readonly eqv: Eq<G>; // equivalence: reflexive/symmetric/transitive (caller responsible)
-  /** Compatibility: if x≈x' and y≈y' then x◦y ≈ x'◦y' */
-  readonly comp: (x: G, x1: G, y: G, y1: G) => boolean;
+  readonly eq: Equiv<G>;
 }
 
-/** Kernel-pair congruence from a homomorphism f: x≈y ⇔ f(x)=f(y). */
+export function isCongruence<G>(
+  elems: readonly G[],
+  op: (a: G, b: G) => G,
+  eq: Equiv<G>
+): boolean {
+  // reflexive + symmetric + (optional) transitive spot-check
+  for (const x of elems) if (!eq(x, x)) return false;
+  for (const x of elems) for (const y of elems) {
+    if (eq(x, y) !== eq(y, x)) return false;
+  }
+  // Compatibility left/right
+  for (const x of elems) for (const y of elems) if (eq(x, y)) {
+    for (const z of elems) {
+      if (!eq(op(z, x), op(z, y))) return false;
+      if (!eq(op(x, z), op(y, z))) return false;
+    }
+  }
+  return true;
+}
+
+// Kernel-pair congruence from a homomorphism f: x≈y ⇔ f(x)=f(y).
 export function congruenceFromHom<G, H>(
-  G: Group<G>, H: Group<H>, f: (g: G) => H
+  elems: readonly G[],
+  f: (g: G) => H,
+  eqH: (a: H, b: H) => boolean
 ): Congruence<G> {
-  const eqH = H.eq ?? ((a: H, b: H) => a === b);
-  const eqv: Eq<G> = (x, y) => eqH(f(x), f(y));
-  const comp = (x: G, x1: G, y: G, y1: G) => {
-    // Check if x≈x' and y≈y' implies x◦y ≈ x'◦y'
-    // This follows from f being a homomorphism: f(x◦y) = f(x)◦f(y)
-    return eqH(f(G.op(x, y)), f(G.op(x1, y1)));
-  };
-  return { G, eqv, comp };
+  const eq: Equiv<G> = (x, y) => eqH(f(x), f(y));
+  return { eq };
 }

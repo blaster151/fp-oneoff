@@ -20,7 +20,12 @@ const known: Map<string, IsoClassInfo> = new Map();
   add(V4(), { 
     name: "V4 (Klein four)", 
     order: 4, 
-    notes: ["Z2 × Z2", "every element self-inverse"],
+    notes: [
+      "Z2 × Z2", 
+      "every element self-inverse",
+      "Identical up to isomorphism with K1, K2, K3",
+      "See docs/math/notes/iso-automorphism.md §Identical up to isomorphism for abstract vs. concrete discussion"
+    ],
     properties: ["abelian", "non-cyclic"],
     crossRef: "docs/math/notes/iso-automorphism.md §Identical up to isomorphism for abstract vs. concrete discussion"
   });

@@ -1,16 +1,9 @@
-// Core Category interface - the "generous arena" for mathematical structures
 export interface Category<Obj, Mor> {
-  id: (o: Obj) => Mor;
-  compose: <A,B,C>(f: Mor, g: Mor) => Mor;
-  
-  // Optional: equality and law witnesses
-  eqObj?: (a: Obj, b: Obj) => boolean;
-  eqMor?: (f: Mor, g: Mor) => boolean;
-  
-  // Law witnesses for verification
-  laws?: {
-    leftIdentity?: <A>(obj: Obj, f: Mor) => boolean;
-    rightIdentity?: <A>(obj: Obj, f: Mor) => boolean;
-    associativity?: <A,B,C,D>(f: Mor, g: Mor, h: Mor) => boolean;
-  };
+  /** identity on each object */
+  id: <A extends Obj>(o: A) => Mor;
+
+  /** composition (g ∘ f).  NOTE: first f, then g. */
+  compose: <A extends Obj, B extends Obj, C extends Obj>(
+    f: Mor, g: Mor
+  ) => Mor;
 }

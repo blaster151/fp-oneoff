@@ -4,6 +4,8 @@ import { createEnhancedHom as mkHom } from "../../algebra/group/Hom";
 import type { GroupHom as EnhancedGroupHom } from "../../algebra/group/Hom";
 import { Category } from "../core/Category";
 import { GroupCategory } from "./GroupCategory";
+import { Functor } from "../core/Category";
+import { Grp, GrpObj, GrpHom, asGrpObj } from "./Grp";
 
 export function oneObjectCategory<A>(G: EnhancedGroup<A>): Category<EnhancedGroup<A>, EnhancedGroupHom<A,A>> {
   const id: EnhancedGroupHom<A,A> = GroupCategory.id(G);
@@ -136,3 +138,28 @@ export function finiteFullCategory(
     eqMor: (f, g) => GroupCategory.eqMor!(f, g)
   };
 }
+
+// Inclusion functors from subcategories to the mega-category Grp
+// Note: These are commented out due to type compatibility issues between EnhancedGroup and FiniteGroup
+// They would need to be reimplemented when the type systems are aligned
+
+// // Inclusion: identities-only subcategory  ↪  Grp
+// export function includeIdentitiesOnly(): Functor<any, any, GrpObj, GrpHom> {
+//   return {
+//     source: identitiesOnlyCategory([]), // placeholder - would need actual groups
+//     target: Grp,
+//     onObj: asGrpObj,
+//     onMor: (f) => f as unknown as GrpHom
+//   };
+// }
+
+// // Inclusion: finite groups + all homs  ↪  Grp
+// export function includeFiniteAllHoms(fin: ReturnType<typeof finiteFullCategory>):
+//   Functor<any, any, GrpObj, GrpHom> {
+//   return {
+//     source: fin,
+//     target: Grp,
+//     onObj: asGrpObj,
+//     onMor: (f) => f as unknown as GrpHom
+//   };
+// }

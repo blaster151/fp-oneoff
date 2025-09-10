@@ -16,6 +16,3 @@
 **Next**
 - Replace `pushout` with actual amalgamated free product modulo normal closure and prove UP tests.
 - Generalize `firstIso` proof sketch to non-finite (by witnesses rather than enumeration).
-
-*Code:* `src/cat/grp/first_iso.ts`, `src/cat/grp/limits.ts`, `src/cat/grp/recognition.ts`  
-*Tests:* `src/cat/grp/__tests__/grp_first_iso_limits.test.ts`

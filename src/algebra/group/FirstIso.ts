@@ -1,76 +1,182 @@
-import { Group, GroupHom } from "./structures";
-import { congruenceFromHom } from "./Congruence";
-import { QuotientGroup, Coset } from "./QuotientGroup";
+// Traceability: Smith §2.8 – First Isomorphism Theorem: G/ker(f) ≅ im(f)
 
-/**
- * Given a hom f: G→H, build:
- *  - the congruence ≈_f (x≈y ⇔ f(x)=f(y))
- *  - the quotient group Q = G/≈_f
- *  - the canonical hom Φ: Q → im(f) (as a subgroup predicate of H)
- * For finite examples we verify Φ is an isomorphism by exhaustive check.
- */
-export function firstIsomorphismData<G, H>(
-  F: GroupHom<G, H>
-) {
-  const { source: G, target: H, map: f } = F;
+import { FiniteGroup, eqOf } from "./Group";
+import { GroupHom, hom, compose, analyzeHom } from "./Hom";
 
-  // 1) congruence
-  const cong = congruenceFromHom(G, H, f);
+// --- Kernel and image ---
 
-  // 2) quotient
-  const Q = QuotientGroup(cong);
+export function kernel<A, B>(f: GroupHom<unknown, unknown, A, B>): {
+  K: FiniteGroup<A>;
+  include: GroupHom<unknown, unknown, A, A>;
+} {
+  const G = f.source;
+  const H = f.target;
+  const eqH = eqOf(H);
+  
+  const kernelElems = G.elems.filter(a => eqH(f.map(a), H.id));
+  
+  const K: FiniteGroup<A> = {
+    elems: kernelElems,
+    eq: G.eq,
+    op: G.op,
+    id: G.id,
+    inv: G.inv,
+    name: `ker(${f.name || 'f'})`
+  };
+  
+  const include: GroupHom<unknown, unknown, A, A> = hom(K, G, (a: A) => a, "ι");
+  
+  return { K, include };
+}
 
-  // 3) image predicate (extensible; for tests we pass finite carrier)
-  const inImage = (h: H, support: G[]): boolean =>
-    support.some(g => {
-      const eqH = H.eq ?? ((a: H, b: H) => a === b);
-      return eqH(f(g), h);
+export function image<A, B>(f: GroupHom<unknown, unknown, A, B>): {
+  im: FiniteGroup<B>;
+  include: GroupHom<unknown, unknown, B, B>;
+} {
+  const H = f.target;
+  const eqH = eqOf(H);
+  
+  // Get unique image elements
+  const imageElems = f.source.elems.map(f.map);
+  const unique = imageElems.filter((b, i) => 
+    imageElems.findIndex(bb => eqH(bb, b)) === i
+  );
+  
+  const im: FiniteGroup<B> = {
+    elems: unique,
+    eq: H.eq,
+    op: H.op,
+    id: H.id,
+    inv: H.inv,
+    name: `im(${f.name || 'f'})`
+  };
+  
+  const include: GroupHom<unknown, unknown, B, B> = hom(im, H, (b: B) => b, "ι");
+  
+  return { im, include };
+}
+
+// --- Quotient groups ---
+
+export type Coset<A> = { rep: A; members: A[] };
+
+export function quotientGroup<A>(G: FiniteGroup<A>, K: FiniteGroup<A>): FiniteGroup<Coset<A>> {
+  const eqG = eqOf(G);
+  
+  // Partition G.elems into cosets gK
+  const seen: boolean[] = G.elems.map(() => false);
+  const cosets: Coset<A>[] = [];
+  
+  const idxOf = (x: A) => G.elems.findIndex(y => eqG(x, y));
+  
+  for (let i = 0; i < G.elems.length; i++) {
+    if (seen[i]) continue;
+    const g = G.elems[i];
+    
+    // members = { g * k | k in K }
+    const members: A[] = [];
+    for (const x of G.elems) {
+      if (K.elems.some(k => eqG(x, G.op(g, k)))) {
+        members.push(x);
+        const j = idxOf(x);
+        if (j >= 0) seen[j] = true;
+      }
+    }
+    cosets.push({ rep: g, members });
+  }
+  
+  const eqCoset = (a: Coset<A>, b: Coset<A>) =>
+    a.members.length === b.members.length &&
+    a.members.every(m => b.members.some(n => eqG(m, n)));
+  
+  const opCoset = (a: Coset<A>, b: Coset<A>): Coset<A> => {
+    const rep = G.op(a.rep, b.rep);
+    const belong = cosets.find(c => c.members.some(m => eqG(m, rep)));
+    if (!belong) throw new Error("Internal error: missing coset.");
+    return belong;
+  };
+  
+  const eCoset = cosets.find(c => c.members.some(m => eqG(m, G.id)))!;
+  const invCoset = (c: Coset<A>) => {
+    const repInv = G.inv(c.rep);
+    const belong = cosets.find(k => k.members.some(m => eqG(m, repInv)))!;
+    return belong;
+  };
+  
+  return {
+    elems: cosets,
+    eq: eqCoset,
+    op: opCoset,
+    id: eCoset,
+    inv: invCoset,
+    name: `${G.name || 'G'}/${K.name || 'K'}`
+  };
+}
+
+// --- First Isomorphism Theorem: G/ker(f) ≅ im(f) ---
+
+export interface GroupIso<A, B> {
+  source: FiniteGroup<A>;
+  target: FiniteGroup<B>;
+  to: GroupHom<unknown, unknown, A, B>;
+  from: GroupHom<unknown, unknown, B, A>;
+  leftInverse: () => boolean;  // from∘to = id
+  rightInverse: () => boolean; // to∘from = id
+}
+
+export function firstIsomorphism<A, B>(f: GroupHom<unknown, unknown, A, B>): {
+  quotient: FiniteGroup<Coset<A>>;
+  imageGrp: FiniteGroup<B>;
+  iso: GroupIso<Coset<A>, B>;
+} {
+  const { K } = kernel(f);
+  const quotient = quotientGroup(f.source, K);
+  const { im: imageGrp } = image(f);
+  
+  // φ([g]) = f(g)
+  const to = hom(quotient, imageGrp, (c: Coset<A>) => f.map(c.rep), "φ");
+  
+  // For finite groups, construct a section s : im(f) -> quotient
+  const from = hom(imageGrp, quotient, (b: B) => {
+    // Find any coset containing an element that maps to b
+    const eqH = eqOf(f.target);
+    const coset = quotient.elems.find(c => 
+      c.members.some(a => eqH(f.map(a), b))
+    );
+    if (!coset) throw new Error("Internal error: element not in image.");
+    return coset;
+  }, "s");
+  
+  const leftInverse = () => {
+    const composed = compose(from, to);
+    const analyzed = analyzeHom(composed);
+    const eqQuotient = eqOf(quotient);
+    
+    return quotient.elems.every(c => {
+      const back = analyzed.map(c);
+      return eqQuotient(back, c);
     });
-
-  // 4) canonical hom Φ([g]) = f(g)
-  const phi = (c: Coset<G>) => f(c.rep);
-
-  // homomorphism laws hold by definition; we can provide a checker
-  const respectsOp = (a: Coset<G>, b: Coset<G>) => {
-    const eqH = H.eq ?? ((a: H, b: H) => a === b);
-    return eqH(phi(Q.Group.op(a, b)), H.op(phi(a), phi(b)));
   };
-
-  // For finite groups, we can also check injectivity and surjectivity
-  const checkIsomorphism = (support: G[]) => {
-    if (!Q.Group.elems || !H.elems) {
-      return { injective: null, surjective: null, bijective: null };
-    }
-
-    // Check injectivity: if φ([g₁]) = φ([g₂]) then [g₁] = [g₂]
-    let injective = true;
-    for (const c1 of Q.Group.elems) {
-      for (const c2 of Q.Group.elems) {
-        const eqH = H.eq ?? ((a: H, b: H) => a === b);
-        if (eqH(phi(c1), phi(c2)) && !Q.eqCoset(c1, c2)) {
-          injective = false;
-          break;
-        }
-      }
-      if (!injective) break;
-    }
-
-    // Check surjectivity onto image: every element in im(f) has a preimage
-    const imageElements = support.map(f);
-    let surjective = true;
-    for (const h of imageElements) {
-      const hasPreimage = Q.Group.elems.some(c => {
-        const eqH = H.eq ?? ((a: H, b: H) => a === b);
-        return eqH(phi(c), h);
-      });
-      if (!hasPreimage) {
-        surjective = false;
-        break;
-      }
-    }
-
-    return { injective, surjective, bijective: injective && surjective };
+  
+  const rightInverse = () => {
+    const composed = compose(to, from);
+    const analyzed = analyzeHom(composed);
+    const eqH = eqOf(f.target);
+    
+    return imageGrp.elems.every(b => {
+      const forth = analyzed.map(b);
+      return eqH(forth, b);
+    });
   };
-
-  return { cong, quotient: Q, phi, respectsOp, inImage, checkIsomorphism };
+  
+  const iso: GroupIso<Coset<A>, B> = {
+    source: quotient,
+    target: imageGrp,
+    to,
+    from,
+    leftInverse,
+    rightInverse
+  };
+  
+  return { quotient, imageGrp, iso };
 }

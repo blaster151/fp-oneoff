@@ -11,11 +11,9 @@ describe("Product in Grp satisfies the universal property", () => {
     const { mediating, uniqueness } = pair(K, f, g);
 
     // commuting triangles: π1∘⟨f,g⟩ = f and π2∘⟨f,g⟩ = g
-    if (K.elems) {
-      for (const k of K.elems) {
-        expect(π1.run(mediating.run(k))).toBe(f.run(k));
-        expect(π2.run(mediating.run(k))).toBe(g.run(k));
-      }
+    for (const k of K.elems) {
+      expect(π1.map(mediating.map(k))).toBe(f.map(k));
+      expect(π2.map(mediating.map(k))).toBe(g.map(k));
     }
 
     // uniqueness: any other h with same projections equals mediating
@@ -27,11 +25,11 @@ describe("Product in Grp satisfies the universal property", () => {
     const { P, π1, π2 } = product(G, H);
 
     // Check product has correct size
-    expect(P.elems?.length).toBe(6);
+    expect(P.elems.length).toBe(6);
     
-    // Check projections preserve structure
-    expect(π1.preservesOp([0, 0], [1, 1])).toBe(true);
-    expect(π2.preservesOp([0, 0], [1, 1])).toBe(true);
+    // Check projections are homomorphisms
+    expect(π1.witnesses?.isHom).toBe(true);
+    expect(π2.witnesses?.isHom).toBe(true);
     
     // Check product operation
     const x: [number, number] = [1, 2];
