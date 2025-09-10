@@ -40,21 +40,25 @@ export type UniverseInclusion<SmallU extends UniverseId, BigU extends UniverseId
   readonly big: UToken<BigU>;
 };
 
-// Example concrete universes (more can be added):
-export const U0: UToken<Brand<"U0">> = { U: { __brand: "U0" } as Brand<"U0"> };
-export const U1: UToken<Brand<"U1">> = { U: { __brand: "U1" } as Brand<"U1"> };
+// Define specific universe types
+export type U0Id = Brand<"U0"> & UniverseId;
+export type U1Id = Brand<"U1"> & UniverseId;
 
-export const U0_in_U1: UniverseInclusion<Brand<"U0">, Brand<"U1">> = { small: U0, big: U1 };
+// Example concrete universes (more can be added):
+export const U0: UToken<U0Id> = { U: { __brand: "U0" } as U0Id };
+export const U1: UToken<U1Id> = { U: { __brand: "U1" } as U1Id };
+
+export const U0_in_U1: UniverseInclusion<U0Id, U1Id> = { small: U0, big: U1 };
 
 // A naive in-memory ops instance that allows finite constructions.
 // NOTE: This is *not* set theory—just a disciplined API we control.
-export const finiteOpsU0: UniverseOps<Brand<"U0">> = {
+export const finiteOpsU0: UniverseOps<U0Id> = {
   toSmall: <T>(x: T) => ({ value: x, __brand: "Small@U0" } as any),
   fromSmall: <T>(s: any) => s.value as T,
   pair(a, b) { return this.toSmall([this.fromSmall(a), this.fromSmall(b)] as const); },
   inl(a) { return this.toSmall({ tag: "inl", value: this.fromSmall(a) }); },
   inr(b) { return this.toSmall({ tag: "inr", value: this.fromSmall(b) }); },
-  list<T>(...xs: Small<Brand<"U0">, T>[]) { return this.toSmall(xs.map(this.fromSmall)); },
+  list<T>(...xs: Small<U0Id, T>[]) { return this.toSmall(xs.map(this.fromSmall)); },
   func(dom, f) { this.fromSmall(dom).forEach(_=>{}); return this.toSmall(f as any); },
   eqvClass(rep) { return this.toSmall({ rep: this.fromSmall(rep) }); },
 };
