@@ -3,13 +3,13 @@ import { FiniteGroup } from "./core";
 // Cyclic group (Z_n, +)
 export function Zn(n: number): FiniteGroup<number> {
   const norm = (x: number) => ((x % n) + n) % n;
-  const E = Array.from({ length: n }, (_, i) => i);
+  const E: number[] = Array.from({ length: n }, (_, i) => i);
   return {
-    elements: E,
+    elems: E,
     id: 0,
-    op: (a, b) => norm(a + b),
-    inv: (a) => norm(-a),
-    eq: (a, b) => a === b,
-    show: (a) => String(a)
+    op: (a: number, b: number) => norm(a + b),
+    inv: (a: number) => norm(-a),
+    eq: (a: number, b: number) => a === b,
+    show: (a: number) => String(a),
   };
 }

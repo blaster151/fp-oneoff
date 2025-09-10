@@ -1,11 +1,10 @@
 // src/algebra/groups/recognition.ts
-import { FiniteGroup } from "./core";
 import { Hom } from "./hom";
 
 // check injective (mono ⇔ injective in Grp for finite)
 export function isInjective<G, H>(f: Hom<G, H>): boolean {
   const { src: G, dst: H } = f;
-  for (const g1 of G.elements) for (const g2 of G.elements) {
+  for (const g1 of G.elems) for (const g2 of G.elems) {
     if (H.eq(f.map(g1), f.map(g2)) && !G.eq(g1, g2)) return false;
   }
   return true;
@@ -14,7 +13,7 @@ export function isInjective<G, H>(f: Hom<G, H>): boolean {
 // check surjective (epi ⇔ surjective in Grp for finite)
 export function isSurjective<G, H>(f: Hom<G, H>): boolean {
   const { src: G, dst: H } = f;
-  return H.elements.every(h => G.elements.some(g => H.eq(f.map(g), h)));
+  return H.elems.every((h: H) => G.elems.some((g: G) => H.eq(f.map(g), h)));
 }
 
 // iso ⇔ bijective homomorphism

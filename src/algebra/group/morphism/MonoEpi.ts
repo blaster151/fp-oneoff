@@ -1,14 +1,19 @@
 import { Group, Homomorphism } from "../iso/IsomorphismWitnesses";
 
 // Monomorphism = left cancellable
-export function isMonomorphism<A, B>(
-  f: Homomorphism<A, B>
-): boolean {
-  // For groups, monomorphism ⟺ injective homomorphism
-  // We need to check: f(x) = f(y) ⟹ x = y
-  // This is a simplified check - in practice you'd check for all elements
-  return (x: A, y: A) =>
-    f.target.eq(f.map(x), f.map(y)) ? f.source.eq(x, y) : true;
+export function isMonomorphism<A, B>(f: Homomorphism<A, B>): boolean {
+  // Use the finite carrier on the source to check injectivity
+  const E = f.source.elems;
+  for (let i = 0; i < E.length; i++) {
+    for (let j = i + 1; j < E.length; j++) {
+      const xi = E[i]!;
+      const xj = E[j]!;
+      if (f.target.eq(f.map(xi), f.map(xj)) && !f.source.eq(xi, xj)) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 // Enhanced monomorphism check for finite groups
@@ -123,16 +128,15 @@ export function rightCancellable<A, B, C>(
 ): (g: Homomorphism<C, A>, h: Homomorphism<C, A>) => boolean {
   return (g: Homomorphism<C, A>, h: Homomorphism<C, A>) => {
     // Check: f ∘ g = f ∘ h ⟹ g = h
-    // This is a simplified check - in practice you'd check for all elements
-    const testElement = g.source.id;
-    const fCompG = f.map(g.map(testElement));
-    const fCompH = f.map(h.map(testElement));
-    
+    const testElement = g.source.id; // C
+    const fCompG = f.map(g.map(testElement)); // B
+    const fCompH = f.map(h.map(testElement)); // B
+
     if (f.target.eq(fCompG, fCompH)) {
-      // If compositions are equal, check if g and h are equal
-      return g.source.eq(g.map(g.source.id), h.map(g.source.id));
+      // IMPORTANT: compare g and h in A (their TARGET), not in C (their SOURCE)
+      return g.target.eq(g.map(testElement), h.map(testElement));
     }
-    return true; // Compositions are different, so no contradiction
+    return true;
   };
 }
 

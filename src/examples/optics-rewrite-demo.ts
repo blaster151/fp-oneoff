@@ -7,6 +7,7 @@ import {
   defaultRules, defaultRegistry, Rule, _Add, _Mul, _Let, Term
 } from "../types/optics-rewrite.js";
 
+function demo() {
 console.log("=".repeat(80));
 console.log("COMPREHENSIVE OPTICS REWRITING DEMO");
 console.log("=".repeat(80));

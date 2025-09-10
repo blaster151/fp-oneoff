@@ -1,5 +1,8 @@
-import { GroupHom } from "../Hom";
+﻿import { GroupHom } from "../Hom";
 import { Group } from "../structures";
+
+// Local finite-group alias (no need to import from ../structures)
+type FiniteGroup<A> = Group<A> & { elems: A[] };
 
 /**
  * Finite pushout (demo): given mono-like inclusions f:H->G, g:H->K and a known finite ambient group U
@@ -8,38 +11,44 @@ import { Group } from "../structures";
  *
  * NOTE: This is a pragmatic finite constructor suitable for tests/demos, not a general free-product implementation.
  */
-export function pushoutFinite<H,G,K,U>(
-  f: GroupHom<unknown,unknown,H,G>,
-  g: GroupHom<unknown,unknown,H,K>,
-  embedG: GroupHom<unknown,unknown,G,U>,
-  embedK: GroupHom<unknown,unknown,K,U>
-): { P: Group<U>; inG: (x: G)=>U; inK: (y: K)=>U } {
-  const Ugrp = embedG.target; // also embedK.target
-  if (!Ugrp.elements) throw new Error("pushoutFinite: need finite ambient U.");
+export function pushoutFinite<H, G, K, U>(
+  f: GroupHom<unknown, unknown, H, G>,
+  g: GroupHom<unknown, unknown, H, K>,
+  embedG: GroupHom<unknown, unknown, G, U>,
+  embedK: GroupHom<unknown, unknown, K, U>
+): { P: FiniteGroup<U>; inG: (x: G) => U; inK: (y: K) => U } {
+  // Narrow to a possibly-finite ambient group (elems may or may not exist)
+  const Ugrp = embedG.target as Group<U> & { elems?: U[] };
+
+  if (!Ugrp.elems) throw new Error("pushoutFinite: need finite ambient U.");
+  if (!Ugrp.eq) throw new Error("pushoutFinite: U must define an equality predicate 'eq'.");
 
   // Generate the subgroup ⟨embedG(G) ∪ embedK(K)⟩ inside U
   const gens: U[] = [];
-  for (const x of f.source.elements ?? []) {
-    gens.push(Ugrp.op(embedG.map(f.map(x as any as H) as any as G), Ugrp.e)); // f(h) in G ⊂ U
-    gens.push(Ugrp.op(embedK.map(g.map(x as any as H) as any as K), Ugrp.e)); // g(h) in K ⊂ U
+  for (const x of f.source.elems ?? []) {
+    // f(h) and g(h), embedded into U
+    gens.push(Ugrp.op(embedG.map(f.map(x as any as H) as any as G), Ugrp.id)); // f(h) in G ⊂ U
+    gens.push(Ugrp.op(embedK.map(g.map(x as any as H) as any as K), Ugrp.id)); // g(h) in K ⊂ U
   }
   // Also include whole images of G, K as generators when finite:
-  for (const x of (embedG.source.elements ?? [])) gens.push(embedG.map(x));
-  for (const y of (embedK.source.elements ?? [])) gens.push(embedK.map(y));
+  for (const x of embedG.source.elems ?? []) gens.push(embedG.map(x));
+  for (const y of embedK.source.elems ?? []) gens.push(embedK.map(y));
 
   // Saturate subgroup under products/inverses until closure (finite BFS)
   const uniq: U[] = [];
+  const eqU = Ugrp.eq; // safe: we guarded above
+
   const add = (u: U) => {
-    if (uniq.findIndex(v => Ugrp.eq(v,u)) < 0) uniq.push(u);
+    if (uniq.findIndex((v) => eqU(v, u)) < 0) uniq.push(u);
   };
   gens.forEach(add);
 
-  for (let changed = true; changed;) {
+  for (let changed = true; changed; ) {
     changed = false;
     for (const a of uniq.slice()) {
       add(Ugrp.inv(a));
       for (const b of uniq.slice()) {
-        const ab = Ugrp.op(a,b);
+        const ab = Ugrp.op(a, b);
         const before = uniq.length;
         add(ab);
         if (uniq.length !== before) changed = true;
@@ -47,6 +56,6 @@ export function pushoutFinite<H,G,K,U>(
     }
   }
 
-  const P: Group<U> = { ...Ugrp, elements: uniq };
+  const P: FiniteGroup<U> = { ...(Ugrp as Group<U>), elems: uniq };
   return { P, inG: embedG.map, inK: embedK.map };
 }

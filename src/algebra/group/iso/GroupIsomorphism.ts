@@ -1,86 +1,70 @@
-import { GroupHom } from "../Hom";
 import { FiniteGroup } from "../Group";
 import { isoLaws } from "../../../laws/Witness";
 
 /**
- * GroupIsomorphism typeclass as a refinement of GroupHomomorphism.
- * 
- * An isomorphism is a homomorphism with an inverse that satisfies
- * the round-trip laws: inverse(map(a)) === a and map(inverse(b)) === b
+ * A concrete isomorphism record (does NOT extend the GroupHom interface).
+ * Holds source/target groups plus forward/inverse maps and provides checks.
  */
-export class GroupIsomorphism<A, B> extends GroupHom<unknown, unknown, A, B> {
+export class GroupIsomorphism<A, B> {
   constructor(
-    G: FiniteGroup<A>,
-    H: FiniteGroup<B>,
-    map: (a: A) => B,
-    readonly inverse: (b: B) => A
-  ) {
-    super(G, H, map);
-  }
+    public readonly G: FiniteGroup<A>,
+    public readonly H: FiniteGroup<B>,
+    public readonly map: (a: A) => B,
+    public readonly inverse: (b: B) => A
+  ) {}
 
-  /**
-   * Witness law: inverse(map(a)) === a for all a in G
-   * This verifies that the inverse is actually a left inverse
-   */
+  /** Witness law: inverse(map(a)) === a for all a in G (finite check). */
   leftInverse(): boolean {
     const { G, map, inverse } = this;
     const eqA = G.eq ?? ((x: A, y: A) => x === y);
-    
-    // For finite groups, check all elements
-    if (G.elements) {
-      return G.elements.every((a: any) => eqA(inverse(map(a)), a));
-    }
-    
-    // For infinite groups, this is a promise that the caller must verify
-    // In practice, you'd provide specific elements to test
-    throw new Error("leftInverse verification requires finite group or specific test elements");
+    if (!G.elems) throw new Error("leftInverse requires finite G (no elems).");
+    return G.elems.every((a) => eqA(inverse(map(a)), a));
   }
 
-  /**
-   * Witness law: map(inverse(b)) === b for all b in H
-   * This verifies that the inverse is actually a right inverse
-   */
+  /** Witness law: map(inverse(b)) === b for all b in H (finite check). */
   rightInverse(): boolean {
     const { H, map, inverse } = this;
     const eqB = H.eq ?? ((x: B, y: B) => x === y);
-    
-    // For finite groups, check all elements
-    if (H.elements) {
-      return H.elements.every((b: any) => eqB(map(inverse(b)), b));
+    if (!H.elems) throw new Error("rightInverse requires finite H (no elems).");
+    return H.elems.every((b) => eqB(map(inverse(b)), b));
+  }
+
+  /** Check map is a homomorphism and preserves identity on finite carriers. */
+  private preservesOpAndId(): boolean {
+    const { G, H, map } = this;
+    const eqB = H.eq ?? ((x: B, y: B) => x === y);
+
+    // preserves identity
+    if (!eqB(map(G.id), H.id)) return false;
+
+    // preserves operation (finite brute-force)
+    for (const a of G.elems) for (const b of G.elems) {
+      const lhs = map(G.op(a, b));
+      const rhs = H.op(map(a), map(b));
+      if (!eqB(lhs, rhs)) return false;
     }
-    
-    // For infinite groups, this is a promise that the caller must verify
-    throw new Error("rightInverse verification requires finite group or specific test elements");
+    return true;
   }
 
-  /**
-   * Verify that this is actually an isomorphism by checking all laws
-   */
+  /** Verify all isomorphism laws with finite checks. */
   verifyIsomorphism(): boolean {
-    return this.respectsOp(this.G.elements?.[0] ?? (this.G as any).e, this.G.elements?.[1] ?? (this.G as any).e) &&
-           this.preservesId() &&
-           this.leftInverse() &&
-           this.rightInverse();
+    return this.preservesOpAndId() && this.leftInverse() && this.rightInverse();
   }
 
-  /**
-   * Get isomorphism laws for use with the law testing framework
-   */
+  /** Bundle laws for your law-testing framework. */
   getIsomorphismLaws() {
     const { G, H, map, inverse } = this;
     const eqA = G.eq ?? ((x: A, y: A) => x === y);
     const eqB = H.eq ?? ((x: B, y: B) => x === y);
-    
     return isoLaws(eqA, eqB, { to: map, from: inverse });
   }
 
-  /**
-   * Compose this isomorphism with another isomorphism
-   */
+  /** Compose two isomorphisms. */
   compose<C>(other: GroupIsomorphism<B, C>): GroupIsomorphism<A, C> {
     const { G, map, inverse } = this;
-    const { H: K, map: g, inverse: gInv } = other;
-    
+    const K = other.H;
+    const g = other.map;
+    const gInv = other.inverse;
     return new GroupIsomorphism(
       G,
       K,
@@ -89,126 +73,84 @@ export class GroupIsomorphism<A, B> extends GroupHom<unknown, unknown, A, B> {
     );
   }
 
-  /**
-   * Get the inverse isomorphism
-   */
+  /** Inverse isomorphism. */
   getInverse(): GroupIsomorphism<B, A> {
     const { G, H, map, inverse } = this;
     return new GroupIsomorphism(H, G, inverse, map);
   }
 }
 
-/**
- * GroupAutomorphism alias for isomorphisms from a group to itself
- */
+/** GroupAutomorphism alias for isomorphisms from a group to itself. */
 export type GroupAutomorphism<A> = GroupIsomorphism<A, A>;
 
-/**
- * Create the identity automorphism for a group
- */
+/** Identity automorphism. */
 export function identityAutomorphism<A>(G: FiniteGroup<A>): GroupAutomorphism<A> {
-  return new GroupIsomorphism(G, G, (a: A) => a, (a: A) => a);
+  return new GroupIsomorphism(G, G, (a) => a, (a) => a);
 }
 
-/**
- * Create a negation automorphism for additive groups
- * This maps x to -x, which is its own inverse
- */
+/** Negation automorphism for additive finite groups (modular). */
 export function negationAutomorphism(G: FiniteGroup<number>): GroupAutomorphism<number> {
-  // For finite groups, we need to use modular arithmetic
-  const order = G.elements?.length ?? 1;
-  
+  const order = G.elems?.length ?? 1;
   return new GroupIsomorphism(
     G,
     G,
-    (n: number) => (order - n) % order,  // Modular negation
-    (n: number) => (order - n) % order   // Modular negation
+    (n) => (order - n) % order,
+    (n) => (order - n) % order
   );
 }
 
-/**
- * Create a scaling automorphism for additive groups
- * This maps x to factor * x, with inverse using modular inverse
- */
+/** Scaling automorphism for additive finite groups (uses modular inverse). */
 export function scalingAutomorphism(G: FiniteGroup<number>, factor: number): GroupAutomorphism<number> {
-  if (factor === 0) {
-    throw new Error("Scaling factor cannot be zero");
-  }
-  
-  // For finite groups, we need to use modular arithmetic
-  const order = G.elements?.length ?? 1;
-  const modInverse = modInverseOf(factor, order);
-  
+  if (factor === 0) throw new Error("Scaling factor cannot be zero");
+  const order = G.elems?.length ?? 1;
+  const inv = modInverse(factor, order);
   return new GroupIsomorphism(
     G,
     G,
-    (n: number) => (factor * n) % order,
-    (n: number) => (modInverse * n) % order
+    (n) => (factor * n) % order,
+    (n) => (inv * n) % order
   );
 }
 
-/**
- * Create a conjugation automorphism for any group
- * This maps x to g * x * g^(-1) for a fixed element g
- */
+/** Conjugation automorphism: x ↦ g * x * g^{-1}. */
 export function conjugationAutomorphism<A>(G: FiniteGroup<A>, g: A): GroupAutomorphism<A> {
   return new GroupIsomorphism(
     G,
     G,
-    (x: A) => G.op(G.op(g, x), G.inv(g)),
-    (x: A) => G.op(G.op(G.inv(g), x), g)
+    (x) => G.op(G.op(g, x), G.inv(g)),
+    (x) => G.op(G.op(G.inv(g), x), g)
   );
 }
 
-/**
- * Create a power automorphism for multiplicative groups
- * This maps x to x^k, with inverse x^(1/k) when k is coprime to the group order
- */
+/** Power automorphism: x ↦ x^k (finite, via repeated op); inverse via modular inverse of k. */
 export function powerAutomorphism<A>(G: FiniteGroup<A>, k: number): GroupAutomorphism<A> {
-  // For finite groups, we can compute the inverse power
-  const computeInversePower = (x: A, k: number): A => {
-    // This is a simplified version - in practice you'd use extended Euclidean algorithm
-    // to find the modular inverse of k
-    let result = G.id;
-    const order = G.elements?.length ?? 1;
-    const invK = modInverse(k, order);
-    
-    for (let i = 0; i < invK; i++) {
-      result = G.op(result, x);
-    }
-    return result;
+  const order = G.elems?.length ?? 1;
+  const kInv = modInverse(k, order);
+
+  const pow = (x: A, times: number): A => {
+    let acc = G.id;
+    for (let i = 0; i < times; i++) acc = G.op(acc, x);
+    return acc;
   };
 
   return new GroupIsomorphism(
     G,
     G,
-    (x: A) => {
-      let result = G.id;
-      for (let i = 0; i < k; i++) {
-        result = G.op(result, x);
-      }
-      return result;
-    },
-    (x: A) => computeInversePower(x, k)
+    (x) => pow(x, k),
+    (x) => pow(x, kInv)
   );
 }
 
-/**
- * Helper function to compute modular inverse
- * This is a simplified version - in practice you'd use extended Euclidean algorithm
- */
+/** Naive modular inverse (for demo purposes). */
 function modInverse(a: number, m: number): number {
+  a = ((a % m) + m) % m;
   for (let x = 1; x < m; x++) {
-    if ((a * x) % m === 1) {
-      return x;
-    }
+    if ((a * x) % m === 1) return x;
   }
   throw new Error(`No modular inverse exists for ${a} mod ${m}`);
 }
 
-/**
- * Helper function to compute modular inverse (renamed for clarity)
- */
+/** Alias for clarity. */
 function modInverseOf(a: number, m: number): number {
   return modInverse(a, m);
 }

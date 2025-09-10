@@ -1,21 +1,3 @@
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true,
-    "declaration": true,
-    "declarationMap": true,
-    "outDir": "dist",
-    "downlevelIteration": true,
-    "types": ["vitest/globals", "vitest", "node"]
-  },
-  "include": ["src/**/*.ts", "**/*.test.ts", "vitest.config.*"],
-  "exclude": ["src/examples/**", "dist/**", "node_modules/**"]
+﻿{
+  "extends": "./tsconfig.src.json"
 }

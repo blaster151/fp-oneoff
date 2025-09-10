@@ -1,38 +1,66 @@
-// src/algebra/groups/limits.ts
-import { FiniteGroup } from "./core";
-import { Hom } from "./hom";
+import { FiniteGroup, containsByEq } from "./core";
 
-// Pullback of f:A->C, g:B->C
-export function pullback<A,B,C>(
-  f: Hom<A,C>, g: Hom<B,C>
-): FiniteGroup<[A,B]> {
-  const A = f.src, B = g.src, C = f.dst;
-  const elems: [A,B][] = [];
-  for (const a of A.elements) for (const b of B.elements) {
-    if (C.eq(f.map(a), g.map(b))) elems.push([a,b]);
-  }
-  return {
-    elements: elems,
-    id: [A.id, B.id],
-    op: ([a1,b1],[a2,b2]) => [A.op(a1,a2), B.op(b1,b2)],
-    inv: ([a,b]) => [A.inv(a), B.inv(b)],
-    eq: ([a1,b1],[a2,b2]) => A.eq(a1,a2)&&B.eq(b1,b2),
-    show: ([a,b]) => `(${A.show?.(a)??a},${B.show?.(b)??b})`
-  };
+export type Hom<G, H> = {
+  src: FiniteGroup<G>;
+  dst: FiniteGroup<H>;
+  map: (g: G) => H;
+};
+
+// Kernel, Image
+export function kernel<G, H>(f: Hom<G, H>): G[] {
+  const { src: G, dst: H } = f;
+  return G.elems.filter((g: G) => H.eq(f.map(g), H.id));
 }
 
-// Pushout stub for abelian-cyclic case (placeholder for full implementation)
-export function pushoutStub<A,B,C>(
-  f: Hom<C,A>, g: Hom<C,B>
-): { elements: Array<[A,B]>; note: string } {
-  // Naive: quotient A×B by relation (f(c), b) ~ (a, g(c))
-  // For full implementation, need free product A*B modulo normal closure
-  const A = f.dst, B = g.dst;
-  const pairs: Array<[A,B]> = [];
-  A.elements.forEach(a => B.elements.forEach(b => pairs.push([a,b])));
-  
-  return { 
-    elements: pairs, 
-    note: "Placeholder: returns A×B; upgrade to true amalgamated free product needed" 
-  };
+export function image<G, H>(f: Hom<G, H>): H[] {
+  const { src: G, dst: H } = f;
+  const img: H[] = [];
+  for (const g of G.elems) {
+    const h = f.map(g);
+    if (!containsByEq(img, h, H.eq)) img.push(h);
+  }
+  return img;
+}
+
+// Cosets and quotient by a normal subgroup K (as a list of cosets)
+export function leftCoset<G>(G: FiniteGroup<G>, K: G[], g: G): G[] {
+  const coset: G[] = [];
+  for (const k of K) coset.push(G.op(g, k));
+  // uniq by equality
+  const uniq: G[] = [];
+  for (const x of coset) {
+    if (!uniq.some(y => G.eq(x, y))) uniq.push(x);
+  }
+  return uniq;
+}
+
+export function quotientCosets<G>(G: FiniteGroup<G>, K: G[]): G[][] {
+  const seen: G[] = [];
+  const cosets: G[][] = [];
+  for (const g of G.elems) {
+    if (!seen.some(s => G.eq(s, g))) {
+      const C = leftCoset(G, K, g);
+      cosets.push(C);
+      for (const x of C) if (!seen.some(s => G.eq(s, x))) seen.push(x);
+    }
+  }
+  return cosets;
+}
+
+// Natural map φ: G/K → im f, presented as a representative-respecting function
+export function phiToImage<G, H>(
+  f: Hom<G, H>,
+  _K: G[],               // kernel(f) — not needed by the check here
+  coset: G[]             // a coset (representative list)
+): H {
+  const { dst: H } = f;
+  let val: H | undefined = undefined;
+  for (const g of coset) {
+    const h = f.map(g);
+    if (val === undefined) val = h;
+    else if (!H.eq(val, h)) {
+      throw new Error("phi not well-defined: coset members mapped to different values");
+    }
+  }
+  return val as H;
 }

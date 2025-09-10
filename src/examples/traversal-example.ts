@@ -77,20 +77,27 @@ console.log("🔍 Example 4: Composed Optics (Array of Objects → .x field)");
 console.log("============================================================");
 const arrOfObjs = [{x:1,y:"a"}, {x:2,y:"b"}, {x:3,y:"c"}];
 
-const travObjsX: any = <P>(dict:any)=>(pab:any)=>(dict.wander(
-  <F,Box<_>>(F:any)=> (ab:any)=> (xs:S[])=> {
-    // map each element via lens's Strong-based morphism
-    const dictL = { dimap:dict.dimap, first:dict.first } as any;
-    const pabL  = (lx as any)(dictL)(pab);
-    // now pabL : Star F S S ; apply to each element like eachArray
-    let acc = F.of([] as S[]);
-    for (const s of xs) {
-      const step = pabL(s); // F S
-      const cons = (ys:S[]) => (z:S)=> ys.concat([z]);
-      acc = F.ap(F.map(acc, (ys:S[])=> (f:(ys:S[])=>S[])=> f(ys)), F.map(step, (z:S)=> (ys:S[])=> ys.concat([z])));
-    }
-    return acc;
-  }, pab));
+const travObjsX: any =
+  (dict: any) => (pab: any) =>
+    dict.wander(
+      (F: any) => (_ab: any) => (xs: S[]) => {
+        // map each element via lens's Strong-based morphism
+        const dictL = { dimap: dict.dimap, first: dict.first } as any;
+        const pabL  = (lx as any)(dictL)(pab); // Star F S S
+
+        // accumulate like eachArray
+        let acc = F.of([] as S[]);
+        for (const s of xs) {
+          const step = pabL(s); // F S
+          // acc :: F S[] ; step :: F S
+          // cons :: S[] -> S -> S[]
+          const cons = (ys: S[]) => (z: S) => ys.concat([z]);
+          acc = F.ap(F.map(acc, cons), step);
+        }
+        return acc;
+      },
+      pab
+    );
 
 console.log("Array of objects:", arrOfObjs);
 console.log("[composed] toListOf (all .x values):", toListOf(travObjsX, arrOfObjs));

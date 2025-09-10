@@ -1,0 +1,27 @@
+﻿{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["node"] },
+  "include": ["src/**/*.ts", "vitest.config.*"],
+  "exclude": [
+    "src/examples/**",
+    "src/algebra/group/examples.ts",
+    "**/__tests__/**",
+    "test/**",
+    "dist/**",
+    "node_modules/**",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+
+    // benches
+    "**/bench/**",
+    "**/benchmark/**",
+    "**/*bench*.ts",
+    "**/*benchmark*.ts",
+
+    // the legacy/experimental tree that’s tripping imports
+    "src/ts1/**"
+  ]
+}

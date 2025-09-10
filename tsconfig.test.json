@@ -1,9 +1,6 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["src/**/*.ts", "tests/**/*.ts", "**/*.test.ts", "vitest.config.*"],
-  "compilerOptions": {
-    "noEmit": true,
-    "types": ["vitest", "node"],
-    "skipLibCheck": true
-  }
+﻿{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "types": ["vitest/globals", "vitest", "node"] },
+  "include": ["**/*.test.ts", "test/**/*.ts", "vitest.config.*"],
+  "exclude": ["dist/**", "node_modules/**"]
 }

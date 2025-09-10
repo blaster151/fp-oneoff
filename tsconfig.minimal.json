@@ -1,0 +1,39 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noImplicitAny": true,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
+    "skipLibCheck": true,
+    "declaration": false,
+    "declarationMap": false,
+    "outDir": "dist-minimal"
+  },
+  "include": [
+    "src/types/category-to-nerve-sset.ts",
+    "src/types/catkit-adjunction.ts",
+    "src/types/catkit-kan.ts",
+    "src/types/catkit-equivalence.ts",
+    "src/types/catkit-kan-transport.ts",
+    "src/types/catkit-optics.ts",
+    "src/examples/**/*.ts"
+  ],
+  "exclude": [
+    "src/types/allegory-witness.ts",
+    "src/types/rel-common.ts",
+    "src/types/rel-factory-default.ts",
+    "src/types/rel-lawcheck-witnessed.ts",
+    "src/types/snf-witness.ts",
+    "src/types/measured-fingertree.ts",
+    "src/types/double-lax-functor-interface.ts",
+    "src/types/spec-impl-refactored.ts",
+    "src/types/config.ts",
+    "dist/**",
+    "node_modules/**"
+  ]
+}
+

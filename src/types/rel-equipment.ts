@@ -48,7 +48,7 @@ export class Subset<T> {
 }
 
 /************ Relations ************/
-export type Pair<A,B> = readonly [A,B];
+export type Pair<A,B> = [A,B];
 
 export class Rel<A,B> {
   readonly A: Finite<A>;

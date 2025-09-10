@@ -1,77 +1,45 @@
 /**
- * Developer Demo:
+ * Developer Demo (relations-focused):
  * - This file is not part of the library build.
  * - Do not import it from 'src/index.ts' or 'src/types/index.ts'.
  */
 
 import {
-  // Core category theory
-  SmallCategory, Edge, Quiver, makeFreeCategory,
-  // Relations equipment (concrete)
-  SetObj, Rel, FnM, makeRelationsDouble, companionOf, conjointOf,
-  // Existing discrete category function
-  Disc
-} from '../types';
+  Finite, Rel, Fun, companion, conjoint
+} from "../types/rel-equipment.js";
 
-console.log('🎯 Simple Category Theory Demo');
-console.log('==============================\n');
+console.log("🎯 Simple Category/Relations Demo");
+console.log("================================\n");
 
-// ---------- Build a free category A->B->C (+ A->C) and its nerve ----------
-console.log('1️⃣ Building free category and nerve...');
-const Q: Quiver<string> = {
-  objects: ['A', 'B', 'C'],
-  edges: [
-    { src: 'A', dst: 'B', label: 'f' },
-    { src: 'B', dst: 'C', label: 'g' },
-    { src: 'A', dst: 'C', label: 'h' }
-  ]
-};
+// ---------- Simple relations over finite sets ----------
+console.log("1️⃣ Building relations...");
 
-const A = makeFreeCategory(Q);
-console.log('  Free category built with objects:', A.objects);
-console.log('  Morphisms:', A.morphisms.map(m => `${m.src}->${m.dst} [${m.edges.map(e => e.label).join('∘')}]`));
+const X = new Finite(["x1","x2"]);
+const Y = new Finite(["y1","y2"]);
+const Z = new Finite(["z1","z2"]);
 
-// ---------- Test discrete categories ----------
-console.log('\n2️⃣ Testing discrete categories...');
+const R1 = Rel.fromPairs(X, Y, [["x1","y1"], ["x2","y2"]]);
+const R2 = Rel.fromPairs(Y, Z, [["y1","z1"], ["y2","z2"]]);
 
-// Create discrete categories using existing function
-const DiscA = Disc(['a1', 'a2']);
-const DiscB = Disc(['b1', 'b2']);
+console.log("R1 pairs:", R1.toPairs());
+console.log("R2 pairs:", R2.toPairs());
 
-console.log('  Created discrete categories:');
-console.log('    DiscA objects:', DiscA.objects);
-console.log('    DiscB objects:', DiscB.objects);
-console.log('    DiscA morphisms:', DiscA.morphisms.map(m => m.x));
-console.log('    DiscB morphisms:', DiscB.morphisms.map(m => m.x));
+// ---------- Companions / conjoints for a function ----------
+console.log("\n2️⃣ Companions & Conjoints...");
 
-// Test hom function
-console.log('  Hom sets:');
-console.log('    hom(a1, a1) =', DiscA.hom('a1', 'a1').map(m => m.x));
-console.log('    hom(a1, a2) =', DiscA.hom('a1', 'a2').map(m => m.x));
+const f: Fun<string,string> = a => (a === "x1" ? "y1" : "y2");
 
-// ---------- Test relations equipment ----------
-console.log('\n3️⃣ Testing relations equipment...');
+// Companion graph ⟨f⟩ : X → Y and conjoint ⟨f⟩† : Y → X
+const comp = companion(X, Y, f);
+const conj = conjoint(X, Y, f);
 
-// Create some simple relations
-const R1: Rel = { src: 'X', dst: 'Y', elems: [['x1', 'y1'], ['x2', 'y2']] };
-const R2: Rel = { src: 'Y', dst: 'Z', elems: [['y1', 'z1'], ['y2', 'z2']] };
+console.log("Companion ⟨f⟩ pairs:", comp.toPairs());
+console.log("Conjoint ⟨f⟩† pairs:", conj.toPairs());
 
-console.log('  Created relations:');
-console.log('    R1: X → Y with elements:', R1.elems);
-console.log('    R2: Y → Z with elements:', R2.elems);
+// ---------- Composition example ----------
+console.log("\n3️⃣ Composition...");
 
-// Test companion/conjoint
-const f: FnM = { src: 'A', dst: 'B', fn: (a) => a === 'a1' ? 'b1' : 'b2' };
-const companion = companionOf(f);
-const conjoint = conjointOf(f);
+const R1_then_R2 = R1.compose(R2 as any);
+console.log("R1;R2 pairs:", R1_then_R2.toPairs());
 
-console.log('  Function f: A → B where f(a1) = b1, f(a2) = b2');
-console.log('  Companion relation:', companion.elems);
-console.log('  Conjoint relation:', conjoint.elems);
-
-console.log('\n🎉 Simple category theory demo completed successfully!');
-console.log('This demonstrates:');
-console.log('  • Free category construction from quivers');
-console.log('  • Discrete categories with existing Disc function');
-console.log('  • Relations equipment with companions/conjoints');
-console.log('  • Basic category theory infrastructure');
+console.log("\n🎉 Demo completed successfully!");

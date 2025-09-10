@@ -18,8 +18,8 @@ export const U: ForgetfulGrpToSet = {
   source: GroupCategory,
   target: SetCategory,
   onObj: <A>(G: EnhancedGroup<A>) => {
-    // Convert to Set from elems if finite, otherwise create abstract set representation
-    return G.elems ? new Set(G.elems) : new Set([G.e]); // fallback for infinite case
+    // If finite, use elems; otherwise fall back to a singleton with the identity.
+    return new Set<A>(G.elems ?? [G.id]); // was G.e
   },
-  onMor: <A,B>(f: EnhancedGroupHom<A,B>) => f.map        // underlying function
+  onMor: <A,B>(f: EnhancedGroupHom<A,B>) => f.map
 };

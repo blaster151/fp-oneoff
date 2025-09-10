@@ -1,0 +1,28 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noImplicitAny": false,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": false,
+    "skipLibCheck": true,
+    "declaration": false,
+    "declarationMap": false,
+    "outDir": "dist-kan",
+    "noEmit": false
+  },
+  "include": [
+    "src/types/category-to-nerve-sset.ts",
+    "src/types/catkit-kan.ts",
+    "src/types/catkit-equivalence.ts",
+    "src/types/catkit-kan-transport.ts",
+    "src/examples/kan-transport-iso-example.ts"
+  ],
+  "exclude": [
+    "dist/**",
+    "node_modules/**"
+  ]
+}

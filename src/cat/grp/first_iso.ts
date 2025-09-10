@@ -2,7 +2,7 @@ import { FinGroup, FinGroupMor } from "./FinGrp"; // adjust import path
 
 // Compute kernel: elements sent to identity in H
 export function kernel<A, B>(G: FinGroup<A>, H: FinGroup<B>, f: FinGroupMor<A, B>): A[] {
-  return G.carrier.filter(a => H.eq(f.run(a), H.e));
+  return G.carrier.filter(a => H.eq(f.run(a), H.id));   // ⟵ was H.e
 }
 
 // Compute image: all values attained by f

@@ -364,12 +364,21 @@ export class InstrumentedRel<A, B> {
     this.rel = rel;
   }
   
-  /** Create from pairs with optional parity checking */
-  static fromPairs<A, B>(A: Finite<A>, B: Finite<B>, pairs: Iterable<readonly [A, B]>): InstrumentedRel<A, B> {
-    const rel = Rel.fromPairs(A, B, pairs);
-    return new InstrumentedRel(rel);
+/** Create from pairs with optional parity checking */
+static fromPairs<A, B>(
+  A: Finite<A>,
+  B: Finite<B>,
+  pairs: Iterable<readonly [A, B]> | Iterable<[A, B]>
+): InstrumentedRel<A, B> {
+  // Normalize to mutable tuples, which Rel.fromPairs expects.
+  const norm: [A, B][] = [];
+  for (const [a, b] of pairs as Iterable<readonly [A, B]>) {
+    norm.push([a, b]);
   }
-  
+  const rel = Rel.fromPairs(A, B, norm);
+  return new InstrumentedRel(rel);
+}
+
   /** Delegate basic properties */
   get A() { return this.rel.A; }
   get B() { return this.rel.B; }

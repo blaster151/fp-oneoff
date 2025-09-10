@@ -1,217 +1,176 @@
-// examples/torus-homology-demo.ts
+// src/examples/torus-homology-demo.ts
+// ---------------------------------------------------------------------------
+// Torus homology demo (self-contained)
 //
-// Demo: certified homology via Smith Normal Form.
-//
-// What you'll see when you run this:
-//  - SNF certificates verified (U*A*V === D) with a pinpoint diff if it fails
-//  - Homology ranks for T^2 (H0=Z, H1=Z^2, H2=Z)
-//  - (Optional) RP^2 example showing torsion Z/2 in H1
-//
-// Run (pick one):
-//   pnpm ts-node examples/torus-homology-demo.ts
-//   npx tsx examples/torus-homology-demo.ts
-//   ts-node examples/torus-homology-demo.ts
+// - No external imports
+// - Minimal integer-matrix helpers (Matrixh, mul, ranks over Q)
+// - Computes cellular homology of T^2 from standard CW structure:
+//     C2 = Z, C1 = Z^2, C0 = Z
+//     ∂2 = 0 (1×2 zero), ∂1 = 0 (2×1 zero)
+//   ⇒ H2 ≅ Z, H1 ≅ Z^2, H0 ≅ Z
+// ---------------------------------------------------------------------------
 
-// ---- Using the new surface API for clean, witness-based verification ----
-import { 
-  smithNormalForm, verifySNF, explainDiagonal, 
-  printSNFVerification, printDiagonalExplanation,
-  computeAndVerifySNF, homologyRankFromSNF, Matrix,
-  matrixZeros, matrixShape, matricesEqual
-} from "../types/snf-surface-api.js";
+// Lightweight "matrix handle" with a callable constructor and a couple helpers.
+type Matrixh = number[][];
 
-// ---------- matrix helpers using consolidated utilities ----------
-const zeros = matrixZeros;
-const shape = matrixShape;
-const equalMatrix = matricesEqual;
-const firstDiff = (A: Matrix, B: Matrix) => {
-  const [rA, cA] = shape(A), [rB, cB] = shape(B);
-  if (rA !== rB || cA !== cB) return { loc: [-1, -1], got: NaN, expected: NaN };
-  for (let i = 0; i < rA; i++) for (let j = 0; j < cA; j++) if (A[i]![j] !== B[i]![j]) return { loc: [i, j], got: A[i]![j], expected: B[i]![j] };
-  return { loc: [-1, -1], got: NaN, expected: NaN };
-};
-const rankOverZFromSNF = (D: Matrix) => {
-  // rank = count of nonzero diagonal entries in SNF
-  const n = Matrixh.min(D.length, D[0]?.length ?? 0);
-  let r = 0;
-  for (let i = 0; i < n; i++) if (D[i]![i] !== 0) r++;
+interface MatrixhCtor {
+  (rows: number[][]): Matrixh;     // allow Matrixh([[...], ...])
+  abs(A: Matrixh): Matrixh;        // elementwise absolute value
+  min(A: Matrixh): number;         // global min entry
+  max(A: Matrixh): number;         // global max entry
+}
+
+const Matrixh: MatrixhCtor = ((rows: number[][]) => rows) as MatrixhCtor;
+Matrixh.abs = (A) => A.map(r => r.map(Math.abs));
+Matrixh.min = (A) => Math.min(...A.flat());
+Matrixh.max = (A) => Math.max(...A.flat());
+
+function shape(A: Matrixh): [number, number] {
+  const m = A.length;
+  const n = m ? (A[0]?.length ?? 0) : 0;
+  return [m, n];
+}
+
+// Plain matrix multiply over integers (A: m×k, B: k×n) → m×n.
+function mul(A: Matrixh, B: Matrixh): Matrixh {
+  const [m, k] = shape(A);
+  const [k2, n] = shape(B);
+  if (k !== k2) throw new Error(`mul: inner dims mismatch (${k} vs ${k2})`);
+  const C: Matrixh = Array.from({ length: m }, () => Array(n).fill(0));
+  for (let i = 0; i < m; i++) {
+    for (let t = 0; t < k; t++) {
+      const a = A[i][t] || 0;
+      if (a === 0) continue;
+      for (let j = 0; j < n; j++) C[i][j] += a * (B[t][j] || 0);
+    }
+  }
+  return C;
+}
+
+// Rank over Q via Gaussian elimination (sufficient here; torsion not needed for T^2).
+function rankOverQ(A: Matrixh): number {
+  const M = A.map(row => row.map(x => x)); // copy
+  const [m, n] = shape(M);
+  let r = 0, c = 0;
+  while (r < m && c < n) {
+    // Find pivot in column c at or below row r
+    let piv = r;
+    for (let i = r; i < m; i++) {
+      if (Math.abs(M[i][c] || 0) > Math.abs(M[piv][c] || 0)) piv = i;
+    }
+    if ((M[piv][c] || 0) === 0) { c++; continue; }
+    // Swap rows r and piv
+    if (piv !== r) [M[r], M[piv]] = [M[piv], M[r]];
+    // Normalize row r (over Q)
+    const pivVal = M[r][c];
+    for (let j = c; j < n; j++) M[r][j] = (M[r][j] || 0) / pivVal;
+    // Eliminate below
+    for (let i = r + 1; i < m; i++) {
+      const factor = M[i][c] || 0;
+      if (factor === 0) continue;
+      for (let j = c; j < n; j++) M[i][j] = (M[i][j] || 0) - factor * M[r][j];
+    }
+    r++; c++;
+  }
   return r;
-};
-const diagonalInvariants = (D: Matrix) => {
-  const n = Matrixh.min(D.length, D[0]?.length ?? 0);
-  const diag: number[] = [];
-  for (let i = 0; i < n; i++) diag.push(D[i]![i]!);
-  return diag.filter((d) => d !== 0);
-};
-const prettyGroup = (freeRank: number, torsion: number[] = []) => {
-  const parts: string[] = [];
-  if (freeRank === 1) parts.push("Z");
-  if (freeRank > 1) parts.push(`Z^${freeRank}`);
-  for (const d of torsion) parts.push(`Z/${d}`);
-  return parts.length ? parts.join(" ⊕ ") : "0";
-};
-const verifySNF = (U: Matrix, A: Matrix, V: Matrix, D: Matrix) => {
-  const UAV = mul(mul(U, A), V);
-  if (equalMatrix(UAV, D)) return { ok: true as const };
-  const { loc, got, expected } = firstDiff(UAV, D);
-  return { ok: false as const, loc, got, expected };
-};
-
-// ---------- Homology ranks from chain complex via SNF ----------
-// Chain complex ... → C_{n+1} --d_{n+1}→ C_n --d_n→ C_{n-1} → ...
-// Over Z with free, finite ranks: rank H_n = (dim C_n - rank d_n) - rank d_{n+1}
-const homologyRanksFromSNF = (dimCn: number, Dn: Matrix, Dnp1: Matrix) => {
-  const rank_dn = rankOverZFromSNF(Dn);
-  const rank_dnp1 = rankOverZFromSNF(Dnp1);
-  const beta_n = (dimCn - rank_dn) - rank_dnp1;
-  return Matrixh.max(beta_n, 0);
-};
-
-// (Optional) For pedagogical cases where d_{n-1} = 0, torsion(H_{n-1}) is exactly
-// the set of non-unit diagonal entries of SNF(d_n). (E.g., RP^2 example below.)
-const torsionInHnm1_whenPrevBoundaryIsZero = (Dn: Matrix) =>
-  diagonalInvariants(Dn).filter((d) => Matrixh.abs(d) > 1).map((d) => Matrixh.abs(d));
-
-// ---------- Example 1: Torus T^2 ----------
-function torusExample() {
-  console.log("=".repeat(60));
-  console.log("TORUS T² HOMOLOGY COMPUTATION");
-  console.log("=".repeat(60));
-  
-  // CW model: 1 vertex v, 2 edges a,b, 1 face c with boundary aba^{-1}b^{-1}.
-  // In homology, ∂₂(c)=0 in C₁, ∂₁(a)=∂₁(b)=0 in C₀.
-  // Matrixrices over Z:
-  const d2: Matrix = [[0, 0]];   // shape 1x2  (C2 -> C1)
-  const d1: Matrix = [[0], [0]]; // shape 2x1  (C1 -> C0)
-
-  console.log("\nChain complex matrices:");
-  console.log("∂₂ (C₂ → C₁):", d2);
-  console.log("∂₁ (C₁ → C₀):", d1);
-
-  const snf2 = computeAndVerifySNF(d2);
-  const snf1 = computeAndVerifySNF(d1);
-
-  console.log("\n=== Torus T^2: SNF certificates ===");
-  printSNFVerification("∂₂ certificate", snf2.verification);
-  printSNFVerification("∂₁ certificate", snf1.verification);
-
-  console.log("\nSmith Normal Forms:");
-  console.log("SNF(∂₂) =", snf2.snf.D);
-  console.log("SNF(∂₁) =", snf1.snf.D);
-
-  // dims: C2=1, C1=2, C0=1
-  const H2_rank = homologyRankFromSNF(1, d2, zeros(0, 0)); // d3 is 0
-  const H1_rank = homologyRankFromSNF(2, d1, d2);
-  const H0_rank = homologyRankFromSNF(1, zeros(1, 1), d1); // d0=0, but we don't use it
-
-  console.log("\n=== Torus T^2: Homology ===");
-  printDiagonalExplanation("H₂", explainDiagonal([[H2_rank]]));
-  printDiagonalExplanation("H₁", explainDiagonal([[H1_rank, 0]]));
-  printDiagonalExplanation("H₀", explainDiagonal([[H0_rank]]));
-  
-  console.log("\n🎯 TORUS TOPOLOGY:");
-  console.log("• T² = S¹ × S¹ has fundamental group Z²");
-  console.log("• H₁(T²) ≅ Z² reflects the two independent loops");
-  console.log("• H₂(T²) ≅ Z comes from the 2-dimensional surface");
-  console.log("• Total Betti numbers: β₀=1, β₁=2, β₂=1");
 }
 
-// ---------- Example 2 (optional): RP^2 showing torsion ----------
-function rp2Example() {
-  console.log("\n" + "=".repeat(60));
-  console.log("REAL PROJECTIVE PLANE RP² HOMOLOGY");
-  console.log("=".repeat(60));
-  
-  // Minimal CW: C2=Z[c], C1=Z[a], C0=Z[v]
-  // The 2-cell attaches by degree-2 map on the 1-skeleton → ∂₂ = [2], ∂₁ = [0].
-  const d2: Matrix = [[2]]; // C2 -> C1
-  const d1: Matrix = [[0]]; // C1 -> C0
-
-  console.log("\nChain complex matrices:");
-  console.log("∂₂ (C₂ → C₁):", d2);
-  console.log("∂₁ (C₁ → C₀):", d1);
-
-  const snf2 = computeAndVerifySNF(d2);
-  const snf1 = computeAndVerifySNF(d1);
-
-  console.log("\n=== RP^2: SNF certificates ===");
-  printSNFVerification("∂₂ certificate", snf2.verification);
-  printSNFVerification("∂₁ certificate", snf1.verification);
-
-  console.log("\nSmith Normal Forms:");
-  console.log("SNF(∂₂) =", snf2.snf.D);
-  console.log("SNF(∂₁) =", snf1.snf.D);
-
-  // dims: C2=1, C1=1, C0=1
-  const H2_rank = homologyRankFromSNF(1, d2, zeros(0, 0)); // no d3
-  const H1_rank = homologyRankFromSNF(1, d1, d2);
-  const H0_rank = homologyRankFromSNF(1, zeros(1, 1), d1);
-
-  // Enhanced explanation with torsion detection
-  const H2_explanation = explainDiagonal([[H2_rank]]);
-  const H1_explanation = explainDiagonal(snf2.snf.D); // Torsion from ∂₂
-  const H0_explanation = explainDiagonal([[H0_rank]]);
-
-  console.log("\n=== RP^2: Homology (with torsion) ===");
-  printDiagonalExplanation("H₂", H2_explanation);
-  printDiagonalExplanation("H₁", H1_explanation);
-  printDiagonalExplanation("H₀", H0_explanation);
-  
-  console.log("\n🎯 RP² TOPOLOGY:");
-  console.log("• RP² is the quotient of S² by antipodal identification");
-  console.log("• H₁(RP²) ≅ Z/2 shows the non-orientable twist");
-  console.log("• The torsion Z/2 comes from the degree-2 boundary map");
-  console.log("• Total Betti numbers: β₀=1, β₁=0, β₂=0 (but H₁ has torsion!)");
+// Pretty-print helpers
+function fmtMat(A: Matrixh): string {
+  if (A.length === 0) return "[]";
+  const cols = Math.max(0, ...A.map(r => r.length));
+  const widths = Array.from({ length: cols }, (_, j) =>
+    Math.max(1, ...A.map(r => (r[j] ?? 0).toString().length))
+  );
+  return A.map(r =>
+    "[ " + r.map((x, j) => (x ?? 0).toString().padStart(widths[j]!)).join(" ") + " ]"
+  ).join("\n");
 }
 
-export function demonstrateTorusHomology(): void {
+function assertZero(B: Matrixh, name: string) {
+  const nz = B.flat().some(x => x !== 0);
+  if (nz) throw new Error(`${name} should be the zero matrix`);
+}
+
+/**
+ * Compute homology ranks for a chain complex
+ *   C2 --d2--> C1 --d1--> C0
+ * over Z by using ranks over Q (free parts only).
+ */
+function homologyRanks(
+  d2: Matrixh, // size: dim(C1) × dim(C2)
+  d1: Matrixh, // size: dim(C0) × dim(C1)
+  dimC2: number,
+  dimC1: number,
+  dimC0: number
+): { H2: number; H1: number; H0: number } {
+  const rk_d2 = rankOverQ(d2);
+  const rk_d1 = rankOverQ(d1);
+  const ker_d2 = dimC2 - rk_d2; // rank ker ∂2 : C2 → C1
+  const ker_d1 = dimC1 - rk_d1; // rank ker ∂1 : C1 → C0
+  const im_d2 = rk_d2;          // over Q, rank(im ∂2) = rank(∂2)
+  const im_d1 = rk_d1;
+
+  // H2 = ker ∂2 / im ∂3  (im ∂3 = 0 here)
+  const H2 = ker_d2;
+  // H1 = ker ∂1 / im ∂2
+  const H1 = ker_d1 - im_d2;
+  // H0 = ker ∂0 / im ∂1, but ker ∂0 = C0 (no ∂0); hence rank = dimC0 - rk(∂1)
+  const H0 = dimC0 - im_d1;
+
+  return { H2, H1, H0 };
+}
+
+// Demo: torus T^2 with standard CW structure
+export function demo() {
   console.log("=".repeat(80));
-  console.log("CERTIFIED HOMOLOGY VIA SMITH NORMAL FORM");
+  console.log("TORUS HOMOLOGY DEMO (self-contained)");
   console.log("=".repeat(80));
-  
-  console.log("\nThis demo showcases:");
-  console.log("• Smith Normal Form computation with certificates");
-  console.log("• Homology rank computation for classic surfaces");
-  console.log("• Torsion detection in non-orientable manifolds");
-  console.log("• Verification that U*A*V = D exactly");
-  
-  torusExample();
-  rp2Example();
-  
+
+  // C2 = Z (1 2-cell), C1 = Z^2 (two 1-cells a,b), C0 = Z (one 0-cell)
+  const dimC2 = 1, dimC1 = 2, dimC0 = 1;
+
+  // Cellular boundary maps for T^2:
+  // ∂2: Z -> Z^2 is 0 (the attaching map [a,b] abelianizes to 0)
+  // ∂1: Z^2 -> Z is 0 (both 1-cells loop at the unique 0-cell)
+  const d2: Matrixh = Matrixh([
+    [0], // row for a
+    [0], // row for b
+  ]); // shape 2×1
+
+  const d1: Matrixh = Matrixh([
+    [0, 0], // single row into the single 0-cell
+  ]); // shape 1×2
+
+  console.log("\nBoundary matrices (cellular):");
+  console.log("∂2 : C2→C1 (2×1)\n" + fmtMat(d2));
+  console.log("∂1 : C1→C0 (1×2)\n" + fmtMat(d1));
+
+  // Sanity: ∂1 ∘ ∂2 = 0
+  const zeroCheck = mul(d1, d2);
+  assertZero(zeroCheck, "∂1 ∘ ∂2");
+
+  const ranks = homologyRanks(d2, d1, dimC2, dimC1, dimC0);
+
+  console.log("\nHomology ranks (free parts over Z):");
+  console.log(`H2(T^2) ≅ Z^${ranks.H2}`);
+  console.log(`H1(T^2) ≅ Z^${ranks.H1}`);
+  console.log(`H0(T^2) ≅ Z^${ranks.H0}`);
+
+  console.log("\nConclusion (expected):");
+  console.log("  H2(T^2) ≅ Z");
+  console.log("  H1(T^2) ≅ Z ⊕ Z");
+  console.log("  H0(T^2) ≅ Z");
+
+  console.log("\nNotes:");
+  console.log("• This demo uses ranks over Q; torsion detection would require Smith Normal Form.");
+  console.log("• For the torus, torsion is absent, so ranks fully describe the homology.");
+  console.log("• All helpers in this file are demo-only and isolated from the library build.");
+
   console.log("\n" + "=".repeat(80));
-  console.log("HOMOLOGY COMPUTATION FEATURES:");
-  console.log("✓ Certified Smith Normal Form with runtime verification");
-  console.log("✓ Exact integer arithmetic for homology ranks");
-  console.log("✓ Torsion detection for non-orientable surfaces");
-  console.log("✓ Classical examples: Torus T² and Projective Plane RP²");
-  console.log("✓ Matrixhematical rigor with algorithmic verification");
-  console.log("=".repeat(80));
-  
-  console.log("\n📚 MATHEMATICAL BACKGROUND:");
-  console.log("• Chain complexes encode topological information");
-  console.log("• Smith Normal Form diagonalizes integer matrices");
-  console.log("• Homology groups measure 'holes' in different dimensions");
-  console.log("• Torsion elements capture twisting and non-orientability");
-  console.log("• Betti numbers count free generators in each dimension");
-  
-  console.log("\n6. FAILURE CASE DEMONSTRATION");
-  
-  // Test the surface API with a broken SNF for demonstration
-  console.log("\nTesting broken SNF verification:");
-  const brokenA: number[][] = [[1, 2], [3, 4]];
-  const brokenU: number[][] = [[1, 0], [0, 1]];
-  const brokenV: number[][] = [[1, 0], [0, 1]];
-  const brokenD: number[][] = [[1, 2], [3, 5]]; // Wrong: should be [[1, 2], [3, 4]]
-  
-  const brokenVerification = verifySNF(brokenA, brokenU, brokenV, brokenD);
-  printSNFVerification("Broken SNF test", brokenVerification);
 }
 
-function main() {
-  demonstrateTorusHomology();
-}
-
-// Run if executed directly
-if (typeof process !== 'undefined' && process.argv && process.argv[1]?.includes('torus-homology-demo')) {
-  main();
+// Run when executed directly (e.g., ts-node src/examples/torus-homology-demo.ts)
+if (typeof process !== "undefined" && process.argv && process.argv[1]?.includes("torus-homology-demo")) {
+  demo();
 }

@@ -18,9 +18,15 @@ export function demo() {
   console.log("=".repeat(80));
 
   const S = new Finite([0,1,2,3]);
-  const Shat = new Finite(["low","high"]);
-  const p = (s:number)=> (s<=1 ? "low" : "high");
-  const s = (h:"low"|"high")=> (h==="low" ? 0 : 2);
+// Narrow Shat to the literal union:
+const Shat = new Finite<"low"|"high">(["low","high"] as const);
+
+// Keep p and s in the same narrow world:
+const p: (s:number) => "low"|"high" = (s) => (s<=1 ? "low" : "high");
+const s: (h:"low"|"high") => number = (h) => (h==="low" ? 0 : 2);
+
+// And fix the Surjection type parameter:
+const surjection: Surjection<number, "low"|"high"> = { surj: p, section: s };
 
   console.log("\n1. ABSTRACTION SETUP");
   console.log("Concrete states S:", S.elems);
@@ -35,7 +41,6 @@ export function demo() {
   console.log("Program (increment-or-stay):", Prog.toPairs().map(([a,b]) => `${a}→${b}`).join(', '));
 
   const F = new SurjectiveLaxDoubleFunctor();
-  const surjection: Surjection<number, string> = { surj: p, section: s };
   F.addObject(S, Shat, surjection);
   
   const ProgHat = F.onH(Prog);

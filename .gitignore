@@ -94,3 +94,9 @@ jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/
+dist-minimal/*
+dist-kan/*
+src/ts1/*
+*/code-all.txt
+
+papers/*.pdf
